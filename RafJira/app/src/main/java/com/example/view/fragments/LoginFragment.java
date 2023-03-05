@@ -2,6 +2,7 @@ package com.example.view.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.constants.Constants;
+import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentLoginBinding;
 import com.example.viewModels.LoginViewModel;
 
@@ -39,7 +41,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        mViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         // TODO: Use the ViewModel
     }
 
@@ -76,12 +78,19 @@ public class LoginFragment extends Fragment {
                     .putString(Constants.PASSWORD_KEY, password)
                     .apply();
 
-            if(username.startsWith("admin")){
-                Toast.makeText(getActivity(), "Admin logged in successfully", Toast.LENGTH_LONG).show();
-            }
-            else{
-                Toast.makeText(getActivity(), "User logged in successfully", Toast.LENGTH_LONG).show();
-            }
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container_view_tag, new MainFragment());
+            transaction.commit();
+
         });
+    }
+
+    private FragmentTransaction createTransactionWithAnimation() {
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        // Dodajemo animaciju kada se fragment doda
+    //transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+        // Dodajemo transakciju na backstack kako bi se pritisokm na back transakcija rollback-ovala
+        transaction.addToBackStack(null);
+        return transaction;
     }
 }
