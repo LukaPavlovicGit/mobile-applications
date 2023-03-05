@@ -49,6 +49,7 @@
         tools:layout_editor_absoluteY="261dp">
 
         <EditText
+            android:id="@+id/username_et"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:textColor="#808080"
@@ -56,6 +57,7 @@
             android:textColorHint="#2F4F4F"
             android:inputType="text" />
         <EditText
+            android:id="@+id/email_et"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:textColor="#808080"
@@ -63,6 +65,7 @@
             android:textColorHint="#2F4F4F"
             android:inputType="textEmailAddress" />
         <EditText
+            android:id="@+id/password_et"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:textColor="#808080"

@@ -28,17 +28,17 @@ public class MainActivity extends AppCompatActivity {
 
             SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
             boolean isLogged = sharedPreferences.getBoolean(Constants.IS_LOGGED_KEY, false);
-            if(isLogged){
-                String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
-                if(username.startsWith("admin")){
-
-                }
-                else{
-
-                }
-
-            }
-            else
+//            if(isLogged){
+//                String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
+//                if(username.startsWith("admin")){
+//
+//                }
+//                else{
+//
+//                }
+//
+//            }
+//            else
                 fragmentTransaction.add(R.id.fragment_container_view_tag, new LoginFragment());
 
             fragmentTransaction.commit();
