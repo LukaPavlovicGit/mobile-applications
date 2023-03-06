@@ -79,18 +79,11 @@ public class LoginFragment extends Fragment {
                     .apply();
 
             FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.addToBackStack(null);
             transaction.replace(R.id.fragment_container_view_tag, new MainFragment());
             transaction.commit();
 
         });
     }
 
-    private FragmentTransaction createTransactionWithAnimation() {
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        // Dodajemo animaciju kada se fragment doda
-    //transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
-        // Dodajemo transakciju na backstack kako bi se pritisokm na back transakcija rollback-ovala
-        transaction.addToBackStack(null);
-        return transaction;
-    }
 }

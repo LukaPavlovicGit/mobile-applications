@@ -12,6 +12,7 @@ import com.example.constants.Constants;
 import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.ActivityMainBinding;
 import com.example.view.fragments.LoginFragment;
+import com.example.view.fragments.MainFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,17 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
             SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
             boolean isLogged = sharedPreferences.getBoolean(Constants.IS_LOGGED_KEY, false);
-//            if(isLogged){
-//                String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
-//                if(username.startsWith("admin")){
-//
-//                }
-//                else{
-//
-//                }
-//
-//            }
-//            else
+            if(isLogged)
+                fragmentTransaction.add(R.id.fragment_container_view_tag, new MainFragment());
+            else
                 fragmentTransaction.add(R.id.fragment_container_view_tag, new LoginFragment());
 
             fragmentTransaction.commit();

@@ -13,7 +13,7 @@ import com.example.view.fragments.UserAccountFragment;
 
 public class PagerAdapter extends FragmentPagerAdapter {
 
-    private final int ITEM_COUNT = 3;
+    private final int ITEM_COUNT = 4;
     public static final int FRAGMENT_1 = 0;
     public static final int FRAGMENT_2 = 1;
     public static final int FRAGMENT_3 = 2;
