@@ -11,6 +11,7 @@ import com.example.ticket.ticketType.TicketType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SharedViewModel extends ViewModel {
     private static MutableLiveData<List<Ticket>> ticketsLiveData = new MutableLiveData<>();
@@ -82,6 +83,8 @@ public class SharedViewModel extends ViewModel {
 
     private static void initData(){
 
+        List<Ticket> toDoList = new ArrayList<>();
+
         List<Ticket> list = new ArrayList<>();
 
         // TO_DO
@@ -95,6 +98,19 @@ public class SharedViewModel extends ViewModel {
         list.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.LOWEST, 2, "title18", "description18"));
         list.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.MEDIUM, 6, "title19", "description19"));
         list.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.MEDIUM, 4, "title20", "description20"));
+
+        toDoList.add(new Ticket(TicketType.BUG, TicketPriority.HIGH, 3, "title1", "description1"));
+        toDoList.add(new Ticket(TicketType.BUG, TicketPriority.HIGH, 2, "title2", "description2"));
+        toDoList.add(new Ticket(TicketType.BUG, TicketPriority.LOW, 1, "title3", "description3"));
+        toDoList.add(new Ticket(TicketType.BUG, TicketPriority.LOWEST, 1, "title4", "description4"));
+        toDoList.add(new Ticket(TicketType.BUG, TicketPriority.HIGHEST, 5, "title5", "description5"));
+        toDoList.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.HIGHEST, 2, "title16", "description16"));
+        toDoList.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.LOW, 4, "title17", "description17"));
+        toDoList.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.LOWEST, 2, "title18", "description18"));
+        toDoList.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.MEDIUM, 6, "title19", "description19"));
+        toDoList.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.MEDIUM, 4, "title20", "description20"));
+
+        toDoTicketsLiveData.setValue(toDoList);
 
         // IN_PROGRESS
         list.add(new Ticket(TicketType.BUG, TicketPriority.LOW, TicketState.IN_PROGRESS,1, "title6", "description6"));
@@ -120,10 +136,10 @@ public class SharedViewModel extends ViewModel {
         list.add(new Ticket(TicketType.ENHANCEMENT, TicketPriority.LOW, TicketState.DONE, 1, "title29", "description29"));
 
         ticketsLiveData.setValue(list);
-        setDataForStatView();
+        initDataForStatView();
     }
 
-    private static void setDataForStatView(){
+    private static void initDataForStatView(){
 
         List<Ticket> list = ticketsLiveData.getValue();
 
@@ -163,5 +179,17 @@ public class SharedViewModel extends ViewModel {
         totalDone.setValue(doneEnh+doneBugs);
         totalDoneEnhancement.setValue(doneEnh);
         totalDoneBugs.setValue(doneBugs);
+    }
+
+    public void addTicketInToDoList(Ticket ticket){
+        List<Ticket> list = toDoTicketsLiveData.getValue();
+        list.add(ticket);
+        toDoTicketsLiveData.setValue(list);
+
+        totalToDo.setValue(totalToDo.getValue() + 1);
+        if(ticket.getType() == TicketType.ENHANCEMENT)
+            totalToDoEnhancement.setValue(totalToDoEnhancement.getValue() + 1);
+        else if(ticket.getType() == TicketType.BUG)
+            totalToDoBugs.setValue(totalToDoBugs.getValue() + 1);
     }
 }

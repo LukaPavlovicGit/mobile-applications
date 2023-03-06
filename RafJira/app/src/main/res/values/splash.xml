@@ -3,7 +3,7 @@
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#202020</item>
 
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_sharp_lightbulb_24</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_baseline_note_24</item>
 
         <item name="postSplashScreenTheme">@style/Theme.RafJira</item>
     </style>
