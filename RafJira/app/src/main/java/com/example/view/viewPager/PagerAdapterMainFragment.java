@@ -1,7 +1,6 @@
 package com.example.view.viewPager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -11,7 +10,7 @@ import com.example.view.fragments.StatisticsFragment;
 import com.example.view.fragments.TicketsListsFragment;
 import com.example.view.fragments.UserAccountFragment;
 
-public class PagerAdapter extends FragmentPagerAdapter {
+public class PagerAdapterMainFragment extends FragmentPagerAdapter {
 
     private final int ITEM_COUNT = 4;
     public static final int FRAGMENT_1 = 0;
@@ -19,7 +18,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public static final int FRAGMENT_3 = 2;
     public static final int FRAGMENT_4 = 3;
 
-    public PagerAdapter(@NonNull FragmentManager fm) {
+    public PagerAdapterMainFragment(@NonNull FragmentManager fm) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     }
 
