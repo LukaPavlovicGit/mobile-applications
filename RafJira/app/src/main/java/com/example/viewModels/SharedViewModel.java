@@ -37,6 +37,16 @@ public class SharedViewModel extends ViewModel {
         initData();
     }
 
+    public LiveData<List<Ticket>> getToDoTicketsLiveData(){
+        return toDoTicketsLiveData;
+    }
+    public LiveData<List<Ticket>> getInProgressTicketsLiveData(){
+        return inProgressTicketsLiveData;
+    }
+    public LiveData<List<Ticket>> getDoneTicketsLiveData(){
+        return doneTicketsLiveData;
+    }
+
     public LiveData<Integer> getTotalToDo(){
         return totalToDo;
     }

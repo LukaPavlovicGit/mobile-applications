@@ -3,24 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.example.view.fragments.ToDoTicketsFragment"
+    android:padding="8dp">
 
     <EditText
         android:id="@+id/fragment_todo_tv"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Search"
-        app:layout_constraintBottom_toTopOf="@+id/listview"
+        android:layout_height="80dp"
+        android:textColor="@color/white"
+        android:hint="Search..."
+        android:textColorHint="#2F4F4F"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/toDoRecyclerview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <ListView
-        android:id="@+id/listview"
-        android:layout_width="404dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/toDoRecyclerview"
+        android:layout_width="match_parent"
         android:layout_height="665dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_todo_tv" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_todo_tv"
+        tools:listitem="@layout/single_ticket_item"
+        android:background="@color/black"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
