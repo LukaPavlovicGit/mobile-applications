@@ -20,29 +20,16 @@ import android.widget.Toast;
 import com.example.constants.Constants;
 import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentLoginBinding;
-import com.example.viewModels.LoginViewModel;
 
 public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
-    private LoginViewModel mViewModel;
-
-    public static LoginFragment newInstance() {
-        return new LoginFragment();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
-        // TODO: Use the ViewModel
     }
 
     @Override

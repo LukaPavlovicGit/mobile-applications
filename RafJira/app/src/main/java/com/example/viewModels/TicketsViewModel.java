@@ -15,7 +15,8 @@ import java.util.Optional;
 
 public class TicketsViewModel extends ViewModel {
     private static int id = 0;
-    private MutableLiveData<List<Ticket>> ticketsLD = new MutableLiveData<>();
+    private final MutableLiveData<List<Ticket>> ticketsLD = new MutableLiveData<>();
+    private List<Ticket> tickets = new ArrayList<>();
 
     public TicketsViewModel(){
         initData();
@@ -23,14 +24,13 @@ public class TicketsViewModel extends ViewModel {
 
     private void initData(){
 
-        List<Ticket> tickets = new ArrayList<>();
         TicketType type;
         TicketPriority priority;
         TicketState state;
         int estimation;
         String title = "Title", description = "Description";
 
-        for(int i=0 ; i < 100 ; i++){
+        for(int i=0 ; i < 10 ; i++){
             if(i % 2 == 0) type = TicketType.BUG;
             else type = TicketType.ENHANCEMENT;
 
@@ -54,12 +54,17 @@ public class TicketsViewModel extends ViewModel {
 
             ++id;
         }
-        ticketsLD.setValue(tickets);
+        // We are doing this because cars.setValue in the background is first checking if the reference on the object is same
+        // and if it is it will not do notifyAll. By creating a new list, we get the new reference everytime
+        ArrayList<Ticket> listToSubmit = new ArrayList<>(tickets);
+        ticketsLD.setValue(listToSubmit);
     }
 
     public LiveData<List<Ticket>> getTickets() {
         return ticketsLD;
     }
+
+//    public void
 
 
     public void addTicket(TicketType type, TicketPriority priority, int estimation, String title, String description){

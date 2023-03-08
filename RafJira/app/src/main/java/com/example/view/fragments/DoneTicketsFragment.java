@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.raf_jira.databinding.FragmentInprogressTicketsBinding;
 import com.example.ticket.ticketType.TicketState;
-import com.example.view.viewPager.TicketAdapter;
+import com.example.view.recycler.adapter.TicketAdapter;
+import com.example.view.recycler.differ.TicketDiffItemCallback;
 import com.example.viewModels.TicketsViewModel;
 
 import java.util.stream.Collectors;
@@ -44,13 +46,13 @@ public class DoneTicketsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
 
-        adapter = new TicketAdapter();
+        adapter = new TicketAdapter(new TicketDiffItemCallback(), null);
         recyclerView.setAdapter(adapter);
     }
 
     private void initObservers(){
         ticketsViewModel.getTickets().observe(getViewLifecycleOwner(), tickets -> {
-            adapter.setTickets(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE).collect(Collectors.toList()));
+            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE).collect(Collectors.toList()));
         });
     }
 }
