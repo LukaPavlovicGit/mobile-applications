@@ -10,15 +10,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.raf_jira.databinding.FragmentLoginBinding;
-import com.example.raf_jira.databinding.FragmentMainBinding;
 import com.example.raf_jira.databinding.FragmentStatisticsBinding;
-import com.example.viewModels.SharedViewModel;
+import com.example.ticket.ticketType.TicketState;
+import com.example.ticket.ticketType.TicketType;
+import com.example.viewModels.TicketsViewModel;
+
+import java.util.stream.Collectors;
 
 public class StatisticsFragment extends Fragment {
 
     private FragmentStatisticsBinding binding;
-    private SharedViewModel sharedViewModel;
+    private TicketsViewModel ticketsViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -30,21 +32,23 @@ public class StatisticsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
         initObservers();
     }
 
     private void initObservers(){
-        sharedViewModel.getTotalToDo().observe(getViewLifecycleOwner(), totalToDo -> binding.statisticsViewTodoTotal.setText(String.valueOf(totalToDo)));
-        sharedViewModel.getTotalToDoEnhancement().observe(getViewLifecycleOwner(), totalToDoEnh -> binding.statisticsViewTodoEnhTotal.setText(String.valueOf(totalToDoEnh)));
-        sharedViewModel.getTotalToDoBugs().observe(getViewLifecycleOwner(), totalToDoBugs -> binding.statisticsViewTodoBugsTotal.setText(String.valueOf(totalToDoBugs)));
+        ticketsViewModel.getTickets().observe(getViewLifecycleOwner(), tickets -> {
+            binding.statisticsViewTodoTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO).collect(Collectors.toList()).size()));
+            binding.statisticsViewTodoEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO && ticket.getType() == TicketType.ENHANCEMENT).collect(Collectors.toList()).size()));
+            binding.statisticsViewTodoBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO && ticket.getType() == TicketType.BUG).collect(Collectors.toList()).size()));
 
-        sharedViewModel.getTotalInProgress().observe(getViewLifecycleOwner(), totalInProgress -> binding.statisticsViewInProgressTotal.setText(String.valueOf(totalInProgress)));
-        sharedViewModel.getTotalInProgressEnhancement().observe(getViewLifecycleOwner(), totalInProgressEnh -> binding.statisticsViewInProgressEnhTotal.setText(String.valueOf(totalInProgressEnh)));
-        sharedViewModel.getTotalInProgressBugs().observe(getViewLifecycleOwner(), totalInProgressBugs -> binding.statisticsViewInProgressBugsTotal.setText(String.valueOf(totalInProgressBugs)));
+            binding.statisticsViewInProgressTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS).collect(Collectors.toList()).size()));
+            binding.statisticsViewInProgressEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS && ticket.getType() == TicketType.ENHANCEMENT).collect(Collectors.toList()).size()));
+            binding.statisticsViewInProgressBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS && ticket.getType() == TicketType.BUG).collect(Collectors.toList()).size()));
 
-        sharedViewModel.getTotalDone().observe(getViewLifecycleOwner(), totalDone -> binding.statisticsViewDoneTotal.setText(String.valueOf(totalDone)));
-        sharedViewModel.getTotalDoneEnhancement().observe(getViewLifecycleOwner(), totalDoneEnh -> binding.statisticsViewDoneEnhTotal.setText(String.valueOf(totalDoneEnh)));
-        sharedViewModel.getTotalDoneBugs().observe(getViewLifecycleOwner(), totalDoneBugs -> binding.statisticsViewDoneBugsTotal.setText(String.valueOf(totalDoneBugs)));
+            binding.statisticsViewDoneTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE).collect(Collectors.toList()).size()));
+            binding.statisticsViewDoneEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE && ticket.getType() == TicketType.ENHANCEMENT).collect(Collectors.toList()).size()));
+            binding.statisticsViewDoneBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE && ticket.getType() == TicketType.BUG).collect(Collectors.toList()).size()));
+        });
     }
 }

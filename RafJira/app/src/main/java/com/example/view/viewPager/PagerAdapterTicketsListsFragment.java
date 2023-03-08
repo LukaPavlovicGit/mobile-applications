@@ -1,21 +1,14 @@
 package com.example.view.viewPager;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.view.fragments.DoneTicketsFragment;
 import com.example.view.fragments.InProgressTicketsFragment;
-import com.example.view.fragments.NewTicketFragment;
-import com.example.view.fragments.StatisticsFragment;
-import com.example.view.fragments.TicketsListsFragment;
-import com.example.view.fragments.ToDoTicketsFragment;
-import com.example.view.fragments.UserAccountFragment;
+import com.example.view.fragments.TodoTicketsFragment;
 
 public class PagerAdapterTicketsListsFragment extends FragmentPagerAdapter {
 
@@ -32,7 +25,7 @@ public class PagerAdapterTicketsListsFragment extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case FRAGMENT_1: return new ToDoTicketsFragment();
+            case FRAGMENT_1: return new TodoTicketsFragment();
             case FRAGMENT_2: return new InProgressTicketsFragment();
             default: return new DoneTicketsFragment();
         }

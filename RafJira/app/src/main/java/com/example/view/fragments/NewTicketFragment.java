@@ -18,12 +18,12 @@ import com.example.raf_jira.databinding.FragmentNewTicketBinding;
 import com.example.ticket.Ticket;
 import com.example.ticket.ticketType.TicketPriority;
 import com.example.ticket.ticketType.TicketType;
-import com.example.viewModels.SharedViewModel;
+import com.example.viewModels.TicketsViewModel;
 
 public class NewTicketFragment extends Fragment {
 
     private FragmentNewTicketBinding binding;
-    private SharedViewModel sharedViewModel;
+    private TicketsViewModel ticketsViewModel;
 
     @Nullable
     @Override
@@ -35,7 +35,7 @@ public class NewTicketFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
         initSpinners();
         initListeners();
     }
@@ -85,7 +85,7 @@ public class NewTicketFragment extends Fragment {
             String title = binding.fragmentNewTicketTitleTv.getText().toString();
             String description = binding.fragmentNewTicketDescTv.getText().toString();
 
-            sharedViewModel.addTicketInToDoList(new Ticket(ticketType, ticketPriority, estimate, title, description));
+            ticketsViewModel.addTicket(ticketType, ticketPriority, estimate, title, description);
             resetFields();
         });
     }

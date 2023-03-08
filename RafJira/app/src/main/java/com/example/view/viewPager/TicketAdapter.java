@@ -29,14 +29,13 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketHold
 
     @Override
     public void onBindViewHolder(@NonNull TicketHolder holder, int position) {
-        Ticket ticket = tickets.get(position);
-        if(ticket.getType() == TicketType.ENHANCEMENT)
-            holder.imageView.setImageResource(R.drawable.ic_enhancement_icon);
-        else if(ticket.getType() == TicketType.BUG)
-            holder.imageView.setImageResource(R.drawable.ic_bug_icon);
-
-        holder.title.setText(ticket.getTittle());
-        holder.description.setText(ticket.getDescription());
+        holder.bind(tickets.get(position));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tickets.get(position);
+            }
+        });
     }
 
     @Override
@@ -49,7 +48,12 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketHold
         notifyDataSetChanged();
     }
 
-    class TicketHolder extends RecyclerView.ViewHolder {
+    public Ticket getTicketAt(int position){
+        return tickets.get(position);
+    }
+
+
+    class TicketHolder extends RecyclerView.ViewHolder{
 
         private ImageView imageView;
         private TextView title;
@@ -62,6 +66,17 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketHold
             title = itemView.findViewById(R.id.card_view_textview);
             description = itemView.findViewById(R.id.card_view_textview2);
         }
+
+        public void bind(Ticket ticket){
+            if(ticket.getType() == TicketType.ENHANCEMENT)
+               imageView.setImageResource(R.drawable.ic_enhancement_icon);
+            else if(ticket.getType() == TicketType.BUG)
+                imageView.setImageResource(R.drawable.ic_bug_icon);
+
+            title.setText(ticket.getTitle());
+            description.setText(ticket.getDescription());
+        }
+
     }
 
 }

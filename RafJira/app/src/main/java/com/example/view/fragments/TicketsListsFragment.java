@@ -12,12 +12,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.raf_jira.databinding.FragmentTicketsListsBinding;
 import com.example.view.viewPager.PagerAdapterTicketsListsFragment;
-import com.example.viewModels.SharedViewModel;
+import com.example.viewModels.TicketsViewModel;
 
 public class TicketsListsFragment extends Fragment {
 
     private FragmentTicketsListsBinding binding;
-    private SharedViewModel sharedViewModel;
+    private TicketsViewModel ticketsViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -29,7 +29,7 @@ public class TicketsListsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
         init();
 
     }

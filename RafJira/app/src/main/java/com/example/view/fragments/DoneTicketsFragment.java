@@ -12,14 +12,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.raf_jira.databinding.FragmentDoneTicketsBinding;
 import com.example.raf_jira.databinding.FragmentInprogressTicketsBinding;
+import com.example.ticket.ticketType.TicketState;
 import com.example.view.viewPager.TicketAdapter;
-import com.example.viewModels.SharedViewModel;
+import com.example.viewModels.TicketsViewModel;
+
+import java.util.stream.Collectors;
 
 public class DoneTicketsFragment extends Fragment {
     private FragmentInprogressTicketsBinding binding;
-    private SharedViewModel sharedViewModel;
+    private TicketsViewModel ticketsViewModel;
     private TicketAdapter adapter;
 
     @Override
@@ -32,7 +34,7 @@ public class DoneTicketsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
         initRecyclerView();
         initObservers();
     }
@@ -47,8 +49,8 @@ public class DoneTicketsFragment extends Fragment {
     }
 
     private void initObservers(){
-        sharedViewModel.getDoneTicketsLiveData().observe(getViewLifecycleOwner(), tickets -> {
-            adapter.setTickets(tickets);
+        ticketsViewModel.getTickets().observe(getViewLifecycleOwner(), tickets -> {
+            adapter.setTickets(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE).collect(Collectors.toList()));
         });
     }
 }

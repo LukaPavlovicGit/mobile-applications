@@ -5,29 +5,40 @@ import com.example.ticket.ticketType.TicketState;
 import com.example.ticket.ticketType.TicketType;
 
 public class Ticket {
+    private int id;
     private TicketType type;
     private TicketPriority priority;
     private TicketState state;
     private int estimation;
-    private String tittle;
+    private String title;
     private String description;
 
-    public Ticket(TicketType type, TicketPriority priority, int estimation, String tittle, String description) {
+    public Ticket(int id, TicketType type, TicketPriority priority, int estimation, String title, String description) {
+        this.id = id;
         this.type = type;
         this.priority = priority;
         this.state = TicketState.TODO;
         this.estimation = estimation;
-        this.tittle = tittle;
+        this.title = title;
         this.description = description;
     }
 
-    public Ticket(TicketType type, TicketPriority priority, TicketState state, int estimation, String tittle, String description) {
+    public Ticket(int id, TicketType type, TicketPriority priority, TicketState state, int estimation, String title, String description) {
+        this.id = id;
         this.type = type;
         this.priority = priority;
         this.state = state;
         this.estimation = estimation;
-        this.tittle = tittle;
+        this.title = title;
         this.description = description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public TicketType getType() {
@@ -54,12 +65,12 @@ public class Ticket {
         this.estimation = estimation;
     }
 
-    public String getTittle() {
-        return tittle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setTittle(String tittle) {
-        this.tittle = tittle;
+    public void setTitle(String tittle) {
+        this.title = tittle;
     }
 
     public String getDescription() {
