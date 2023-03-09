@@ -12,4 +12,7 @@ public class Constants {
     public static final String ADMIN_PASSWORD = "admin";
 
     // fragments
+    public static final String TODO_FRAGMENT = "todo";
+    public static final String IN_PROGRESS_FRAGMENT = "in_progress";
+    public static final String DONE_FRAGMENT = "done";
 }

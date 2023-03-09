@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentTodoTicketsBinding;
 import com.example.ticket.ticketType.TicketState;
 import com.example.view.recycler.adapter.TicketAdapter;
@@ -21,7 +21,7 @@ import com.example.viewModels.TicketsViewModel;
 
 import java.util.stream.Collectors;
 
-public class TodoTicketsFragment extends Fragment implements TicketAdapter.TicketClickInterface {
+public class TodoTicketsFragment extends Fragment implements TicketAdapter.TodoInterface {
 
     private FragmentTodoTicketsBinding binding;
     private TicketsViewModel ticketsViewModel;
@@ -38,13 +38,13 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.Ticke
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
-        initRecyclerView();
+        initRecyclerView(view);
         initObservers();
         initListeners();
     }
 
-    private void initRecyclerView(){
-        RecyclerView recyclerView = binding.toDoRecyclerview;
+    private void initRecyclerView(View view){
+        RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
 
@@ -63,15 +63,9 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.Ticke
     }
 
     @Override
-    public void onDelete(int id) {
-        ticketsViewModel.removeTicket(id);
-    }
+    public void onDelete(int id) {ticketsViewModel.removeTicket(id);}
 
     @Override
-    public void fromTodoToInProgress(int id) {
-        ticketsViewModel.fromTodoToInProgress(id);
-    }
+    public void fromTodoToInProgress(int id) {ticketsViewModel.fromTodoToInProgress(id);}
 
-    @Override
-    public void fromInProgressToTodo(int id) { }
 }

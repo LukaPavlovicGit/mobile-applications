@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentInprogressTicketsBinding;
 import com.example.ticket.ticketType.TicketState;
 import com.example.view.recycler.adapter.TicketAdapter;
@@ -21,7 +21,7 @@ import com.example.viewModels.TicketsViewModel;
 
 import java.util.stream.Collectors;
 
-public class InProgressTicketsFragment extends Fragment implements TicketAdapter.TicketClickInterface {
+public class InProgressTicketsFragment extends Fragment implements TicketAdapter.InProgressInterface {
 
     private FragmentInprogressTicketsBinding binding;
     private TicketsViewModel ticketsViewModel;
@@ -43,7 +43,7 @@ public class InProgressTicketsFragment extends Fragment implements TicketAdapter
     }
 
     private void initRecyclerView(){
-        RecyclerView recyclerView = binding.toDoRecyclerview;
+        RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
 
@@ -58,15 +58,8 @@ public class InProgressTicketsFragment extends Fragment implements TicketAdapter
     }
 
     @Override
-    public void onDelete(int id) {
-        ticketsViewModel.removeTicket(id);
-    }
+    public void fromInProgressToTodo(int id) {ticketsViewModel.fromInProgressToTodo(id);}
 
     @Override
-    public void fromTodoToInProgress(int id) { }
-
-    @Override
-    public void fromInProgressToTodo(int id) {
-        ticketsViewModel.fromInProgressToTodo(id);
-    }
+    public void fromInProgressToDone(int id) {ticketsViewModel.fromInProgressToDone(id);}
 }

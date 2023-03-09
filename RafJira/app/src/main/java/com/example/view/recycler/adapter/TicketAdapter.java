@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.raf_jira.R;
 import com.example.ticket.Ticket;
 import com.example.ticket.ticketType.TicketType;
+import com.example.view.fragments.DoneTicketsFragment;
+import com.example.view.fragments.TodoTicketsFragment;
 
 public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolder> {
 
@@ -48,8 +51,9 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
             TextView title = itemView.findViewById(R.id.card_view_textview1);
             TextView description = itemView.findViewById(R.id.card_view_textview2);
             Button btn1 = itemView.findViewById(R.id.button1);
-            Button btn2 = itemView.findViewById(R.id.button2);;
-            Button btn3 = itemView.findViewById(R.id.button3);;
+            Button btn2 = itemView.findViewById(R.id.button2);
+            Button btn3 = itemView.findViewById(R.id.button3);
+            Button btn4 = itemView.findViewById(R.id.button4);
 
             if(ticket.getType() == TicketType.ENHANCEMENT)
                imageView.setImageResource(R.drawable.ic_enhancement_icon);
@@ -57,21 +61,39 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
                 imageView.setImageResource(R.drawable.ic_bug_icon);
             title.setText(ticket.getTitle());
             description.setText(ticket.getDescription());
-            btn1.setOnClickListener(view -> {
-                if(ticketClickInterface == null) return;
-                ticketClickInterface.onDelete(getCurrentList().get(getBindingAdapterPosition()).getId());
-            });
-            btn2.setOnClickListener(view -> {
-                if(ticketClickInterface == null) return;
-                ticketClickInterface.fromTodoToInProgress(getCurrentList().get(getBindingAdapterPosition()).getId());
-            });
+
+            if(ticketClickInterface instanceof DoneTicketsFragment){
+                btn1.setVisibility(View.INVISIBLE);
+                btn2.setVisibility(View.INVISIBLE);
+                btn3.setVisibility(View.INVISIBLE);
+                btn4.setVisibility(View.INVISIBLE);
+            }
+            else if(ticketClickInterface instanceof TodoTicketsFragment){
+                TodoInterface todoInterface = (TodoInterface) ticketClickInterface;
+                btn1.setOnClickListener(view -> todoInterface.fromTodoToInProgress(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                btn2.setOnClickListener(view -> todoInterface.onDelete(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                btn3.setVisibility(View.INVISIBLE);
+                btn4.setVisibility(View.INVISIBLE);
+            }
+            else if(ticketClickInterface instanceof InProgressInterface){
+                InProgressInterface inProgressInterface = (InProgressInterface) ticketClickInterface;
+                btn1.setVisibility(View.INVISIBLE);
+                btn2.setVisibility(View.INVISIBLE);
+                btn3.setOnClickListener(view -> inProgressInterface.fromInProgressToTodo(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                btn4.setOnClickListener(view -> inProgressInterface.fromInProgressToDone(getCurrentList().get(getBindingAdapterPosition()).getId()));
+            }
         }
     }
 
-    public interface TicketClickInterface {
+    public interface TicketClickInterface { }
+
+    public interface TodoInterface extends TicketClickInterface {
         void onDelete(int id);
         void fromTodoToInProgress(int id);
+    }
+    public interface InProgressInterface extends TicketClickInterface {
         void fromInProgressToTodo(int id);
+        void fromInProgressToDone(int id);
     }
 
 }

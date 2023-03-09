@@ -30,7 +30,7 @@ public class TicketsViewModel extends ViewModel {
         int estimation;
         String title = "Title", description = "Description";
 
-        for(int i=0 ; i < 10 ; i++){
+        for(int i=0 ; i < 100 ; i++){
             if(i % 2 == 0) type = TicketType.BUG;
             else type = TicketType.ENHANCEMENT;
 
@@ -46,12 +46,11 @@ public class TicketsViewModel extends ViewModel {
             else if(i % 5 == 3) estimation = 5;
             else estimation = 3;
 
-            if(i > 80) state = TicketState.DONE;
-            else if(i > 40) state = TicketState.IN_PROGRESS;
+            if(i > 90) state = TicketState.DONE;
+            else if(i > 45) state = TicketState.IN_PROGRESS;
             else state = TicketState.TODO;
 
             tickets.add(new Ticket(id, type, priority, state, estimation, title + id, description + id));
-
             ++id;
         }
         // We are doing this because cars.setValue in the background is first checking if the reference on the object is same
@@ -63,9 +62,6 @@ public class TicketsViewModel extends ViewModel {
     public LiveData<List<Ticket>> getTickets() {
         return ticketsLD;
     }
-
-//    public void
-
 
     public void addTicket(TicketType type, TicketPriority priority, int estimation, String title, String description){
         List<Ticket> tickets = ticketsLD.getValue();
@@ -124,6 +120,4 @@ public class TicketsViewModel extends ViewModel {
             ticketsLD.setValue(tickets);
         });
     }
-
-
 }
