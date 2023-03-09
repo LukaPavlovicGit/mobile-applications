@@ -12,7 +12,8 @@ public class Constants {
     public static final String ADMIN_PASSWORD = "admin";
 
     // fragments
-    public static final String TODO_FRAGMENT = "todo";
-    public static final String IN_PROGRESS_FRAGMENT = "in_progress";
-    public static final String DONE_FRAGMENT = "done";
+    public static final String TODO_FRAGMENT_TAG = "todo";
+    public static final String IN_PROGRESS_FRAGMENT_TAG = "in_progress";
+    public static final String DONE_FRAGMENT_TAG = "done";
+    public static final String EDIT_TICKET_TAG = "EDIT_TICKET_TAG";
 }

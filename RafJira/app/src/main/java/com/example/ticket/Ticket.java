@@ -1,10 +1,15 @@
 package com.example.ticket;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.example.ticket.enumTicket.TicketPriority;
 import com.example.ticket.enumTicket.TicketState;
 import com.example.ticket.enumTicket.TicketType;
 
-public class Ticket {
+public class Ticket implements Parcelable {
     private int id;
     private TicketType type;
     private TicketPriority priority;
@@ -32,6 +37,28 @@ public class Ticket {
         this.title = title;
         this.description = description;
     }
+
+    protected Ticket(Parcel in) {
+        id = in.readInt();
+        estimation = in.readInt();
+        title = in.readString();
+        description = in.readString();
+        type = TicketType.valueOf(in.readString());
+        priority = TicketPriority.valueOf(in.readString());
+        state = TicketState.valueOf(in.readString());
+    }
+
+    public static final Creator<Ticket> CREATOR = new Creator<Ticket>() {
+        @Override
+        public Ticket createFromParcel(Parcel in) {
+            return new Ticket(in);
+        }
+
+        @Override
+        public Ticket[] newArray(int size) {
+            return new Ticket[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -87,5 +114,21 @@ public class Ticket {
 
     public void setState(TicketState state) {
         this.state = state;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeInt(estimation);
+        parcel.writeString(title);
+        parcel.writeString(description);
+        parcel.writeString(type.name());
+        parcel.writeString(priority.name());
+        parcel.writeString(state.name());
     }
 }
