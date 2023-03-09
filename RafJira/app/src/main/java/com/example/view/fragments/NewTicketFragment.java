@@ -15,9 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentNewTicketBinding;
-import com.example.ticket.Ticket;
-import com.example.ticket.ticketType.TicketPriority;
-import com.example.ticket.ticketType.TicketType;
+import com.example.ticket.enumTicket.TicketPriority;
+import com.example.ticket.enumTicket.TicketType;
 import com.example.viewModels.TicketsViewModel;
 
 public class NewTicketFragment extends Fragment {

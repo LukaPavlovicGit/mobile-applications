@@ -1,5 +1,8 @@
 package com.example.view.recycler.adapter;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +11,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.constants.Constants;
 import com.example.raf_jira.R;
 import com.example.ticket.Ticket;
-import com.example.ticket.ticketType.TicketType;
+import com.example.ticket.enumTicket.TicketType;
 import com.example.view.fragments.DoneTicketsFragment;
 import com.example.view.fragments.TodoTicketsFragment;
 
@@ -31,7 +34,7 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
     @NonNull
     @Override
     public TicketHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_ticket_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_item_recycler_view, parent, false);
         return new TicketHolder(itemView);
     }
 
@@ -62,6 +65,9 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
             title.setText(ticket.getTitle());
             description.setText(ticket.getDescription());
 
+            if(getBindingAdapterPosition() != RecyclerView.NO_POSITION)
+                itemView.setOnClickListener(view -> ticketClickInterface.itemClicked(itemView, getBindingAdapterPosition()));
+
             if(ticketClickInterface instanceof DoneTicketsFragment){
                 btn1.setVisibility(View.INVISIBLE);
                 btn2.setVisibility(View.INVISIBLE);
@@ -70,8 +76,16 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
             }
             else if(ticketClickInterface instanceof TodoTicketsFragment){
                 TodoInterface todoInterface = (TodoInterface) ticketClickInterface;
-                btn1.setOnClickListener(view -> todoInterface.fromTodoToInProgress(getCurrentList().get(getBindingAdapterPosition()).getId()));
-                btn2.setOnClickListener(view -> todoInterface.onDelete(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                if(getBindingAdapterPosition() != RecyclerView.NO_POSITION) {
+                    btn1.setOnClickListener(view -> todoInterface.fromTodoToInProgress(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                    btn2.setOnClickListener(view -> todoInterface.onDelete(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                }
+
+                SharedPreferences sharedPreferences = ((TodoTicketsFragment) ticketClickInterface).getActivity().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+                String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
+                if(!username.startsWith("admin"))
+                    btn2.setVisibility(View.INVISIBLE);
+
                 btn3.setVisibility(View.INVISIBLE);
                 btn4.setVisibility(View.INVISIBLE);
             }
@@ -79,13 +93,17 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
                 InProgressInterface inProgressInterface = (InProgressInterface) ticketClickInterface;
                 btn1.setVisibility(View.INVISIBLE);
                 btn2.setVisibility(View.INVISIBLE);
-                btn3.setOnClickListener(view -> inProgressInterface.fromInProgressToTodo(getCurrentList().get(getBindingAdapterPosition()).getId()));
-                btn4.setOnClickListener(view -> inProgressInterface.fromInProgressToDone(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                if(getBindingAdapterPosition() != RecyclerView.NO_POSITION) {
+                    btn3.setOnClickListener(view -> inProgressInterface.fromInProgressToTodo(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                    btn4.setOnClickListener(view -> inProgressInterface.fromInProgressToDone(getCurrentList().get(getBindingAdapterPosition()).getId()));
+                }
             }
         }
     }
 
-    public interface TicketClickInterface { }
+    public interface TicketClickInterface {
+        void itemClicked(View v, int position);
+    }
 
     public interface TodoInterface extends TicketClickInterface {
         void onDelete(int id);

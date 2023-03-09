@@ -14,7 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentTodoTicketsBinding;
-import com.example.ticket.ticketType.TicketState;
+import com.example.ticket.Ticket;
+import com.example.ticket.enumTicket.TicketState;
 import com.example.view.recycler.adapter.TicketAdapter;
 import com.example.view.recycler.differ.TicketDiffItemCallback;
 import com.example.viewModels.TicketsViewModel;
@@ -67,5 +68,11 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.TodoI
 
     @Override
     public void fromTodoToInProgress(int id) {ticketsViewModel.fromTodoToInProgress(id);}
+
+    @Override
+    public void itemClicked(View v, int position) {
+        Ticket ticket = adapter.getCurrentList().get(position);
+
+    }
 
 }

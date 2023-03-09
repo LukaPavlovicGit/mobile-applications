@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentDoneTicketsBinding;
-import com.example.raf_jira.databinding.FragmentInprogressTicketsBinding;
-import com.example.ticket.ticketType.TicketState;
+import com.example.ticket.enumTicket.TicketState;
 import com.example.view.recycler.adapter.TicketAdapter;
 import com.example.view.recycler.differ.TicketDiffItemCallback;
 import com.example.viewModels.TicketsViewModel;
@@ -65,4 +63,8 @@ public class DoneTicketsFragment extends Fragment implements TicketAdapter.Ticke
         });
     }
 
+    @Override
+    public void itemClicked(View v, int position) {
+
+    }
 }

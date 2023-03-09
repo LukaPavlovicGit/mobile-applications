@@ -11,8 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.raf_jira.databinding.FragmentStatisticsBinding;
-import com.example.ticket.ticketType.TicketState;
-import com.example.ticket.ticketType.TicketType;
+import com.example.ticket.enumTicket.TicketState;
+import com.example.ticket.enumTicket.TicketType;
 import com.example.viewModels.TicketsViewModel;
 
 import java.util.stream.Collectors;

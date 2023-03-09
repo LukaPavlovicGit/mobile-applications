@@ -1,8 +1,8 @@
 package com.example.ticket;
 
-import com.example.ticket.ticketType.TicketPriority;
-import com.example.ticket.ticketType.TicketState;
-import com.example.ticket.ticketType.TicketType;
+import com.example.ticket.enumTicket.TicketPriority;
+import com.example.ticket.enumTicket.TicketState;
+import com.example.ticket.enumTicket.TicketType;
 
 public class Ticket {
     private int id;

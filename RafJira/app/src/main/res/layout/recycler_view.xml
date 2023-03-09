@@ -26,7 +26,7 @@
         android:layout_height="665dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_edit_view"
-        tools:listitem="@layout/single_ticket_item"
+        tools:listitem="@layout/single_item_recycler_view"
         android:background="@color/black"/>
 
 </LinearLayout>

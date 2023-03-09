@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.ticket.Ticket;
-import com.example.ticket.ticketType.TicketPriority;
-import com.example.ticket.ticketType.TicketState;
-import com.example.ticket.ticketType.TicketType;
+import com.example.ticket.enumTicket.TicketPriority;
+import com.example.ticket.enumTicket.TicketState;
+import com.example.ticket.enumTicket.TicketType;
 
 import java.util.ArrayList;
 import java.util.List;
