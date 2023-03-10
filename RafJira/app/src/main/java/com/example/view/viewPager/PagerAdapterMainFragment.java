@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.example.view.fragments.NewTicketFragment;
+import com.example.view.fragments.NewEditTicketFragment;
 import com.example.view.fragments.StatisticsFragment;
 import com.example.view.fragments.TicketsListsFragment;
 import com.example.view.fragments.UserAccountFragment;
@@ -27,7 +27,7 @@ public class PagerAdapterMainFragment extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case FRAGMENT_1: return new StatisticsFragment();
-            case FRAGMENT_2: return new NewTicketFragment();
+            case FRAGMENT_2: return new NewEditTicketFragment();
             case FRAGMENT_3: return new TicketsListsFragment();
             default: return new UserAccountFragment();
         }

@@ -76,7 +76,7 @@ public class InProgressTicketsFragment extends Fragment implements TicketAdapter
         fragment.setArguments(bundle);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.addToBackStack(null);
-        transaction.replace(R.id.fragment_container_view_tag, fragment, Constants.EDIT_TICKET_TAG);
+        transaction.replace(R.id.fragment_container_view_tag, fragment, Constants.SINGLE_TICKET_FRAGMENT_TAG);
         transaction.commit();
 
     }

@@ -27,10 +27,7 @@ public class PagerAdapterTicketsListsFragment extends FragmentPagerAdapter {
         switch (position) {
             case FRAGMENT_1: return new TodoTicketsFragment();
             case FRAGMENT_2: return new InProgressTicketsFragment();
-            default: {
-
-                return new DoneTicketsFragment();
-            }
+            default: return new DoneTicketsFragment();
         }
     }
 

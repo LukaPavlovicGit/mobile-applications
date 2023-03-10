@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.constants.Constants;
@@ -87,6 +88,15 @@ public class SingleTicketFragment extends Fragment {
             ticketsViewModel.decrementLoggedTime();
             return true;
         });
-        binding.editButton.setOnClickListener(view -> {});
+        binding.editButton.setOnClickListener(view -> {
+            Fragment fragment = new NewEditTicketFragment();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constants.POPULATE_FIELDS_KEY, true);
+            fragment.setArguments(bundle);
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.addToBackStack(null);
+            transaction.replace(R.id.fragment_container_view_tag, fragment, Constants.SINGLE_TICKET_FRAGMENT_TAG);
+            transaction.commit();
+        });
     }
 }

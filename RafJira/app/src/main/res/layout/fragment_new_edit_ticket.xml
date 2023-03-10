@@ -99,12 +99,27 @@
         app:layout_constraintVertical_bias="0.618" />
 
     <Button
-        android:id="@+id/add_new_ticket"
+        android:id="@+id/new_ticket_btn"
         android:layout_width="312dp"
         android:layout_height="53dp"
-        android:background="@drawable/add_ticket_btn"
+        android:background="@drawable/new_edit_ticket_btn"
         android:text="Add new ticket"
         android:textColor="#FF0000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.937" />
+
+    <Button
+        android:id="@+id/edit_ticket_btn"
+        android:layout_width="312dp"
+        android:layout_height="53dp"
+        android:background="@drawable/new_edit_ticket_btn"
+        android:text="Edit"
+        android:textColor="#FF0000"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.489"

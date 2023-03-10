@@ -101,13 +101,12 @@ public class TicketsViewModel extends ViewModel {
         List<Ticket> tickets = ticketsLD.getValue();
         Optional<Ticket> optionalTicket = tickets.stream().filter(ticket -> ticket.getId() == id).findFirst();
         optionalTicket.ifPresent(ticket -> {
-            ticket.setType(type);
-            ticket.setPriority(priority);
-            ticket.setState(state);
+            if(type != null) ticket.setType(type);
+            if(priority != null )ticket.setPriority(priority);
+            if(state != null) ticket.setState(state);
             if(estimation != null) ticket.setEstimation(estimation);
             if(title != null && !title.isEmpty()) ticket.setTitle(title);
             if(description != null && !description.isEmpty()) ticket.setDescription(description);
-
             ticketsLD.setValue(tickets);
         });
     }
