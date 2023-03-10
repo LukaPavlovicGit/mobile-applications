@@ -44,7 +44,7 @@ public class MainFragment extends Fragment {
     }
 
     private void initNavigation() {
-        ((BottomNavigationView)binding.bottomNavigation).setOnItemSelectedListener(item -> {
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 // setCurrentItem metoda viewPager samo obavesti koji je Item trenutno aktivan i onda metoda getItem u adapteru setuje odredjeni fragment za tu poziciju
                 case R.id.navigation_1: viewPager.setCurrentItem(PagerAdapterMainFragment.FRAGMENT_1, false); break;

@@ -16,6 +16,7 @@ import java.util.Optional;
 public class TicketsViewModel extends ViewModel {
     private static int id = 0;
     private final MutableLiveData<List<Ticket>> ticketsLD = new MutableLiveData<>();
+    private final MutableLiveData<Ticket> ticketLD = new MutableLiveData<>();
     private List<Ticket> tickets = new ArrayList<>();
 
     public TicketsViewModel(){
@@ -61,6 +62,32 @@ public class TicketsViewModel extends ViewModel {
 
     public LiveData<List<Ticket>> getTickets() {
         return ticketsLD;
+    }
+
+    public LiveData<Ticket> getTicketLD(){
+        return ticketLD;
+    }
+
+    public void incrementLoggedTime(){
+        Ticket ticket = ticketLD.getValue();
+        ticket.setLoggedTime(ticket.getLoggedTime() + 1);
+        ticketLD.setValue(ticket);
+    }
+    public void decrementLoggedTime(){
+        Ticket ticket = ticketLD.getValue();
+        System.out.println("SUPER");
+        ticket.setLoggedTime(ticket.getLoggedTime() - 1);
+        ticketLD.setValue(ticket);
+    }
+
+    public void setTicketLD(int id){
+        tickets
+            .stream()
+            .filter(ticket -> ticket.getId() == id)
+            .findFirst()
+            .ifPresent(ticket -> {
+                ticketLD.setValue(ticket);
+            });
     }
 
     public void addTicket(TicketType type, TicketPriority priority, int estimation, String title, String description){

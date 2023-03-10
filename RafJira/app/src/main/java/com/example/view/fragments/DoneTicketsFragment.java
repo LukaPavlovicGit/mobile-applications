@@ -9,12 +9,15 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.constants.Constants;
 import com.example.raf_jira.R;
 import com.example.raf_jira.databinding.FragmentDoneTicketsBinding;
+import com.example.ticket.Ticket;
 import com.example.ticket.enumTicket.TicketState;
 import com.example.view.recycler.adapter.TicketAdapter;
 import com.example.view.recycler.differ.TicketDiffItemCallback;
@@ -65,6 +68,16 @@ public class DoneTicketsFragment extends Fragment implements TicketAdapter.Ticke
 
     @Override
     public void itemClicked(View v, int position) {
+        Ticket ticket = adapter.getCurrentList().get(position);
+        ticketsViewModel.setTicketLD(ticket.getId());
+        Fragment fragment = new SingleTicketFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("Ticket", ticket);
+        fragment.setArguments(bundle);
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.fragment_container_view_tag, fragment, Constants.EDIT_TICKET_TAG);
+        transaction.commit();
 
     }
 }

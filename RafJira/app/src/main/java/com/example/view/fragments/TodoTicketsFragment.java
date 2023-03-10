@@ -56,9 +56,9 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.TodoI
     }
 
     private void initObservers(){
-        ticketsViewModel.getTickets().observe(requireActivity(), tickets -> {
-            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO).collect(Collectors.toList()));
-        });
+        ticketsViewModel.getTickets().observe(requireActivity(), tickets ->
+            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO).collect(Collectors.toList()))
+        );
     }
 
     private void initListeners(){
@@ -74,6 +74,7 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.TodoI
     @Override
     public void itemClicked(View v, int position) {
         Ticket ticket = adapter.getCurrentList().get(position);
+        ticketsViewModel.setTicketLD(ticket.getId());
         Fragment fragment = new SingleTicketFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("Ticket", ticket);

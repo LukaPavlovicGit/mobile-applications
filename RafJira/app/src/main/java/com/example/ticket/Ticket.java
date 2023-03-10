@@ -15,6 +15,7 @@ public class Ticket implements Parcelable {
     private TicketPriority priority;
     private TicketState state;
     private int estimation;
+    private int loggedTime;
     private String title;
     private String description;
 
@@ -23,6 +24,7 @@ public class Ticket implements Parcelable {
         this.type = type;
         this.priority = priority;
         this.state = TicketState.TODO;
+        this.loggedTime = 0;
         this.estimation = estimation;
         this.title = title;
         this.description = description;
@@ -32,6 +34,7 @@ public class Ticket implements Parcelable {
         this.id = id;
         this.type = type;
         this.priority = priority;
+        this.loggedTime = 0;
         this.state = state;
         this.estimation = estimation;
         this.title = title;
@@ -41,6 +44,7 @@ public class Ticket implements Parcelable {
     protected Ticket(Parcel in) {
         id = in.readInt();
         estimation = in.readInt();
+        loggedTime = in.readInt();
         title = in.readString();
         description = in.readString();
         type = TicketType.valueOf(in.readString());
@@ -92,6 +96,10 @@ public class Ticket implements Parcelable {
         this.estimation = estimation;
     }
 
+    public int getLoggedTime() { return loggedTime; }
+
+    public void setLoggedTime(int loggedTime) { this.loggedTime = loggedTime; }
+
     public String getTitle() {
         return title;
     }
@@ -125,6 +133,7 @@ public class Ticket implements Parcelable {
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeInt(id);
         parcel.writeInt(estimation);
+        parcel.writeInt(loggedTime);
         parcel.writeString(title);
         parcel.writeString(description);
         parcel.writeString(type.name());
