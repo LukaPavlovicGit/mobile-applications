@@ -38,17 +38,17 @@ public class StatisticsFragment extends Fragment {
 
     private void initObservers(){
         ticketsViewModel.getTickets().observe(getViewLifecycleOwner(), tickets -> {
-            binding.statisticsViewTodoTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO).collect(Collectors.toList()).size()));
-            binding.statisticsViewTodoEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO && ticket.getType() == TicketType.ENHANCEMENT).collect(Collectors.toList()).size()));
-            binding.statisticsViewTodoBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO && ticket.getType() == TicketType.BUG).collect(Collectors.toList()).size()));
+            binding.statisticsViewTodoTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Todo).collect(Collectors.toList()).size()));
+            binding.statisticsViewTodoEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Todo && ticket.getType() == TicketType.Enhancement).collect(Collectors.toList()).size()));
+            binding.statisticsViewTodoBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Todo && ticket.getType() == TicketType.Bug).collect(Collectors.toList()).size()));
 
-            binding.statisticsViewInProgressTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS).collect(Collectors.toList()).size()));
-            binding.statisticsViewInProgressEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS && ticket.getType() == TicketType.ENHANCEMENT).collect(Collectors.toList()).size()));
-            binding.statisticsViewInProgressBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS && ticket.getType() == TicketType.BUG).collect(Collectors.toList()).size()));
+            binding.statisticsViewInProgressTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.In_progress).collect(Collectors.toList()).size()));
+            binding.statisticsViewInProgressEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.In_progress && ticket.getType() == TicketType.Enhancement).collect(Collectors.toList()).size()));
+            binding.statisticsViewInProgressBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.In_progress && ticket.getType() == TicketType.Bug).collect(Collectors.toList()).size()));
 
-            binding.statisticsViewDoneTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE).collect(Collectors.toList()).size()));
-            binding.statisticsViewDoneEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE && ticket.getType() == TicketType.ENHANCEMENT).collect(Collectors.toList()).size()));
-            binding.statisticsViewDoneBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE && ticket.getType() == TicketType.BUG).collect(Collectors.toList()).size()));
+            binding.statisticsViewDoneTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Done).collect(Collectors.toList()).size()));
+            binding.statisticsViewDoneEnhTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Done && ticket.getType() == TicketType.Enhancement).collect(Collectors.toList()).size()));
+            binding.statisticsViewDoneBugsTotal.setText(String.valueOf(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Done && ticket.getType() == TicketType.Bug).collect(Collectors.toList()).size()));
         });
     }
 }

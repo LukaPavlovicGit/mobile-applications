@@ -1,7 +1,7 @@
 package com.example.ticket.enumTicket;
 
 public enum TicketState {
-    TODO,
-    IN_PROGRESS,
-    DONE
+    Todo,
+    In_progress,
+    Done
 }

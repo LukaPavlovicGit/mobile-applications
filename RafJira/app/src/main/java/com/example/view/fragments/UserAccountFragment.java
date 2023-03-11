@@ -39,7 +39,6 @@ public class UserAccountFragment extends Fragment {
     private void initView(){
         String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
         String email = sharedPreferences.getString(Constants.EMAIL_KEY, "");
-
         binding.usernameHolderTv.setText(username);
         binding.emailHolderTv.setText(email);
     }

@@ -1,7 +1,5 @@
 package com.example.view.fragments;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,7 +36,6 @@ public class SingleTicketFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
-
         init();
         initObservers();
         initListeners();
@@ -53,9 +50,9 @@ public class SingleTicketFragment extends Fragment {
             binding.editButton.setVisibility(View.INVISIBLE);
 
         Ticket ticket = bundle.getParcelable("Ticket");
-        if(ticket.getType() == TicketType.ENHANCEMENT)
+        if(ticket.getType() == TicketType.Enhancement)
             binding.singleTicketImageView.setImageResource(R.drawable.ic_enhancement_icon);
-        else if(ticket.getType() == TicketType.BUG)
+        else if(ticket.getType() == TicketType.Bug)
             binding.singleTicketImageView.setImageResource(R.drawable.ic_bug_icon);
         binding.singeTicketTextView1.setText(ticket.getTitle());
         binding.ticketTypeHolderTv.setText(ticket.getType().name());
@@ -63,7 +60,6 @@ public class SingleTicketFragment extends Fragment {
         binding.estimationHolderTv.setText(String.valueOf(ticket.getEstimation()));
         binding.loggedTimeHolderTv.setText(String.valueOf(ticket.getLoggedTime()));
         binding.descriptionContentTv.setText(ticket.getDescription());
-
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
         String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
@@ -73,9 +69,9 @@ public class SingleTicketFragment extends Fragment {
 
     private void initObservers(){
         ticketsViewModel.getTicketLD().observe(getViewLifecycleOwner(),ticket -> {
-            if(ticket.getType() == TicketType.ENHANCEMENT)
+            if(ticket.getType() == TicketType.Enhancement)
                 binding.singleTicketImageView.setImageResource(R.drawable.ic_enhancement_icon);
-            else if(ticket.getType() == TicketType.BUG)
+            else if(ticket.getType() == TicketType.Bug)
                 binding.singleTicketImageView.setImageResource(R.drawable.ic_bug_icon);
             binding.singeTicketTextView1.setText(ticket.getTitle());
             binding.ticketTypeHolderTv.setText(ticket.getType().name());

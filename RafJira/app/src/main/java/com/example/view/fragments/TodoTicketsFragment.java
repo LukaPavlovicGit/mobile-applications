@@ -56,7 +56,7 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.TodoI
 
     private void initObservers(){
         ticketsViewModel.getTickets().observe(requireActivity(), tickets ->
-            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO).collect(Collectors.toList()))
+            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Todo).collect(Collectors.toList()))
         );
     }
 

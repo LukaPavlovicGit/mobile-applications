@@ -23,7 +23,7 @@ public class Ticket implements Parcelable {
         this.id = id;
         this.type = type;
         this.priority = priority;
-        this.state = TicketState.TODO;
+        this.state = TicketState.Todo;
         this.loggedTime = 0;
         this.estimation = estimation;
         this.title = title;

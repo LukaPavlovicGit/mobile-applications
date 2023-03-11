@@ -1,6 +1,6 @@
 package com.example.ticket.enumTicket;
 
 public enum TicketType {
-    BUG,
-    ENHANCEMENT
+    Bug,
+    Enhancement
 }

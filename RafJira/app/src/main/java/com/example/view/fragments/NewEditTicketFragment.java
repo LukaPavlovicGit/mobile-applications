@@ -52,17 +52,18 @@ public class NewEditTicketFragment extends Fragment {
         adapterTicketPriority.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTicketPriority.setAdapter(adapterTicketPriority);
 
-
         Bundle bundle = getArguments();
         if(bundle != null){
             boolean setFields = bundle.getBoolean(Constants.POPULATE_FIELDS_KEY, false);
             if(setFields){
-
-                TicketType.valueOf(ticketsViewModel.getTicketLD().getValue().getType().name());
                 binding.editTicketBtn.setVisibility(View.VISIBLE);
                 binding.newTicketBtn.setVisibility(View.INVISIBLE);
-                binding.spinnerType.setSelection(ticketsViewModel.getTicketLD().getValue().getType().ordinal());
-                binding.spinnerPriority.setSelection(ticketsViewModel.getTicketLD().getValue().getPriority().ordinal());
+
+                int spinTypePos = adapterTicketType.getPosition(ticketsViewModel.getTicketLD().getValue().getType().toString());
+                int spinPriorityPos = adapterTicketPriority.getPosition(ticketsViewModel.getTicketLD().getValue().getPriority().toString());
+
+                binding.spinnerType.setSelection(spinTypePos);
+                binding.spinnerPriority.setSelection(spinPriorityPos);
                 binding.textView.setText("Edit ticket");
                 binding.fragmentNewTicketEstimateTv.setText(String.valueOf(ticketsViewModel.getTicketLD().getValue().getEstimation()));
                 binding.fragmentNewTicketTitleTv.setText(ticketsViewModel.getTicketLD().getValue().getTitle());
@@ -72,26 +73,9 @@ public class NewEditTicketFragment extends Fragment {
     }
 
     private void initListeners(){
-
         binding.newTicketBtn.setOnClickListener(view -> {
-            TicketType ticketType = null;
-            TicketPriority ticketPriority = null;
-
-            if(binding.spinnerType.getSelectedItem().toString().equals("Enhancement"))
-                ticketType = TicketType.ENHANCEMENT;
-            else if(binding.spinnerType.getSelectedItem().toString().equals("Bug"))
-                ticketType = TicketType.BUG;
-
-            if(binding.spinnerPriority.getSelectedItem().toString().equals("Highest"))
-                ticketPriority = TicketPriority.HIGHEST;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("High"))
-                ticketPriority = TicketPriority.HIGH;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("Medium"))
-                ticketPriority = TicketPriority.MEDIUM;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("Low"))
-                ticketPriority = TicketPriority.LOW;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("Lowest"))
-                ticketPriority = TicketPriority.LOWEST;
+            TicketType ticketType = TicketType.valueOf(binding.spinnerType.getSelectedItem().toString().toUpperCase());
+            TicketPriority ticketPriority = TicketPriority.valueOf(binding.spinnerPriority.getSelectedItem().toString().toUpperCase());
 
             if( binding.fragmentNewTicketEstimateTv.getText().toString().isEmpty() ||
                     binding.fragmentNewTicketTitleTv.getText().toString().isEmpty() ||
@@ -110,24 +94,8 @@ public class NewEditTicketFragment extends Fragment {
         });
 
         binding.editTicketBtn.setOnClickListener(view -> {
-            TicketType ticketType = null;
-            TicketPriority ticketPriority = null;
-
-            if(binding.spinnerType.getSelectedItem().toString().equals("Enhancement"))
-                ticketType = TicketType.ENHANCEMENT;
-            else if(binding.spinnerType.getSelectedItem().toString().equals("Bug"))
-                ticketType = TicketType.BUG;
-
-            if(binding.spinnerPriority.getSelectedItem().toString().equals("Highest"))
-                ticketPriority = TicketPriority.HIGHEST;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("High"))
-                ticketPriority = TicketPriority.HIGH;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("Medium"))
-                ticketPriority = TicketPriority.MEDIUM;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("Low"))
-                ticketPriority = TicketPriority.LOW;
-            else if(binding.spinnerPriority.getSelectedItem().toString().equals("Lowest"))
-                ticketPriority = TicketPriority.LOWEST;
+            TicketType ticketType = TicketType.valueOf(binding.spinnerType.getSelectedItem().toString().toUpperCase());
+            TicketPriority ticketPriority = TicketPriority.valueOf(binding.spinnerPriority.getSelectedItem().toString().toUpperCase());
 
             int id = ticketsViewModel.getTicketLD().getValue().getId();
             Integer estimate = Integer.valueOf(binding.fragmentNewTicketEstimateTv.getText().toString());
@@ -135,7 +103,6 @@ public class NewEditTicketFragment extends Fragment {
             String description = binding.fragmentNewTicketDescTv.getText().toString();
 
             ticketsViewModel.updateTicket(id, ticketType, ticketPriority, null, estimate, title, description);
-            resetFields();
             getActivity().getSupportFragmentManager().popBackStack();
         });
     }

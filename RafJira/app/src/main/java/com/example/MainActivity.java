@@ -25,16 +25,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         splashScreen.setKeepOnScreenCondition(() -> {
-
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
             SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
             boolean isLogged = sharedPreferences.getBoolean(Constants.IS_LOGGED_KEY, false);
             if(isLogged)
                 fragmentTransaction.replace(R.id.fragment_container_view_tag, new MainFragment(), Constants.MAIN_FRAGMENT_TAG);
             else
                 fragmentTransaction.replace(R.id.fragment_container_view_tag, new LoginFragment(), Constants.LOGIN_FRAGMENT_TAG);
-
             fragmentTransaction.commit();
             return false;
         });

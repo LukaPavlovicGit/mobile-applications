@@ -20,6 +20,7 @@ import com.example.raf_jira.R;
 import com.example.ticket.Ticket;
 import com.example.ticket.enumTicket.TicketType;
 import com.example.view.fragments.DoneTicketsFragment;
+import com.example.view.fragments.InProgressTicketsFragment;
 import com.example.view.fragments.TodoTicketsFragment;
 
 public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolder> {
@@ -43,7 +44,7 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
         holder.bind(getItem(position));
     }
 
-    public class TicketHolder extends RecyclerView.ViewHolder{
+    public class TicketHolder extends RecyclerView.ViewHolder {
 
         public TicketHolder(@NonNull View itemView) {
             super(itemView);
@@ -58,9 +59,9 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
             Button btn3 = itemView.findViewById(R.id.button3);
             Button btn4 = itemView.findViewById(R.id.button4);
 
-            if(ticket.getType() == TicketType.ENHANCEMENT)
+            if(ticket.getType() == TicketType.Enhancement)
                imageView.setImageResource(R.drawable.ic_enhancement_icon);
-            else if(ticket.getType() == TicketType.BUG)
+            else if(ticket.getType() == TicketType.Bug)
                 imageView.setImageResource(R.drawable.ic_bug_icon);
             title.setText(ticket.getTitle());
             description.setText(ticket.getDescription());
@@ -89,7 +90,7 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketHolde
                 btn3.setVisibility(View.INVISIBLE);
                 btn4.setVisibility(View.INVISIBLE);
             }
-            else if(ticketClickInterface instanceof InProgressInterface){
+            else if(ticketClickInterface instanceof InProgressTicketsFragment){
                 InProgressInterface inProgressInterface = (InProgressInterface) ticketClickInterface;
                 btn1.setVisibility(View.INVISIBLE);
                 btn2.setVisibility(View.INVISIBLE);

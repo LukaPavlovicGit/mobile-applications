@@ -49,14 +49,13 @@ public class InProgressTicketsFragment extends Fragment implements TicketAdapter
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
-
         adapter = new TicketAdapter(new TicketDiffItemCallback(), this);
         recyclerView.setAdapter(adapter);
     }
 
     private void initObservers(){
         ticketsViewModel.getTickets().observe(requireActivity(), tickets -> {
-            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS).collect(Collectors.toList()));
+            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.In_progress).collect(Collectors.toList()));
         });
     }
 
@@ -78,6 +77,5 @@ public class InProgressTicketsFragment extends Fragment implements TicketAdapter
         transaction.addToBackStack(null);
         transaction.replace(R.id.fragment_container_view_tag, fragment, Constants.SINGLE_TICKET_FRAGMENT_TAG);
         transaction.commit();
-
     }
 }

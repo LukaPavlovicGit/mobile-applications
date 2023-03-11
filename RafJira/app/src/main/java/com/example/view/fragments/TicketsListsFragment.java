@@ -35,16 +35,10 @@ public class TicketsListsFragment extends Fragment {
 
     private void init(){
         initTabs();
-        initObservers();
     }
 
     private void initTabs() {
-        // da li treba getParentFragmentManager() ili getChildFragmentManager()
         binding.viewPager.setAdapter(new PagerAdapterTicketsListsFragment(getChildFragmentManager()));
         binding.tabLayout.setupWithViewPager(binding.viewPager);
-    }
-
-    private void initObservers(){
-
     }
 }

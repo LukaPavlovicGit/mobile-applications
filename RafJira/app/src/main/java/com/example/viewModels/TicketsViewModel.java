@@ -32,14 +32,14 @@ public class TicketsViewModel extends ViewModel {
         String title = "Title", description = "Description";
 
         for(int i=0 ; i < 100 ; i++){
-            if(i % 2 == 0) type = TicketType.BUG;
-            else type = TicketType.ENHANCEMENT;
+            if(i % 2 == 0) type = TicketType.Bug;
+            else type = TicketType.Enhancement;
 
-            if(i % 5 == 0) priority = TicketPriority.LOWEST;
-            else if(i % 5 == 1) priority = TicketPriority.LOW;
-            else if(i % 5 == 2) priority = TicketPriority.MEDIUM;
-            else if(i % 5 == 3) priority = TicketPriority.HIGH;
-            else priority = TicketPriority.HIGHEST;
+            if(i % 5 == 0) priority = TicketPriority.Lowest;
+            else if(i % 5 == 1) priority = TicketPriority.Low;
+            else if(i % 5 == 2) priority = TicketPriority.Medium;
+            else if(i % 5 == 3) priority = TicketPriority.High;
+            else priority = TicketPriority.Highest;
 
             if(i % 5 == 0) estimation = 4;
             else if(i % 5 == 1) estimation = 1;
@@ -47,9 +47,9 @@ public class TicketsViewModel extends ViewModel {
             else if(i % 5 == 3) estimation = 5;
             else estimation = 3;
 
-            if(i > 90) state = TicketState.DONE;
-            else if(i > 45) state = TicketState.IN_PROGRESS;
-            else state = TicketState.TODO;
+            if(i > 90) state = TicketState.Done;
+            else if(i > 45) state = TicketState.In_progress;
+            else state = TicketState.Todo;
 
             tickets.add(new Ticket(id, type, priority, state, estimation, title + id, description + id));
             ++id;
@@ -115,7 +115,7 @@ public class TicketsViewModel extends ViewModel {
         List<Ticket> tickets = ticketsLD.getValue();
         Optional<Ticket> optionalTicket = tickets.stream().filter(ticket -> ticket.getId() == id).findFirst();
         optionalTicket.ifPresent(ticket -> {
-            ticket.setState(TicketState.IN_PROGRESS);
+            ticket.setState(TicketState.In_progress);
             ticketsLD.setValue(tickets);
         });
     }
@@ -124,7 +124,7 @@ public class TicketsViewModel extends ViewModel {
         List<Ticket> tickets = ticketsLD.getValue();
         Optional<Ticket> optionalTicket = tickets.stream().filter(ticket -> ticket.getId() == id).findFirst();
         optionalTicket.ifPresent(ticket -> {
-            ticket.setState(TicketState.DONE);
+            ticket.setState(TicketState.Done);
             ticketsLD.setValue(tickets);
         });
     }
@@ -133,7 +133,7 @@ public class TicketsViewModel extends ViewModel {
         List<Ticket> tickets = ticketsLD.getValue();
         Optional<Ticket> optionalTicket = tickets.stream().filter(ticket -> ticket.getId() == id).findFirst();
         optionalTicket.ifPresent(ticket -> {
-            ticket.setState(TicketState.TODO);
+            ticket.setState(TicketState.Todo);
             ticketsLD.setValue(tickets);
         });
     }

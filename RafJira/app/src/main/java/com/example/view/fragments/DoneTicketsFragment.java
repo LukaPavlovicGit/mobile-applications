@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,14 +48,13 @@ public class DoneTicketsFragment extends Fragment implements TicketAdapter.Ticke
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
-
         adapter = new TicketAdapter(new TicketDiffItemCallback(), this);
         recyclerView.setAdapter(adapter);
     }
 
     private void initObservers(){
         ticketsViewModel.getTickets().observe(getViewLifecycleOwner(), tickets -> {
-            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.DONE).collect(Collectors.toList()));
+            adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.Done).collect(Collectors.toList()));
         });
     }
 
