@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/card_view_image"
-            android:layout_marginLeft="38dp"
+            android:layout_marginLeft="22dp"
             android:layout_toRightOf="@id/card_view_image"
             android:text="textView"
             android:textSize="18dp"
@@ -38,14 +38,16 @@
             android:layout_below="@id/card_view_textview1"
             android:layout_alignStart="@id/card_view_textview1"
             android:layout_marginStart="0dp"
-            android:layout_marginLeft="38dp"
-            android:layout_marginTop="20dp"
-            android:maxLines="2"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="15dp"
+            android:layout_toStartOf="@+id/button2"
             android:layout_toRightOf="@id/card_view_image"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:text="Ticket description"
-            android:textSize="18dp"
             android:textColor="@color/white"
-            android:ellipsize="end"/>
+            android:textSize="16dp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button1"

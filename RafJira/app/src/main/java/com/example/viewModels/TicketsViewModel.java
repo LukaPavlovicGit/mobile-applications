@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.raf_jira.R;
 import com.example.ticket.Ticket;
 import com.example.ticket.enumTicket.TicketPriority;
 import com.example.ticket.enumTicket.TicketState;
@@ -12,6 +13,8 @@ import com.example.ticket.enumTicket.TicketType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class TicketsViewModel extends ViewModel {
     private static int id = 0;
@@ -51,7 +54,7 @@ public class TicketsViewModel extends ViewModel {
             else if(i > 45) state = TicketState.In_progress;
             else state = TicketState.Todo;
 
-            tickets.add(new Ticket(id, type, priority, state, estimation, title + id, description + id));
+            tickets.add(new Ticket(id, type, priority, state, estimation, generateTitle(), generateDescription()));
             ++id;
         }
         // We are doing this because cars.setValue in the background is first checking if the reference on the object is same
@@ -68,6 +71,10 @@ public class TicketsViewModel extends ViewModel {
         return ticketLD;
     }
 
+    public void filterTickets(String prefix){
+        ticketsLD.setValue( tickets.stream().filter(ticket -> ticket.getTitle().toLowerCase().startsWith(prefix.toLowerCase())).collect(Collectors.toList()) );
+    }
+
     public void incrementLoggedTime(){
         Ticket ticket = ticketLD.getValue();
         ticket.setLoggedTime(ticket.getLoggedTime() + 1);
@@ -75,7 +82,6 @@ public class TicketsViewModel extends ViewModel {
     }
     public void decrementLoggedTime(){
         Ticket ticket = ticketLD.getValue();
-        System.out.println("SUPER");
         ticket.setLoggedTime(ticket.getLoggedTime() - 1);
         ticketLD.setValue(ticket);
     }
@@ -85,9 +91,7 @@ public class TicketsViewModel extends ViewModel {
             .stream()
             .filter(ticket -> ticket.getId() == id)
             .findFirst()
-            .ifPresent(ticket -> {
-                ticketLD.setValue(ticket);
-            });
+            .ifPresent(ticket ->  ticketLD.setValue(ticket) );
     }
 
     public void addTicket(TicketType type, TicketPriority priority, int estimation, String title, String description){
@@ -145,5 +149,37 @@ public class TicketsViewModel extends ViewModel {
             tickets.remove(ticket);
             ticketsLD.setValue(tickets);
         });
+    }
+
+    private String generateTitle(){
+        StringBuffer title = new StringBuffer();
+        Character vowels[] = {'a', 'e', 'i', 'o', 'y'};
+        Character consonants[] = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'};
+        Random random = new Random();
+        Integer len = random.nextInt(10) + 6;
+
+        for(int i=0 ; i<len ; i++){
+            if(random.nextInt(100) < 36) title.append(vowels[random.nextInt(vowels.length)]);
+            else title.append(consonants[random.nextInt(consonants.length)]);
+
+        }
+
+        return title.toString().substring(0, 1).toUpperCase() + title.toString().substring(1);
+    }
+
+    private String generateDescription(){
+        StringBuffer title = new StringBuffer();
+        Character vowels[] = {'a', 'e', 'i', 'o', 'y'};
+        Character consonants[] = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'};
+        Random random = new Random();
+        Integer len = random.nextInt(30) + 6;
+
+        for(int i=0 ; i<len ; i++){
+            if(random.nextInt(100) < 36) title.append(vowels[random.nextInt(vowels.length)]);
+            else title.append(consonants[random.nextInt(consonants.length)]);
+
+        }
+
+        return title.toString().substring(0, 1).toUpperCase() + title.toString().substring(1);
     }
 }
