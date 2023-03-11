@@ -55,7 +55,7 @@ public class InProgressTicketsFragment extends Fragment implements TicketAdapter
     }
 
     private void initObservers(){
-        ticketsViewModel.getTickets().observe(getViewLifecycleOwner(), tickets -> {
+        ticketsViewModel.getTickets().observe(requireActivity(), tickets -> {
             adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.IN_PROGRESS).collect(Collectors.toList()));
         });
     }

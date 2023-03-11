@@ -31,7 +31,6 @@ public class TicketsListsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
         init();
-
     }
 
     private void init(){

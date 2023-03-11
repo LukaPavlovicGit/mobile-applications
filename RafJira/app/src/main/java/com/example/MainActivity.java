@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -27,12 +28,12 @@ public class MainActivity extends AppCompatActivity {
 
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
-            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
             boolean isLogged = sharedPreferences.getBoolean(Constants.IS_LOGGED_KEY, false);
             if(isLogged)
-                fragmentTransaction.add(R.id.fragment_container_view_tag, new MainFragment());
+                fragmentTransaction.replace(R.id.fragment_container_view_tag, new MainFragment(), Constants.MAIN_FRAGMENT_TAG);
             else
-                fragmentTransaction.add(R.id.fragment_container_view_tag, new LoginFragment());
+                fragmentTransaction.replace(R.id.fragment_container_view_tag, new LoginFragment(), Constants.LOGIN_FRAGMENT_TAG);
 
             fragmentTransaction.commit();
             return false;

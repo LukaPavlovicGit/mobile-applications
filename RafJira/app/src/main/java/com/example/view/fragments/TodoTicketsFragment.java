@@ -41,12 +41,11 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.TodoI
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
-        initRecyclerView(view);
+        initRecyclerView();
         initObservers();
-        initListeners();
     }
 
-    private void initRecyclerView(View view){
+    private void initRecyclerView(){
         RecyclerView recyclerView = binding.getRoot().findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
@@ -59,10 +58,6 @@ public class TodoTicketsFragment extends Fragment implements TicketAdapter.TodoI
         ticketsViewModel.getTickets().observe(requireActivity(), tickets ->
             adapter.submitList(tickets.stream().filter(ticket -> ticket.getState() == TicketState.TODO).collect(Collectors.toList()))
         );
-    }
-
-    private void initListeners(){
-
     }
 
     @Override

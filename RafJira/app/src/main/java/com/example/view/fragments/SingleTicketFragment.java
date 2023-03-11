@@ -2,12 +2,12 @@ package com.example.view.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +48,10 @@ public class SingleTicketFragment extends Fragment {
         Bundle bundle = getArguments();
         if(bundle == null) return;
 
+        boolean hideEditButton = bundle.getBoolean(Constants.HIDE_EDIT_BUTTON, false);
+        if(hideEditButton)
+            binding.editButton.setVisibility(View.INVISIBLE);
+
         Ticket ticket = bundle.getParcelable("Ticket");
         if(ticket.getType() == TicketType.ENHANCEMENT)
             binding.singleTicketImageView.setImageResource(R.drawable.ic_enhancement_icon);
@@ -61,10 +65,10 @@ public class SingleTicketFragment extends Fragment {
         binding.descriptionContentTv.setText(ticket.getDescription());
 
 
-//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
-//        String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
-//        if(!username.startsWith("admin"))
-//            binding.editButton.setVisibility(View.INVISIBLE);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString(Constants.USERNAME_KEY, "");
+        if(!username.startsWith("admin"))
+            binding.editButton.setVisibility(View.INVISIBLE);
     }
 
     private void initObservers(){

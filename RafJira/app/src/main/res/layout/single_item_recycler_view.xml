@@ -46,14 +46,14 @@
             android:textColor="@color/white"
             android:ellipsize="end"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button1"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
             android:background="#FFA500"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button2"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -62,16 +62,14 @@
             android:layout_marginTop="8dp"
             android:background="#FFA500"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button3"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_below="@id/button2"
             android:layout_alignParentEnd="true"
-            android:background="#FFA500"
-            android:layout_marginTop="8dp"/>
+            android:background="#FFA500"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button4"
             android:layout_width="40dp"
             android:layout_height="40dp"

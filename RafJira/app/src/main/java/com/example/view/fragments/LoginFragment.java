@@ -1,10 +1,8 @@
 package com.example.view.fragments;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -54,12 +52,13 @@ public class LoginFragment extends Fragment {
                 return;
             }
 
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
 
             sharedPreferences
                     .edit()
                     .putBoolean(Constants.IS_LOGGED_KEY, true)
                     .putString(Constants.USERNAME_KEY, username)
+                    .putString(Constants.EMAIL_KEY, email)
                     .putString(Constants.PASSWORD_KEY, password)
                     .apply();
 
@@ -67,7 +66,6 @@ public class LoginFragment extends Fragment {
             transaction.addToBackStack(null);
             transaction.replace(R.id.fragment_container_view_tag, new MainFragment());
             transaction.commit();
-
         });
     }
 

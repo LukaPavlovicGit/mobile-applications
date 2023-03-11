@@ -40,7 +40,7 @@ public class MainFragment extends Fragment {
 
     private void initViewPager() {
         viewPager = binding.viewPager;
-        viewPager.setAdapter(new PagerAdapterMainFragment(getParentFragmentManager()));
+        viewPager.setAdapter(new PagerAdapterMainFragment(getChildFragmentManager()));
     }
 
     private void initNavigation() {

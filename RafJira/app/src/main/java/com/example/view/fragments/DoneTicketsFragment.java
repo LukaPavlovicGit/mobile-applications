@@ -41,14 +41,8 @@ public class DoneTicketsFragment extends Fragment implements TicketAdapter.Ticke
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ticketsViewModel = new ViewModelProvider(requireActivity()).get(TicketsViewModel.class);
-        Button b = view.findViewById(R.id.button1);
         initRecyclerView();
         initObservers();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     private void initRecyclerView(){
@@ -72,6 +66,7 @@ public class DoneTicketsFragment extends Fragment implements TicketAdapter.Ticke
         ticketsViewModel.setTicketLD(ticket.getId());
         Fragment fragment = new SingleTicketFragment();
         Bundle bundle = new Bundle();
+        bundle.putBoolean(Constants.HIDE_EDIT_BUTTON, true);
         bundle.putParcelable("Ticket", ticket);
         fragment.setArguments(bundle);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
