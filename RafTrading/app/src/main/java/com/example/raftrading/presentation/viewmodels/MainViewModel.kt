@@ -1,6 +1,5 @@
-package com.example.raftrading.viewmodel
+package com.example.raftrading.presentation.viewmodels
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
