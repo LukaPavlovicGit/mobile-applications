@@ -1,11 +1,13 @@
 package com.example.dnevnjak
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.dnevnjak.presentation.fragments.LoginFragment
+import com.example.dnevnjak.presentation.fragments.MainFragment
 import com.example.dnevnjak.utilities.Constants
 import com.example.dnevnjak.utilities.Constants.Companion.LOGIN_FRAGMENT_TAG
+import com.example.dnevnjak.utilities.Constants.Companion.MAIN_FRAGMENT_TAG
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,17 +22,16 @@ class MainActivity : AppCompatActivity() {
 
                 if(isLoggedBefore.isNullOrEmpty())
                     transaction.replace(R.id.activity_main_fragment_container, LoginFragment(), LOGIN_FRAGMENT_TAG)
-                else{
+                else
+                    transaction.replace(R.id.activity_main_fragment_container, MainFragment(), MAIN_FRAGMENT_TAG)
 
-                }
                 transaction.commit()
-
                 false
             }
         }
 
+        supportActionBar!!.hide()
         setContentView(R.layout.activity_main)
-
     }
 
 }

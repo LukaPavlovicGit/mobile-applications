@@ -27,6 +27,7 @@ class LoginFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return ComposeView(requireContext()).apply {
             setContent {
                 LoginPage(viewModel = viewModel, onClick = { checkCredentials() })

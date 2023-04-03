@@ -8,7 +8,7 @@ class Constants {
         const val USERNAME_KEY = "username_key"
 
         const val LOGIN_FRAGMENT_TAG = "login_fragment_tag"
-
+        const val MAIN_FRAGMENT_TAG = "main_fragment_tag"
     }
 }
 
