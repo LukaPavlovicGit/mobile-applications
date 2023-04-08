@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.dnevnjak.R
 import com.example.dnevnjak.presentation.composable.LoginPage
 import com.example.dnevnjak.presentation.viewModels.LoginVIewModel
+import com.example.dnevnjak.utilities.Constants
 import com.example.dnevnjak.utilities.Constants.Companion.EMAIL_KEY
 import com.example.dnevnjak.utilities.Constants.Companion.SHARED_PREFERENCES_PATH
 import com.example.dnevnjak.utilities.Constants.Companion.USERNAME_KEY
@@ -45,6 +46,8 @@ class LoginFragment: Fragment() {
             return
         }
 
+        Toast.makeText(activity, "Success!", Toast.LENGTH_SHORT).show()
+
         val sharedPreferences = requireActivity().getSharedPreferences(SHARED_PREFERENCES_PATH, Context.MODE_PRIVATE)
         sharedPreferences.edit().apply {
             putString(EMAIL_KEY,  viewModel.email.value)
@@ -52,7 +55,9 @@ class LoginFragment: Fragment() {
             apply()
         }
 
-
+        val transaction = activity?.supportFragmentManager?.beginTransaction()
+        transaction?.replace(R.id.activity_main_fragment_container, MainFragment(),Constants.MAIN_FRAGMENT_TAG)
+        transaction?.commit()
     }
 }
 

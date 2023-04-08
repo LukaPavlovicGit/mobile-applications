@@ -23,7 +23,9 @@ class MainActivity : AppCompatActivity() {
                 val isLoggedBefore = sharedPreferences.getString(Constants.USERNAME_KEY, null)
 
                 if(isLoggedBefore.isNullOrEmpty())
-                    setContent { LoginPage() }
+                    setContent { LoginPage {
+
+                    } }
                 else{
 
                 }
@@ -34,4 +36,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
     }
+}
+
+fun onClick(){
+
 }

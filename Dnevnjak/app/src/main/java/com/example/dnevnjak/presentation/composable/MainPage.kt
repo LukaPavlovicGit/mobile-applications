@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -13,15 +14,23 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dnevnjak.presentation.composable.navigationBar.BottomBar
 import com.example.dnevnjak.presentation.composable.navigationBar.BottomNavGraph
+import com.example.dnevnjak.presentation.events.ObligationEvent
+import com.example.dnevnjak.presentation.states.ObligationState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainPage(){
+fun MainPage(
+    state: ObligationState,
+    onEvent: (ObligationEvent) -> Unit
+){
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomBar(navController = navController)}
     ) {
-        BottomNavGraph(navController = navController)
+        BottomNavGraph(
+            navController = navController,
+            state = state,
+            onEvent = onEvent )
     }
 }
 

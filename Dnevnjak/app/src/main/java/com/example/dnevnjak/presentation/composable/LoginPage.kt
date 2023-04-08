@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.R
 import com.example.dnevnjak.presentation.viewModels.LoginVIewModel
-import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
+import com.example.dnevnjak.presentation.composable.ui.theme.primaryColor
 import com.example.dnevnjak.presentation.composable.ui.theme.WHITE
 
 @Composable
@@ -72,7 +72,7 @@ fun LoginPage(
                     OutlinedTextField(
                         value = viewModel.username.value,
                         onValueChange = { viewModel.username.value = it },
-                        label = { Text(text = "Email Address") },
+                        label = { Text(text = "Username") },
                         placeholder = { Text(text = "Email Address") },
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
@@ -91,7 +91,7 @@ fun LoginPage(
                                 Icon(
                                     painter = painterResource(R.drawable.password_eye),
                                     contentDescription = "",
-                                    tint = if (passwordVisibility.value) PRIMARY_COLOR else Color.Gray
+                                    tint = if (passwordVisibility.value) primaryColor else Color.Gray
                                 )
                             }
                         },

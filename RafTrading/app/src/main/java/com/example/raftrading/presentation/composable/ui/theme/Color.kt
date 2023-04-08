@@ -2,8 +2,10 @@ package com.example.raftrading.presentation.composable.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val purple200 = Color(0xFFBB86FC)
-val purple500 = Color(0xFF6200EE)
+val lightBlue800 = Color(0xFF0277bd)
+val lightBlue500 = Color(0xFF58a5f0)
+val lightBlue900 = Color(0xFF004c8c)
+
 val purple700 = Color(0xFF3700B3)
 val teal200 = Color(0xFF03DAC5)
 

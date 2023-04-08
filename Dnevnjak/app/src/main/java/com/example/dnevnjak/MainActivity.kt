@@ -1,6 +1,7 @@
 package com.example.dnevnjak
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.dnevnjak.presentation.fragments.LoginFragment

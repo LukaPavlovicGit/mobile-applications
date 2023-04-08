@@ -1,5 +1,7 @@
 package com.example.dnevnjak.utilities
 
+import androidx.compose.ui.graphics.Color
+
 class Constants {
     companion object{
         const val SHARED_PREFERENCES_PATH = "java.com.example.dnevnjak.utilities";
@@ -9,7 +11,13 @@ class Constants {
 
         const val LOGIN_FRAGMENT_TAG = "login_fragment_tag"
         const val MAIN_FRAGMENT_TAG = "main_fragment_tag"
+
+        val LOW_PRIORITY_COLOR = Color.Green
+        val MID_PRIORITY_COLOR = Color.Yellow
+        val HIGH_PRIORITY_COLOR = Color.Red
     }
+
+
 }
 
 //// fragments

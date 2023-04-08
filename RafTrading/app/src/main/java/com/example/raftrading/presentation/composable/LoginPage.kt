@@ -14,14 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.raftrading.R
@@ -29,15 +25,16 @@ import com.example.raftrading.presentation.composable.ui.theme.primaryColor
 import com.example.raftrading.presentation.composable.ui.theme.whiteBackground
 
 @Composable
-fun LoginPage() {
+fun LoginPage(onClick: () -> Unit) {
 
     val emailValue = remember { mutableStateOf("") }
+    val usernameValue = remember { mutableStateOf("") }
     val passwordValue = remember { mutableStateOf("") }
 
     val passwordVisibility = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+    Box(modifier = Modifier.fillMaxSize().background(Color.LightGray), contentAlignment = Alignment.BottomCenter) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -57,23 +54,15 @@ fun LoginPage() {
                 .padding(10.dp)
         ) {
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Sign In",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp
-                    ),
-                    fontSize = 30.sp
-                )
-                Spacer(modifier = Modifier.padding(20.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally ) {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     OutlinedTextField(
                         value = emailValue.value,
                         onValueChange = { emailValue.value = it },
-                        label = { Text(text = "Email Address") },
+                        label = { Text(text = "Email A ddress") },
                         placeholder = { Text(text = "Email Address") },
+                        shape = RoundedCornerShape(12.dp),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(0.8f),
 //                        onImeActionPerformed = {
@@ -81,6 +70,18 @@ fun LoginPage() {
 //                        }
                     )
 
+                    OutlinedTextField(
+                        value = usernameValue.value,
+                        onValueChange = { usernameValue.value = it },
+                        label = { Text(text = "Email Address") },
+                        placeholder = { Text(text = "Email Address") },
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(0.8f),
+//                        onImeActionPerformed = {
+//                            focusRequester.requestFocus()
+//                        }
+                    )
                     OutlinedTextField(
                         value = passwordValue.value,
                         onValueChange = { passwordValue.value = it },
@@ -97,6 +98,7 @@ fun LoginPage() {
                         },
                         label = { Text("Password") },
                         placeholder = { Text(text = "Password") },
+                        shape = RoundedCornerShape(12.dp),
                         singleLine = true,
                         visualTransformation = if (passwordVisibility.value) VisualTransformation.None
                         else PasswordVisualTransformation(),
@@ -109,14 +111,15 @@ fun LoginPage() {
 
                     )
 
-                    Spacer(modifier = Modifier.padding(10.dp))
+                    Spacer(modifier = Modifier.padding(50.dp))
                     Button(
-                        onClick = {},
+                        onClick = onClick,
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(50.dp)
                     ) {
-                        Text(text = "Sign In", fontSize = 20.sp)
+                        Text(text = "Login", fontSize = 20.sp)
                     }
                 }
 
@@ -130,6 +133,6 @@ fun LoginPage() {
 @Preview
 @Composable
 fun LoginPagePreview(){
-    LoginPage()
+//    LoginPage()
 }
 
