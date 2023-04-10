@@ -1,7 +1,9 @@
 package com.example.dnevnjak.presentation.viewModels
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.dnevnjak.data.models.ObligationEntity
 import com.example.dnevnjak.data.repository.ObligationRepository
 import com.example.dnevnjak.presentation.events.ObligationEvent
@@ -11,6 +13,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -19,8 +22,9 @@ class ObligationViewModel(
 ): ViewModel() {
 
 
-    val headerDate = MutableStateFlow(LocalDate.now().toString())
+    val headerDate = MutableStateFlow("")
     val state = MutableStateFlow(ObligationState())
+
 
     init{
         GlobalScope.launch(Dispatchers.IO){
@@ -30,8 +34,20 @@ class ObligationViewModel(
     }
 
     fun onEvent(event: ObligationEvent){
+        when(event){
+            is ObligationEvent.SetHeaderDate -> {
+                val localDate = event.localDate.format(dateFormatter)
+                val tokens = localDate.toString().split("-")
+                headerDate.value = tokens[1] + " " + tokens[2] + "."
+            }
 
+
+            else -> {
+
+            }
+        }
     }
+
 
 
 
@@ -48,7 +64,7 @@ class ObligationViewModel(
         var start = LocalDateTime.now()
         var end = LocalDateTime.now().plusHours(1)
 
-        var random = Random()
+        val random = Random()
         for(i in 1..200){
 
             val entity = ObligationEntity(
@@ -89,7 +105,6 @@ class ObligationViewModel(
     private suspend fun initStates(){
 
         state.value.obligations = obligationRepository.getAll().first()
-
         state.value.obligations.forEach { (date, priority) ->
             state.value.dayColorMap[date] = when(priority){
                 Priority.High -> Color.Red
@@ -97,9 +112,13 @@ class ObligationViewModel(
                 Priority.Low -> Color.Green
             }
         }
+
+        val localDate = LocalDate.now().format(dateFormatter)
+        val tokens = localDate.toString().split("-")
+        headerDate.value = tokens[1] + " " + tokens[2] + "."
     }
 
     companion object{
-
+        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MMMM-yyyy")
     }
 }
