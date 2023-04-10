@@ -5,7 +5,7 @@ import com.example.dnevnjak.data.db.Database
 import com.example.dnevnjak.data.repository.ObligationRepository
 import com.example.dnevnjak.data.repository.impl.ObligationRepositoryImpl
 import com.example.dnevnjak.presentation.viewModels.LoginVIewModel
-import com.example.dnevnjak.presentation.viewModels.ObligationViewModel
+import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import org.koin.android.ext.koin.androidContext
@@ -35,7 +35,7 @@ val appModule = module {
 
     viewModel { LoginVIewModel() }
 
-    viewModel { ObligationViewModel(get()) }
+    viewModel { MainViewModel(get()) }
 
 }
 

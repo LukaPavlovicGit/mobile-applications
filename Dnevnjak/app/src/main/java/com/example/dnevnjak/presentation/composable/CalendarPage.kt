@@ -1,8 +1,8 @@
 package com.example.dnevnjak.presentation.composable
 
 import android.annotation.SuppressLint
+import android.service.autofill.OnClickAction
 import android.util.Log
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,22 +14,20 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
-import com.example.dnevnjak.presentation.events.CalendarEvent
 import com.example.dnevnjak.presentation.events.ObligationEvent
-import com.example.dnevnjak.presentation.states.ObligationState
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
 @Composable
 fun CalendarPage(
-    viewModel: MainViewModel = koinViewModel()
+    viewModel: MainViewModel,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -37,9 +35,15 @@ fun CalendarPage(
             .background(PRIMARY_COLOR),
         contentAlignment = Alignment.Center
     ){
+
         Column {
-            HeaderView(viewModel = viewModel)
-            CalendarView(viewModel = viewModel)
+            HeaderView(
+                viewModel = viewModel
+            )
+            CalendarView(
+                viewModel = viewModel,
+                onClick = onClick
+            )
         }
     }
 }
@@ -49,10 +53,10 @@ fun CalendarPage(
 fun HeaderView(
     viewModel: MainViewModel
 ){
-    val calendarState = viewModel.calendarState.collectAsState()
+
     val headerDate by viewModel.headerDate.collectAsState()
 
-    Column( horizontalAlignment = Alignment.CenterHorizontally){
+    Column( horizontalAlignment = Alignment.CenterHorizontally ){
         Text(
             text = headerDate, // why does not work with 'calendarState.value.headerDate'
             fontSize = 35.sp,
@@ -93,9 +97,13 @@ fun HeaderView(
 
 @Composable
 fun CalendarView(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    onClick: () -> Unit
 ){
-    val calendarState = viewModel.calendarState.collectAsState()
+    val dayColorMap = viewModel.dayColorMap.collectAsState()
+    val allObligations = viewModel.allObligations.collectAsState()
+    val displayedMonth = viewModel.displayedMonth.collectAsState()
+    val displayedYear = viewModel.displayedYear.collectAsState()
     val gridState = rememberLazyGridState()
     val earliest: LocalDate = remember { LocalDate.now().minusMonths(1) }
 
@@ -106,31 +114,33 @@ fun CalendarView(
         content = {
             items(1000) { i ->
                 val current: LocalDate = earliest.plusDays(i.toLong())
-                val animatedBlur by animateDpAsState(
-                    targetValue = if(
-                        current.monthValue == calendarState.value.displayedMonth &&
-                        current.year == calendarState.value.displayedYear
-                    )
-                        0.dp
-                    else
-                        15.dp
-                )
-                val color: Color = when(calendarState.value.dayColorMap[current]){
+//                val animatedBlur by animateDpAsState(
+//                    targetValue = if(
+//                        current.monthValue == displayedMonth.value &&
+//                        current.year == displayedYear.value
+//                    )
+//                        0.dp
+//                    else
+//                        30.dp
+//                )
+                val color: Color = when(dayColorMap.value[current]){
                     null -> Color.White
-                    else -> calendarState.value.dayColorMap[current]!!
+                    else -> dayColorMap.value[current]!!
                 }
                 Box(
                     modifier = Modifier
                         .clickable {
-                            Log.e("DATE:", current.toString())
+                            viewModel.onEvent(ObligationEvent.DateTouched(current))
+                            onClick.invoke()
                         }
-                        .blur(radius = animatedBlur)
+                        //.blur(radius = animatedBlur)
                         .height(113.dp)
                         .border(1.dp, Color.Black)
                         .background(color),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text( text = "${current.dayOfMonth}.",
+                    Text(
+                        text = "${current.dayOfMonth}.",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
@@ -145,7 +155,7 @@ fun CalendarView(
                 val upperBoundR = earliest.plusDays(gridState.firstVisibleItemIndex.toLong() + 7L + 21L + 6L)
 
                 if(lowerBoundL.dayOfMonth <= upperBoundL.dayOfMonth || lowerBoundR.dayOfMonth <= upperBoundR.dayOfMonth)
-                    viewModel.onCalendarEvent(CalendarEvent.SetDisplayedDate(lowerBoundR))
+                    viewModel.onEvent(ObligationEvent.SetHeaderDate(lowerBoundR))
 
             }
         }

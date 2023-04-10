@@ -1,11 +1,20 @@
 package com.example.dnevnjak.presentation.composable
 
 import android.annotation.SuppressLint
+import android.graphics.Color.rgb
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -14,24 +23,52 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dnevnjak.presentation.composable.navigationBar.BottomBar
 import com.example.dnevnjak.presentation.composable.navigationBar.BottomNavGraph
+import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
 import com.example.dnevnjak.presentation.events.ObligationEvent
 import com.example.dnevnjak.presentation.states.ObligationState
+import com.example.dnevnjak.presentation.viewModels.MainViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainPage(
-    state: ObligationState,
-    onEvent: (ObligationEvent) -> Unit
+    viewModel: MainViewModel = koinViewModel()
 ){
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = { BottomBar(navController = navController)}
-    ) {
-        BottomNavGraph(
-            navController = navController,
-            state = state,
-            onEvent = onEvent )
+    val isReviewingObligation by viewModel.isReviewingObligation.collectAsState()
+    val isAddingObligation by viewModel.isAddingObligation.collectAsState()
+    val isEditingObligation by viewModel.isEditingObligation.collectAsState()
+    val isDeletingObligation by viewModel.isDeletingObligation.collectAsState()
+
+    when {
+        isReviewingObligation -> { ObligationReviewPage(viewModel) }
+        isAddingObligation -> {}
+        isEditingObligation -> {}
+        isDeletingObligation -> {}
+        else -> {
+            Scaffold(
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { viewModel.onEvent(ObligationEvent.ShowNewObligationScreen) },
+                        backgroundColor = Color(rgb(33, 33, 33)),
+                        contentColor = Color.White
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add contact"
+                        )
+                    }
+                },
+                bottomBar = { BottomBar(navController = navController)}
+            ) {
+                BottomNavGraph(
+                    navController = navController,
+                    viewModel = viewModel,
+                )
+            }
+        }
     }
+
 }
 
 @Composable
@@ -43,8 +80,9 @@ fun BottomBar(navController: NavHostController) {
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-
-    BottomNavigation {
+    BottomNavigation(
+        backgroundColor = PRIMARY_COLOR
+    ) {
         screens.forEach { screen ->
             AddItem(
                 screen = screen,
