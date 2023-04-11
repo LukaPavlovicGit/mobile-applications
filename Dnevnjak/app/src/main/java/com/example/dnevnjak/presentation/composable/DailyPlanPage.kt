@@ -12,10 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,12 +21,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.data.models.ObligationEntity
+import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
 import com.example.dnevnjak.presentation.events.ObligationEvent
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.utilities.Utility
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
+
+
 
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -38,45 +39,61 @@ import java.time.format.DateTimeFormatter
 fun DailyPlanPage(
     viewModel: MainViewModel
 ){
-    val currentDate by viewModel.headerFullDate.collectAsState()
+
     val pagerState = rememberPagerState(initialPage = 0)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
-            Text(
-                text = currentDate,
-                fontSize = 35.sp,
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier
-                    .padding(10.dp)
-            )
-
-            FirstRow(viewModel = viewModel)
+            Header(viewModel = viewModel)
+            ShowPastObligationRow(viewModel = viewModel)
             SearchQueryRow(viewModel = viewModel)
-            Tabs(viewModel = viewModel, pagerState = pagerState)
+            ObligationDate(viewModel = viewModel, pagerState = pagerState)
             TabsContent(viewModel = viewModel, pagerState = pagerState)
         }
     }
 
+@Composable
+private fun Header(
+    viewModel: MainViewModel
+){
+
+    val headerDate = remember { Utility.fullDateFormatterStr(viewModel.selectedDate.value) }
+
+    Row(
+        modifier = Modifier
+            .background(PRIMARY_COLOR)
+            .padding(bottom = 20.dp)
+            .fillMaxWidth()
+    ){
+        Text(
+            text = headerDate,
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier
+                .padding(10.dp)
+        )
+    }
+}
 
 @Composable
-private fun FirstRow(
+private fun ShowPastObligationRow(
     viewModel: MainViewModel
 ){
     val showPastObligations by viewModel.showPastObligations.collectAsState()
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(rgb(178, 235, 242)))
-            .border(3.dp, Color.Black)
+            .border(1.dp, Color.Black)
     ){
         Text(
             text = "Show past obligations",
-            fontSize = 20.sp,
+            fontSize = 17.sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier
                 .padding(10.dp)
@@ -132,12 +149,12 @@ private fun SearchQueryRow(
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @Composable
-fun Tabs(
+fun ObligationDate(
     viewModel: MainViewModel,
     pagerState: PagerState
 ){
-    val list = listOf("High","Mid","Low" )
-    val colors = listOf(Color.Red, Color.Yellow, Color.Green)
+    val list = remember { listOf("High","Mid","Low" ) }
+    val colors = remember { listOf(Color.Red, Color.Yellow, Color.Green) }
     val scope = rememberCoroutineScope()
 
     TabRow(
@@ -146,8 +163,8 @@ fun Tabs(
         indicator = { tabPositions ->
                         TabRowDefaults.Indicator(
                                 Modifier.pagerTabIndicatorOffset(pagerState,tabPositions),
-                                height = 4.dp,
-                                color = Color.White,
+//                                height = 4.dp,
+//                                color = Color.White,
 
                             )
                     }
@@ -197,7 +214,9 @@ fun LowTab(
     val state = rememberLazyListState()
 
     LazyColumn(
-        modifier = Modifier.fillMaxHeight().background(Color.White),
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(Color.White),
         state = state,
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -228,7 +247,9 @@ fun MidTab(
     val state = rememberLazyListState()
 
     LazyColumn(
-        modifier = Modifier.fillMaxHeight().background(Color.White),
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(Color.White),
         state = state,
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -260,7 +281,9 @@ fun HighTab(
     val state = rememberLazyListState()
 
         LazyColumn(
-            modifier = Modifier.fillMaxHeight().background(Color.White),
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(Color.White),
             state = state,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,

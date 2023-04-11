@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
 import com.example.dnevnjak.presentation.events.ObligationEvent
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
+import com.example.dnevnjak.utilities.Utility
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
@@ -56,14 +57,20 @@ fun HeaderView(
 
     val headerDate by viewModel.headerDate.collectAsState()
 
-    Column( horizontalAlignment = Alignment.CenterHorizontally ){
-        Text(
-            text = headerDate, // why does not work with 'calendarState.value.headerDate'
-            fontSize = 35.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier
-                .padding(10.dp)
-        )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Row(
+            modifier = Modifier.background(PRIMARY_COLOR).fillMaxWidth()
+        ){
+            Text(
+                text = Utility.dateFormatterStr(headerDate),
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier
+                    .padding(10.dp)
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween

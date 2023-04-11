@@ -35,21 +35,15 @@ fun MainPage(
     viewModel: MainViewModel = koinViewModel()
 ){
     val navController = rememberNavController()
-    val isReviewingObligation by viewModel.isReviewingObligation.collectAsState()
-    val isAddingObligation by viewModel.isAddingObligation.collectAsState()
-    val isEditingObligation by viewModel.isEditingObligation.collectAsState()
-    val isDeletingObligation by viewModel.isDeletingObligation.collectAsState()
+    val singleObligationMode by viewModel.singleObligationMode.collectAsState()
 
     when {
-        isReviewingObligation -> { ObligationReviewPage(viewModel) }
-        isAddingObligation -> {}
-        isEditingObligation -> {}
-        isDeletingObligation -> {}
+        singleObligationMode -> { ObligationReviewPage(viewModel) }
         else -> {
             Scaffold(
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = { viewModel.onEvent(ObligationEvent.ShowNewObligationScreen) },
+                        onClick = { viewModel.onEvent(ObligationEvent.CreateObligation) },
                         backgroundColor = Color(rgb(33, 33, 33)),
                         contentColor = Color.White
                     ) {
@@ -68,7 +62,6 @@ fun MainPage(
             }
         }
     }
-
 }
 
 @Composable

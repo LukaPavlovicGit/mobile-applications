@@ -8,11 +8,11 @@ import com.example.dnevnjak.data.repository.ObligationRepository
 import com.example.dnevnjak.presentation.events.ObligationEvent
 import com.example.dnevnjak.presentation.states.ObligationState
 import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.utilities.Utility
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -20,8 +20,8 @@ class MainViewModel(
     private val obligationRepository: ObligationRepository
 ): ViewModel() {
 
-    private val _headerFullDate = MutableStateFlow("")
-    val headerFullDate = _headerFullDate.asStateFlow()
+    private val _selectedDate = MutableStateFlow(LocalDate.now())
+    val selectedDate = _selectedDate.asStateFlow()
 
     private val _showPastObligations = MutableStateFlow(true)
     val showPastObligations = _showPastObligations.asStateFlow()
@@ -33,7 +33,7 @@ class MainViewModel(
     val isSearching = _isSearching.asStateFlow()
 
     private val _obligationsByDate = MutableStateFlow(emptyList<ObligationEntity>())
-    val obligationsByDate = _obligationsByDate.asStateFlow()
+    private val obligationsByDate = _obligationsByDate.asStateFlow()
 
     private val _filteredList = MutableStateFlow(emptyList<ObligationEntity>())
     val filteredList = _filteredList.asStateFlow()
@@ -44,23 +44,24 @@ class MainViewModel(
     private val _dayColorMap = MutableStateFlow(hashMapOf<LocalDate, Color>())
     val dayColorMap = _dayColorMap.asStateFlow()
 
-    private val _displayedMonth = MutableStateFlow(1);
+    private val _displayedMonth = MutableStateFlow(LocalDate.now().monthValue);
     val displayedMonth = _displayedMonth.asStateFlow()
 
-    private val _displayedYear = MutableStateFlow(2023);
+    private val _displayedYear = MutableStateFlow(LocalDate.now().year);
     val displayedYear = _displayedYear.asStateFlow()
 
-    private val _selectedDate = MutableStateFlow(LocalDate.now())
-    val selectedDate = _selectedDate.asStateFlow()
+    private val _newObligationState = MutableStateFlow(ObligationState())
+    val newObligationState = _newObligationState.asStateFlow()
+
+    private val _headerDate = MutableStateFlow(LocalDate.now())
+    val headerDate = _headerDate.asStateFlow()
 
     private val _obligationState = MutableStateFlow(ObligationState())
     val obligationState = _obligationState.asStateFlow()
 
-    private val _headerDate = MutableStateFlow("")
-    val headerDate = _headerDate.asStateFlow()
-
-    private val _selectedObligation = MutableStateFlow(ObligationState())
-    val selectedObligation = _selectedObligation.asStateFlow()
+    // singleObligationMode needs to be combination of isRevOb, IsAddOb, isEditOb and idDelOb
+    private var _singleObligationMode = MutableStateFlow(false)
+    var singleObligationMode = _singleObligationMode.asStateFlow()
 
     private var _isReviewingObligation = MutableStateFlow(false)
     var isReviewingObligation = _isReviewingObligation.asStateFlow()
@@ -85,59 +86,65 @@ class MainViewModel(
     fun onEvent(event: ObligationEvent){
         when(event){
             is ObligationEvent.SetHeaderDate -> {
-                _headerDate.value =  dateDiffFormatStr(event.localDate)
+                _headerDate.value =  event.localDate
                 _displayedMonth.value = event.localDate.monthValue
                 _displayedYear.value = event.localDate.year
             }
-            is ObligationEvent.ShowPastObligations -> {
+            is ObligationEvent.ShowPastObligations ->
                 _showPastObligations.value = !showPastObligations.value
-            }
-            is ObligationEvent.SetSearchQuery -> {
+            is ObligationEvent.SetSearchQuery ->
                 _searchText.value = event.query
-            }
-            is ObligationEvent.FilterByPriority -> {
+            is ObligationEvent.FilterByPriority ->
                 _filteredList.value = obligationsByDate.value.filter { obligationEntity -> obligationEntity.priority == event.priority }
-            }
             is ObligationEvent.DateTouched -> {
-                _headerFullDate.value = fullDateDiffFormatStr(event.localDate)
+                _selectedDate.value = event.localDate
                 _obligationsByDate.value = _allObligations.value.filter { obligationEntity -> obligationEntity.date == event.localDate }
             }
-            is ObligationEvent.DeleteObligation -> TODO()
-            ObligationEvent.EditObligation -> TODO()
-            is ObligationEvent.FilterObligations -> TODO()
-            is ObligationEvent.HideConfirmationDialog -> TODO()
-            ObligationEvent.HideDialog -> {
-                _isReviewingObligation.value = false
-                _isAddingObligation.value = false
-                _isDeletingObligation.value = false
-                _isEditingObligation.value = false
-            }
-            ObligationEvent.SaveObligation -> TODO()
-            is ObligationEvent.SetDescription -> TODO()
-            is ObligationEvent.SetEnd -> TODO()
-            is ObligationEvent.SetHeaderFullDate -> TODO()
-            is ObligationEvent.SetPriority -> TODO()
-            is ObligationEvent.SetStart -> TODO()
-            is ObligationEvent.SetTitle -> TODO()
-            ObligationEvent.ShowAll -> TODO()
-            ObligationEvent.ShowConfirmationDialog -> TODO()
-            ObligationEvent.ShowNewObligationScreen -> { }
+            is ObligationEvent.FilterObligations -> { }
+            ObligationEvent.SaveObligation -> { }
+            is ObligationEvent.SetDescription -> _obligationState.value.description = event.description
+            is ObligationEvent.SetPriority -> _obligationState.value.priority = event.priority
+            is ObligationEvent.SetStart -> _obligationState.value.start = event.start
+            is ObligationEvent.SetEnd -> _obligationState.value.end = event.end
+            is ObligationEvent.SetTitle -> _obligationState.value.title = event.title
+            ObligationEvent.ShowAll -> { }
             is ObligationEvent.SelectedObligation -> {
-                _selectedObligation.value.date = event.obligationEntity.date
-                _selectedObligation.value.title = event.obligationEntity.title
-                _selectedObligation.value.priority = event.obligationEntity.priority
-                _selectedObligation.value.description = event.obligationEntity.description
-                _selectedObligation.value.start = event.obligationEntity.start
-                _selectedObligation.value.end = event.obligationEntity.end
-                _selectedObligation.value.dateDiffFormatStr = fullDateDiffFormatStr(event.obligationEntity.date)
+                _obligationState.value.id = event.obligationEntity.id
+                _obligationState.value.date = event.obligationEntity.date
+                _obligationState.value.title = event.obligationEntity.title
+                _obligationState.value.priority = event.obligationEntity.priority
+                _obligationState.value.description = event.obligationEntity.description
+                _obligationState.value.start = event.obligationEntity.start
+                _obligationState.value.end = event.obligationEntity.end
+                _obligationState.value.dateDiffFormatStr = Utility.fullDateFormatterStr(event.obligationEntity.date)
+                _obligationState.value.obligationMode = "Review Obligation"
                 setIsReviewingObligation()
+                _singleObligationMode.value = true
+            }
+            ObligationEvent.CreateObligation -> {
+                setIsCreatingObligation()
+                _singleObligationMode.value = true
+            }
+            ObligationEvent.EditObligation ->  {
+                setIsEditingObligation()
+                _singleObligationMode.value = true
+            }
+            ObligationEvent.DeleteObligation -> {
+                setIsDeletingObligation()
+                _singleObligationMode.value = true
+            }
+            ObligationEvent.CancelObligation -> resetObligationMode()
+            ObligationEvent.DeleteObligationConfirmed -> resetObligationMode()
+            ObligationEvent.DeleteObligationCanceled -> {
+                setIsReviewingObligation()
+                _singleObligationMode.value = true
             }
         }
     }
 
-    // initialize data if database is empty
     private suspend fun initData(){
 
+        // initialize data if database is empty
         if(obligationRepository.getAll().first().isNotEmpty())
             return
 
@@ -210,32 +217,24 @@ class MainViewModel(
 
             _dayColorMap.value[date] = Color.Green
         }
-
-        val localDate = LocalDate.now().format(dateFormatter)
-        val tokens = localDate.toString().split("-")
-        _headerDate.value =  tokens[1] + " " + tokens[2] + "."
-        _headerFullDate.value = tokens[1] + " " + tokens[0] + ". " + tokens[2] + "."
-
-        _displayedMonth.value = LocalDate.now().monthValue
-        _displayedYear.value = LocalDate.now().year
     }
 
     private fun setIsReviewingObligation(){
-        _selectedObligation.value.isReviewingObligation = true
-        _selectedObligation.value.isAddingObligation = false
-        _selectedObligation.value.isDeletingObligation = false
-        _selectedObligation.value.isEditingObligation = false
+        _obligationState.value.isReviewingObligation = true
+        _obligationState.value.isAddingObligation = false
+        _obligationState.value.isDeletingObligation = false
+        _obligationState.value.isEditingObligation = false
 
         _isReviewingObligation.value = true
         _isAddingObligation.value = false
         _isDeletingObligation.value = false
         _isEditingObligation.value = false
     }
-    private fun setIsAddingObligation(){
-        _selectedObligation.value.isReviewingObligation = false
-        _selectedObligation.value.isAddingObligation = true
-        _selectedObligation.value.isDeletingObligation = false
-        _selectedObligation.value.isEditingObligation = false
+    private fun setIsCreatingObligation(){
+        _obligationState.value.isReviewingObligation = false
+        _obligationState.value.isAddingObligation = true
+        _obligationState.value.isDeletingObligation = false
+        _obligationState.value.isEditingObligation = false
 
         _isReviewingObligation.value = false
         _isAddingObligation.value = true
@@ -243,10 +242,10 @@ class MainViewModel(
         _isEditingObligation.value = false
     }
     private fun setIsDeletingObligation(){
-        _selectedObligation.value.isReviewingObligation = false
-        _selectedObligation.value.isAddingObligation = false
-        _selectedObligation.value.isDeletingObligation = true
-        _selectedObligation.value.isEditingObligation = false
+        _obligationState.value.isReviewingObligation = false
+        _obligationState.value.isAddingObligation = false
+        _obligationState.value.isDeletingObligation = true
+        _obligationState.value.isEditingObligation = false
 
         _isReviewingObligation.value = false
         _isAddingObligation.value = false
@@ -254,10 +253,10 @@ class MainViewModel(
         _isEditingObligation.value = false
     }
     private fun setIsEditingObligation(){
-        _selectedObligation.value.isReviewingObligation = false
-        _selectedObligation.value.isAddingObligation = false
-        _selectedObligation.value.isDeletingObligation = false
-        _selectedObligation.value.isEditingObligation = true
+        _obligationState.value.isReviewingObligation = false
+        _obligationState.value.isAddingObligation = false
+        _obligationState.value.isDeletingObligation = false
+        _obligationState.value.isEditingObligation = true
 
         _isReviewingObligation.value = false
         _isAddingObligation.value = false
@@ -265,19 +264,13 @@ class MainViewModel(
         _isEditingObligation.value = true
     }
 
-    private fun fullDateDiffFormatStr(date: LocalDate): String {
-        val localDate = date.format(dateFormatter)
-        val tokens = localDate.toString().split("-")
-        return tokens[1] + " " + tokens[0] + ". " + tokens[2] + "."
+    private fun resetObligationMode(){
+        _singleObligationMode.value = false
+        _isReviewingObligation.value = false
+        _isAddingObligation.value = false
+        _isDeletingObligation.value = false
+        _isEditingObligation.value = false
     }
 
-    private fun dateDiffFormatStr(date: LocalDate): String {
-        val localDate = date.format(dateFormatter)
-        val tokens = localDate.toString().split("-")
-        return tokens[1] + " " + tokens[2] + "."
-    }
 
-    companion object{
-        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MMMM-yyyy")
-    }
 }

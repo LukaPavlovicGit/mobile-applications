@@ -5,6 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class ObligationState(
+    var id: Int = 0,
     var date: LocalDate = LocalDate.now(),
     var title: String = "",
     var start: LocalDateTime = LocalDateTime.now(),
@@ -12,6 +13,7 @@ data class ObligationState(
     var description: String = "",
     var priority: Priority = Priority.Low,
 
+    var obligationMode: String = "",
     var dateDiffFormatStr: String = "",
 
     var isReviewingObligation : Boolean = false,
