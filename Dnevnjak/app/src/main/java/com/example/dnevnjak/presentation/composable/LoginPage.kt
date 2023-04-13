@@ -1,39 +1,68 @@
 package com.example.dnevnjak.presentation.composable
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.R
-import com.example.dnevnjak.presentation.viewModels.LoginVIewModel
+import com.example.dnevnjak.presentation.viewModels.UserViewModel
 import com.example.dnevnjak.presentation.composable.ui.theme.primaryColor
 import com.example.dnevnjak.presentation.composable.ui.theme.WHITE
+import com.example.dnevnjak.presentation.events.UserEvent
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginPage(
-    viewModel: LoginVIewModel,
-    onClick: () -> Unit
+    viewModel: UserViewModel = koinViewModel(),
+    onSuccess: (username: String, email: String) -> Unit
 ) {
+
 
     val passwordVisibility = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.LightGray), contentAlignment = Alignment.BottomCenter) {
+    val incorrectCredentials by viewModel.incorrectCredentials.collectAsState()
+    val incorrectPassword by viewModel.incorrectPassword.collectAsState()
+    val loginSuccess by viewModel.isLoginSuccessful.collectAsState()
+
+
+    val username by viewModel.username.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+
+    val mContext = LocalContext.current
+
+    if(incorrectCredentials){
+        mToastIncorrectCredentials(mContext)
+    }
+    if(incorrectPassword){
+        mToastIncorrectPassword(mContext)
+    }
+    if(loginSuccess){
+        mToastLoginSuccess(mContext)
+        onSuccess.invoke(username, email)
+    }
+
+
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.LightGray), contentAlignment = Alignment.BottomCenter) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -57,8 +86,8 @@ fun LoginPage(
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     OutlinedTextField(
-                        value = viewModel.email.value,
-                        onValueChange = { viewModel.email.value = it },
+                        value = email,
+                        onValueChange = { viewModel.onEvent(UserEvent.SetEmail(it)) },
                         label = { Text(text = "Email A ddress") },
                         placeholder = { Text(text = "Email Address") },
                         shape = RoundedCornerShape(12.dp),
@@ -70,10 +99,10 @@ fun LoginPage(
                     )
 
                     OutlinedTextField(
-                        value = viewModel.username.value,
-                        onValueChange = { viewModel.username.value = it },
+                        value = username,
+                        onValueChange = { viewModel.onEvent(UserEvent.SetUsername(it)) },
                         label = { Text(text = "Username") },
-                        placeholder = { Text(text = "Email Address") },
+                        placeholder = { Text(text = "Username") },
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(0.8f),
@@ -82,8 +111,8 @@ fun LoginPage(
 //                        }
                     )
                     OutlinedTextField(
-                        value = viewModel.password.value,
-                        onValueChange = { viewModel.password.value = it },
+                        value = password,
+                        onValueChange = { viewModel.onEvent(UserEvent.SetPassword(it)) },
                         trailingIcon = {
                             IconButton(onClick = {
                                 passwordVisibility.value = !passwordVisibility.value
@@ -112,7 +141,7 @@ fun LoginPage(
 
                     Spacer(modifier = Modifier.padding(50.dp))
                     Button(
-                        onClick = onClick,
+                        onClick = { viewModel.onEvent(UserEvent.Login) },
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
@@ -121,12 +150,21 @@ fun LoginPage(
                         Text(text = "Login", fontSize = 20.sp)
                     }
                 }
-
             }
-
         }
-
     }
+}
+
+private fun mToastIncorrectCredentials(context: Context){
+    Toast.makeText(context, "Incorrect credentials. Try again...", Toast.LENGTH_LONG).show()
+}
+
+private fun mToastIncorrectPassword(context: Context){
+    Toast.makeText(context, "Incorrect password. Try again...", Toast.LENGTH_LONG).show()
+}
+
+private fun mToastLoginSuccess(context: Context){
+    Toast.makeText(context, "Login success!", Toast.LENGTH_LONG).show()
 }
 
 

@@ -16,5 +16,4 @@ class ObligationRepositoryImpl(
     override fun getAllByDateAndPriority(dateLong: Long, priority: Priority) = obligationDao.getAllByDateAndPriority(dateLong, priority)
     override fun getAllByDateAndTitle(dateLong: Long, searchQuery: String) = obligationDao.getAllByDateAndTitle(dateLong, searchQuery)
     override fun getAllByDateAndTime(dateLong: Long, time: Long) = obligationDao.getAllByDateAndTime(dateLong, time)
-
 }

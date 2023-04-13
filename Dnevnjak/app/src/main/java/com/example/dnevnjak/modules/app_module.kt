@@ -3,8 +3,10 @@ package com.example.dnevnjak.modules
 import androidx.room.Room
 import com.example.dnevnjak.data.db.Database
 import com.example.dnevnjak.data.repository.ObligationRepository
+import com.example.dnevnjak.data.repository.UserRepository
 import com.example.dnevnjak.data.repository.impl.ObligationRepositoryImpl
-import com.example.dnevnjak.presentation.viewModels.LoginVIewModel
+import com.example.dnevnjak.data.repository.impl.UserRepositoryImpl
+import com.example.dnevnjak.presentation.viewModels.UserViewModel
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
@@ -26,17 +28,20 @@ val appModule = module {
         .build()
     }
 
+
     single<ObligationRepository> { ObligationRepositoryImpl(get()) }
+
+    single<UserRepository> { UserRepositoryImpl(get()) }
 
     single { createMoshi() }
 
-
     single { get<Database>().getObligationDao() }
 
-    viewModel { LoginVIewModel() }
+    single { get<Database>().getUserDao() }
+
+    viewModel { UserViewModel(get()) }
 
     viewModel { MainViewModel(get()) }
-
 }
 
 fun createMoshi(): Moshi {

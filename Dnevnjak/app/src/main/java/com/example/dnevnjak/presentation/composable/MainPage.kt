@@ -2,18 +2,13 @@ package com.example.dnevnjak.presentation.composable
 
 import android.annotation.SuppressLint
 import android.graphics.Color.rgb
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -25,7 +20,6 @@ import com.example.dnevnjak.presentation.composable.navigationBar.BottomBar
 import com.example.dnevnjak.presentation.composable.navigationBar.BottomNavGraph
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
 import com.example.dnevnjak.presentation.events.ObligationEvent
-import com.example.dnevnjak.presentation.states.ObligationState
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import org.koin.androidx.compose.koinViewModel
 
