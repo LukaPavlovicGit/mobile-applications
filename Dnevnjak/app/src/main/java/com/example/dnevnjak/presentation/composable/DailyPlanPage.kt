@@ -277,6 +277,7 @@ fun MidTab(
     )
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun HighTab(
     viewModel: MainViewModel

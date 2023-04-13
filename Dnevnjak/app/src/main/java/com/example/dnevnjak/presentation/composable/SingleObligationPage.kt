@@ -1,6 +1,10 @@
 package com.example.dnevnjak.presentation.composable
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.Color.rgb
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,12 +13,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,7 +28,9 @@ import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import com.example.dnevnjak.utilities.Priority
 import com.example.dnevnjak.utilities.Utility
 import com.google.accompanist.pager.*
-import java.time.LocalDateTime
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.time.timepicker
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -111,6 +116,33 @@ private fun ObligationDate(
     val isEditing by viewModel.isEditingObligation.collectAsState()
     val isDeleting by viewModel.isDeletingObligation.collectAsState()
 
+
+    var from by remember { mutableStateOf(obligationState.start) }
+    var to by remember { mutableStateOf(obligationState.end) }
+
+    val formattedTimeFrom by remember {
+        derivedStateOf {
+            DateTimeFormatter
+                .ofPattern("hh:mm")
+                .format(from)
+        }
+    }
+    val formattedTimeTo by remember {
+        derivedStateOf {
+            DateTimeFormatter
+                .ofPattern("hh:mm")
+                .format(to)
+        }
+    }
+
+
+
+    val timeDialogState1 = rememberMaterialDialogState()
+    val timeDialogState2 = rememberMaterialDialogState()
+
+    val mContext = LocalContext.current
+
+
     when{
         isDeleting -> DeleteObligationDialog(viewModel = viewModel)
         isAddingNew -> {}
@@ -180,12 +212,20 @@ private fun ObligationDate(
             .fillMaxWidth()
             .padding(10.dp)){
             OutlinedTextField(
-                enabled = !isReview,
-                value = Utility.timeFormatterStr(obligationState.start),
-                onValueChange = { viewModel.onEvent(ObligationEvent.SetStart(LocalTime.now())) },
+                enabled = false,
+                value = formattedTimeFrom,
+                onValueChange = {  },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 10.dp),
+                    .padding(end = 10.dp)
+                    .clickable {
+                        when{
+                            isReview ->{}
+                            else -> {
+                                timeDialogState1.show()
+                            }
+                        }
+                    },
                 colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.4f),
                         focusedIndicatorColor = Color.White,
@@ -197,12 +237,20 @@ private fun ObligationDate(
                 textStyle = TextStyle.Default.copy(fontSize = 25.sp, color = Color.Black, fontWeight = FontWeight.Black)
             )
             OutlinedTextField(
-                enabled = !isReview,
-                value = Utility.timeFormatterStr(obligationState.end),
-                onValueChange = { viewModel.onEvent(ObligationEvent.SetStart(LocalTime.now().plusHours(1))) },
+                enabled = false,
+                value = formattedTimeTo,
+                onValueChange = {  },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 10.dp),
+                    .padding(start = 10.dp)
+                    .clickable {
+                               when{
+                                   isReview ->{}
+                                   else -> {
+                                       timeDialogState2.show()
+                                   }
+                               }
+                    },
                 colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.4f),
                         focusedIndicatorColor = Color.White,
@@ -213,6 +261,39 @@ private fun ObligationDate(
                 label = { Text(text = "To", fontSize = 20.sp, color = Color.White) },
                 textStyle = TextStyle.Default.copy(fontSize = 25.sp, color = Color.Black, fontWeight = FontWeight.Black)
             )
+
+            MaterialDialog(
+                dialogState = timeDialogState1,
+                buttons = {
+                    positiveButton(text = "Ok") { mToast(mContext) }
+                    negativeButton(text = "Cancel")
+                }
+            ) {
+                timepicker(
+                    initialTime = LocalTime.NOON,
+                    title = "Pick a date",
+                    timeRange = LocalTime.MIDNIGHT..LocalTime.NOON
+                ) {
+                    viewModel.onEvent(ObligationEvent.SetStart(it))
+                    from = it
+                }
+            }
+            MaterialDialog(
+                dialogState = timeDialogState2,
+                buttons = {
+                    positiveButton(text = "Ok") { mToast(mContext) }
+                    negativeButton(text = "Cancel")
+                }
+            ) {
+                timepicker(
+                    initialTime = LocalTime.NOON,
+                    title = "Pick a time",
+                    timeRange = LocalTime.MIDNIGHT..LocalTime.NOON
+                ) {
+                    viewModel.onEvent(ObligationEvent.SetEnd(it))
+                    to = it
+                }
+            }
         }
 
         Row(modifier = Modifier
@@ -243,11 +324,11 @@ private fun ObligationDate(
             .padding(start = 10.dp, end = 10.dp, bottom = 35.dp)){
             Button(
                 onClick = {
-                      when {
+                    when {
                           isReview -> viewModel.onEvent(ObligationEvent.EditObligation)
                           isEditing -> viewModel.onEvent(ObligationEvent.SaveObligation)
                           isAddingNew -> viewModel.onEvent(ObligationEvent.CreateObligation)
-                      }
+                    }
                 },
                 shape = CutCornerShape(25),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green),
@@ -291,4 +372,9 @@ private fun ObligationDate(
         }
 
     }
+}
+
+// Function to generate a Toast
+private fun mToast(context: Context){
+    Toast.makeText(context, "This is a Sample Toast", Toast.LENGTH_LONG).show()
 }
