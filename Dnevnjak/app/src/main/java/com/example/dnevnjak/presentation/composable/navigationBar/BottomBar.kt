@@ -24,6 +24,6 @@ sealed class BottomBar(
     object Profile : BottomBar(
         route = "profile",
         title = "Profile",
-        icon = Icons.Default.Person
+        icon = Icons.Default.Person,
     )
 }

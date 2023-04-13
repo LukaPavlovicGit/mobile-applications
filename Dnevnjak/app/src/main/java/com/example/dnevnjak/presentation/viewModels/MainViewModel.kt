@@ -1,5 +1,6 @@
 package com.example.dnevnjak.presentation.viewModels
 
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -20,7 +21,8 @@ import java.util.*
 
 
 class MainViewModel(
-    private val obligationRepository: ObligationRepository
+    private val obligationRepository: ObligationRepository,
+    private val sharedPreferences: SharedPreferences
 ): ViewModel() {
 
     private val _selectedDate = MutableStateFlow(LocalDate.now())

@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -30,9 +31,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LoginPage(
     viewModel: UserViewModel = koinViewModel(),
-    onSuccess: (username: String, email: String) -> Unit
+    onSuccess: () -> Unit
 ) {
-
 
     val passwordVisibility = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -40,7 +40,6 @@ fun LoginPage(
     val incorrectCredentials by viewModel.incorrectCredentials.collectAsState()
     val incorrectPassword by viewModel.incorrectPassword.collectAsState()
     val loginSuccess by viewModel.isLoginSuccessful.collectAsState()
-
 
     val username by viewModel.username.collectAsState()
     val email by viewModel.email.collectAsState()
@@ -56,19 +55,24 @@ fun LoginPage(
     }
     if(loginSuccess){
         mToastLoginSuccess(mContext)
-        onSuccess.invoke(username, email)
+        onSuccess.invoke()
     }
 
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.LightGray), contentAlignment = Alignment.BottomCenter) {
+    Box(
+        modifier = Modifier.fillMaxSize().background(Color.LightGray),
+        contentAlignment = Alignment.BottomCenter
+    ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White), contentAlignment = Alignment.TopCenter
+            modifier = Modifier.fillMaxSize().background(Color.White),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Image(painterResource(R.drawable.login_image), "content description")
+
+            Image(
+                painterResource(R.drawable.login_image),
+                contentDescription = "content description",
+                modifier = Modifier.fillMaxSize(0.5f),
+            )
         }
 
         Column(
@@ -85,10 +89,11 @@ fun LoginPage(
             Column(horizontalAlignment = Alignment.CenterHorizontally ) {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
                     OutlinedTextField(
                         value = email,
                         onValueChange = { viewModel.onEvent(UserEvent.SetEmail(it)) },
-                        label = { Text(text = "Email A ddress") },
+                        label = { Text(text = "Email Address") },
                         placeholder = { Text(text = "Email Address") },
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
@@ -142,7 +147,7 @@ fun LoginPage(
                     Spacer(modifier = Modifier.padding(50.dp))
                     Button(
                         onClick = { viewModel.onEvent(UserEvent.Login) },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = CutCornerShape(25),
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .height(50.dp)
