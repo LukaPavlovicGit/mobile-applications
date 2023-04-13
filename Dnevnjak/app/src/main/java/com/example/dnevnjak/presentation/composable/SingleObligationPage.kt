@@ -26,6 +26,7 @@ import com.example.dnevnjak.utilities.Priority
 import com.example.dnevnjak.utilities.Utility
 import com.google.accompanist.pager.*
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -181,7 +182,7 @@ private fun ObligationDate(
             OutlinedTextField(
                 enabled = !isReview,
                 value = Utility.timeFormatterStr(obligationState.start),
-                onValueChange = { viewModel.onEvent(ObligationEvent.SetStart(LocalDateTime.now())) },
+                onValueChange = { viewModel.onEvent(ObligationEvent.SetStart(LocalTime.now())) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 10.dp),
@@ -198,7 +199,7 @@ private fun ObligationDate(
             OutlinedTextField(
                 enabled = !isReview,
                 value = Utility.timeFormatterStr(obligationState.end),
-                onValueChange = { viewModel.onEvent(ObligationEvent.SetStart(LocalDateTime.now().plusHours(1))) },
+                onValueChange = { viewModel.onEvent(ObligationEvent.SetStart(LocalTime.now().plusHours(1))) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 10.dp),

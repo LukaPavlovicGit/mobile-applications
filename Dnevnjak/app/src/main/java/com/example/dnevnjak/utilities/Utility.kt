@@ -2,6 +2,7 @@ package com.example.dnevnjak.utilities
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class Utility {
@@ -22,7 +23,7 @@ class Utility {
             return tokens[1] + " " + tokens[2] + "."
         }
 
-        fun timeFormatterStr(time: LocalDateTime): String{
+        fun timeFormatterStr(time: LocalTime): String{
             return time.format(formatter)
         }
 

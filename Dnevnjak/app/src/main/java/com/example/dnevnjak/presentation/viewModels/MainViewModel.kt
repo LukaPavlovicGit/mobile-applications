@@ -3,6 +3,7 @@ package com.example.dnevnjak.presentation.viewModels
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.dnevnjak.data.models.ObligationEntity
 import com.example.dnevnjak.data.repository.ObligationRepository
 import com.example.dnevnjak.presentation.events.ObligationEvent
@@ -13,6 +14,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.*
 
 
@@ -22,6 +25,8 @@ class MainViewModel(
 
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate = _selectedDate.asStateFlow()
+
+    private val _priority = MutableStateFlow(Priority.High)
 
     private val _showPastObligations = MutableStateFlow(true)
     val showPastObligations = _showPastObligations.asStateFlow()
@@ -33,10 +38,7 @@ class MainViewModel(
     val isSearching = _isSearching.asStateFlow()
 
     private val _obligationsByDate = MutableStateFlow(emptyList<ObligationEntity>())
-    private val obligationsByDate = _obligationsByDate.asStateFlow()
-
-    private val _filteredList = MutableStateFlow(emptyList<ObligationEntity>())
-    val filteredList = _filteredList.asStateFlow()
+    val obligationsByDate = _obligationsByDate.asStateFlow()
 
     private val _allObligations = MutableStateFlow(emptyList<ObligationEntity>())
     val allObligations = _allObligations.asStateFlow()
@@ -84,23 +86,56 @@ class MainViewModel(
     }
 
     fun onEvent(event: ObligationEvent){
-        when(event){
+        when(event) {
             is ObligationEvent.SetHeaderDate -> {
-                _headerDate.value =  event.localDate
+                _headerDate.value = event.localDate
                 _displayedMonth.value = event.localDate.monthValue
                 _displayedYear.value = event.localDate.year
             }
-            is ObligationEvent.ShowPastObligations ->
+            is ObligationEvent.ShowPastObligations -> {
                 _showPastObligations.value = !showPastObligations.value
-            is ObligationEvent.SetSearchQuery ->
+                when{
+                    !_showPastObligations.value -> {
+                        viewModelScope.launch {
+                            val time = LocalTime.now().toSecondOfDay().toLong()
+                            _obligationsByDate.value = obligationRepository
+                                .getAllByDateAndTime(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), time)
+                                .first()
+                        }
+                    }
+                    else -> {
+                        viewModelScope.launch {
+                            _obligationsByDate.value = obligationRepository
+                                .getAllByDate(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                                .first()
+                        }
+                    }
+                }
+            }
+            is ObligationEvent.SetSearchQuery -> {
                 _searchText.value = event.query
-            is ObligationEvent.FilterByPriority ->
-                _filteredList.value = obligationsByDate.value.filter { obligationEntity -> obligationEntity.priority == event.priority }
+                viewModelScope.launch {
+                    _obligationsByDate.value = obligationRepository
+                        .getAllByDateAndTitle(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.query)
+                        .first()
+                }
+            }
+            is ObligationEvent.FilterByPriority -> {
+                _priority.value = event.priority
+                viewModelScope.launch {
+                    _obligationsByDate.value = obligationRepository
+                        .getAllByDateAndPriority(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.priority)
+                        .first()
+                }
+            }
             is ObligationEvent.DateTouched -> {
                 _selectedDate.value = event.localDate
-                _obligationsByDate.value = _allObligations.value.filter { obligationEntity -> obligationEntity.date == event.localDate }
+                viewModelScope.launch {
+                    _obligationsByDate.value = obligationRepository
+                        .getAllByDate(event.localDate.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                        .first()
+                }
             }
-            is ObligationEvent.FilterObligations -> { }
             ObligationEvent.SaveObligation -> { }
             is ObligationEvent.SetDescription -> _obligationState.value.description = event.description
             is ObligationEvent.SetPriority -> _obligationState.value.priority = event.priority
@@ -148,12 +183,12 @@ class MainViewModel(
         if(obligationRepository.getAll().first().isNotEmpty())
             return
 
-        var localDate = LocalDate.now()
+        var localDate = LocalDate.now().minusDays(20)
         var priority = Priority.Low
         val title = "title"
         val description = "description"
-        var start = LocalDateTime.now()
-        var end = LocalDateTime.now().plusHours(1)
+        var start = LocalTime.now()
+        var end = LocalTime.now().plusHours(1)
 
         val random = Random()
         for(i in 1..1000){
@@ -185,8 +220,8 @@ class MainViewModel(
 
             if(i % (random.nextInt(7) + 1) == 0){
                 localDate = localDate.plusDays(random.nextInt(3).toLong())
-                start = LocalDateTime.now()
-                end = LocalDateTime.now().plusHours(1)
+                start = LocalTime.now()
+                end = LocalTime.now().plusHours(1)
             }
         }
     }

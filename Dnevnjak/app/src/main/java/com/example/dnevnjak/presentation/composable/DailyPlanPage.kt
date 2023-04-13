@@ -5,6 +5,8 @@ import android.graphics.Color.rgb
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -158,6 +160,7 @@ fun ObligationDate(
     val scope = rememberCoroutineScope()
 
     TabRow(
+        //modifier = Modifier.disa,
         selectedTabIndex = pagerState.currentPage,
         contentColor = Color.Black,
         indicator = { tabPositions ->
@@ -183,6 +186,7 @@ fun ObligationDate(
                         2 -> viewModel.onEvent(ObligationEvent.FilterByPriority(Priority.Low))
                     }
                     scope.launch {
+
                         pagerState.scrollToPage(index)
                     }
                 }
@@ -210,7 +214,7 @@ fun TabsContent(
 fun LowTab(
     viewModel: MainViewModel
 ){
-    val filteredList by viewModel.filteredList.collectAsState()
+    val obligationByDate by viewModel.obligationsByDate.collectAsState()
     val state = rememberLazyListState()
 
     LazyColumn(
@@ -221,17 +225,17 @@ fun LowTab(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
-            items(filteredList.size){ idx ->
+            items(obligationByDate.size){ idx ->
                 Box(
                     modifier = Modifier
                         .clickable {
-                            viewModel.onEvent(ObligationEvent.SelectedObligation(filteredList[idx]))
+                            viewModel.onEvent(ObligationEvent.SelectedObligation(obligationByDate[idx]))
                         }
                         .height(90.dp)
                         .border(1.dp, Color.Black),
                     contentAlignment = Alignment.Center
                 ){
-                    ObligationView(filteredList[idx])
+                    ObligationView(viewModel = viewModel, obligationEntity = obligationByDate[idx])
                 }
 
             }
@@ -243,7 +247,7 @@ fun LowTab(
 fun MidTab(
     viewModel: MainViewModel
 ){
-    val filteredList by viewModel.filteredList.collectAsState()
+    val obligationByDate by viewModel.obligationsByDate.collectAsState()
     val state = rememberLazyListState()
 
     LazyColumn(
@@ -255,17 +259,17 @@ fun MidTab(
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(bottom = 30.dp),
         content = {
-            items(filteredList.size){ idx ->
+            items(obligationByDate.size){ idx ->
                 Box(
                     modifier = Modifier
                         .clickable {
-                            viewModel.onEvent(ObligationEvent.SelectedObligation(filteredList[idx]))
+                            viewModel.onEvent(ObligationEvent.SelectedObligation(obligationByDate[idx]))
                         }
                         .height(90.dp)
                         .border(1.dp, Color.Black),
                     contentAlignment = Alignment.Center
                 ){
-                    ObligationView(filteredList[idx])
+                    ObligationView(viewModel = viewModel, obligationEntity = obligationByDate[idx])
                 }
 
             }
@@ -277,7 +281,7 @@ fun MidTab(
 fun HighTab(
     viewModel: MainViewModel
 ){
-    val filteredList by viewModel.filteredList.collectAsState()
+    val obligationByDate by viewModel.obligationsByDate.collectAsState()
     val state = rememberLazyListState()
 
         LazyColumn(
@@ -289,17 +293,17 @@ fun HighTab(
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(bottom = 30.dp),
             content = {
-                items(filteredList.size){ idx ->
+                items(obligationByDate.size){ idx ->
                     Box(
                         modifier = Modifier
                             .clickable {
-                                viewModel.onEvent(ObligationEvent.SelectedObligation(filteredList[idx]))
+                                viewModel.onEvent(ObligationEvent.SelectedObligation(obligationByDate[idx]))
                             }
                             .height(90.dp)
                             .border(1.dp, Color.Black),
                         contentAlignment = Alignment.Center
                     ){
-                        ObligationView(filteredList[idx])
+                        ObligationView(viewModel = viewModel, obligationEntity = obligationByDate[idx])
                     }
                 }
             }
@@ -308,6 +312,7 @@ fun HighTab(
 
 @Composable
 private fun ObligationView(
+    viewModel: MainViewModel,
     obligationEntity: ObligationEntity
 ){
 
@@ -315,6 +320,7 @@ private fun ObligationView(
     val start = obligationEntity.start.format(formatter)
     val end = obligationEntity.end.format(formatter)
     val title = obligationEntity.title
+    val priority = obligationEntity.priority
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -325,16 +331,28 @@ private fun ObligationView(
     ){
 
         Icon(
-            imageVector = Icons.Default.Person,
+            imageVector = Icons.Default.BrightnessLow
+//                when(priority){
+//                    Priority.High -> Icons.Default.BrightnessHigh
+//                    Priority.Mid -> Icons.Default.BrightnessMedium
+//                    Priority.Low ->Icons.Default.BrightnessLow
+//                }
+            ,
             contentDescription = "Navigation Icon",
-            modifier = Modifier.size(60.dp)//.background(Color.White)
+            modifier = Modifier.size(60.dp).background(
+                when(priority){
+                    Priority.High -> Color.Red
+                    Priority.Mid -> Color.Yellow
+                    Priority.Low ->Color.Green
+                }
+            )
         )
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
-                .padding(start = 7.dp)//.background(Color.White)
+                .padding(start = 20.dp)//.background(Color.White)
         ) {
             Row(
                 horizontalArrangement = Arrangement.Start,
@@ -353,7 +371,7 @@ private fun ObligationView(
                 )
             }
             Text(
-                text = title + " " + obligationEntity.priority,
+                text = title,
                 color = Color.Black,
                 fontSize = 22.sp,
                 modifier = Modifier
@@ -373,7 +391,8 @@ private fun ObligationView(
                 contentDescription = "Edit Icon",
                 modifier = Modifier
                     .size(35.dp)
-                    .weight(1f),
+                    .weight(1f)
+                    .clickable { viewModel.onEvent(ObligationEvent.EditObligation) }
             )
             Icon(
                 imageVector = Icons.Default.Delete,
@@ -381,6 +400,7 @@ private fun ObligationView(
                 modifier = Modifier
                     .size(35.dp)
                     .weight(1f)
+                    .clickable { viewModel.onEvent(ObligationEvent.DeleteObligation) }
             )
         }
     }
