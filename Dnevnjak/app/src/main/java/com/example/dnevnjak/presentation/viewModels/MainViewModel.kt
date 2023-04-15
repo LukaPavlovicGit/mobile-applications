@@ -58,48 +58,84 @@ class MainViewModel(
                 when{
                     !show -> {
                         viewModelScope.launch {
-                            val time = LocalTime.now().toSecondOfDay().toLong()
-                            val obligations =
-                                obligationRepository
-                                .getAllByDateAndTime(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), time)
-                                .first()
+                            var obligations = when (_dailyPlanState.value.filterByPriority) {
+                                null -> {
+                                    obligationRepository
+                                        .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                                        .first()
+                                }
+                                else -> {
+                                    obligationRepository
+                                        .getAllByDateAndPriority(
+                                            _dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(),
+                                            _dailyPlanState.value.filterByPriority!!
+                                        ).first()
+                                }
+                            }
+
+                            val currDate = LocalDate.now()
+                            val currTime = LocalTime.now()
+                            obligations = obligations.filter {
+                                    obligationEntity -> obligationEntity.date > currDate ||
+                                    obligationEntity.date == currDate && obligationEntity.start > currTime
+                            }
 
                             _dailyPlanState.value = _dailyPlanState.value.copy(
                                 obligations = obligations,
-                                showPastObligations = show
+                                showPastObligations = false
                             )
                         }
                     }
                     else -> {
                         viewModelScope.launch {
-                            val obligations = obligationRepository
-                                .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
-                                .first()
+                            val obligations = when (_dailyPlanState.value.filterByPriority) {
+                                null -> {
+                                    obligationRepository
+                                        .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                                        .first()
+                                }
+                                else -> {
+                                    obligationRepository
+                                        .getAllByDateAndPriority(
+                                            _dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(),
+                                            _dailyPlanState.value.filterByPriority!!
+                                        ).first()
+                                }
+                            }
                             _dailyPlanState.value = _dailyPlanState.value.copy(
                                 obligations = obligations,
-                                showPastObligations = show
+                                showPastObligations = true
                             )
                         }
                     }
                 }
             }
             is DnevnjakEvent.SetSearchQuery -> {
+                _dailyPlanState.value = _dailyPlanState.value.copy( searchText = event.query )
                 viewModelScope.launch {
                     val obligations = obligationRepository
                         .getAllByDateAndTitle(dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.query)
                         .first()
                     _dailyPlanState.value = _dailyPlanState.value.copy(
-                        obligations = obligations,
-                        searchText = event.query
+                        obligations = obligations
                     )
                 }
             }
             is DnevnjakEvent.FilterByPriority -> {
                 _priority.value = event.priority
                 viewModelScope.launch {
-                    val obligations = obligationRepository
+                    var obligations = obligationRepository
                         .getAllByDateAndPriority(dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.priority)
                         .first()
+                    val showPast = _dailyPlanState.value.showPastObligations
+                    if(!showPast){
+                        val currDate = LocalDate.now()
+                        val currTime = LocalTime.now()
+                        obligations = obligations.filter {
+                                obligationEntity -> obligationEntity.date > currDate ||
+                                obligationEntity.date == currDate && obligationEntity.start > currTime
+                        }
+                    }
                     _dailyPlanState.value = _dailyPlanState.value.copy(obligations = obligations)
                 }
             }
@@ -111,7 +147,8 @@ class MainViewModel(
 
                     _dailyPlanState.value = _dailyPlanState.value.copy(
                         obligations = obligations,
-                        date = event.localDate
+                        date = event.localDate,
+                        showPastObligations = true
                     )
                 }
             }

@@ -44,7 +44,8 @@ fun DailyPlanPage(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.background(Color(rgb(178, 235, 242)))
     ) {
             Header(viewModel = viewModel)
             ShowPastObligationRow(viewModel = viewModel)
@@ -88,14 +89,13 @@ private fun ShowPastObligationRow(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(rgb(178, 235, 242)))
-            .border(1.dp, Color.Black)
     ){
         Text(
             text = "Show past obligations",
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Normal,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
             modifier = Modifier
-                .padding(10.dp)
+                .padding(15.dp)
         )
         Checkbox(
             checked = dailyPlanState.showPastObligations,
@@ -126,7 +126,7 @@ private fun SearchQueryRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(rgb(179, 229, 252)))
-                .padding(5.dp),
+                .padding(start = 5.dp, top = 15.dp, end = 5.dp, bottom = 15.dp),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             placeholder = { Text(text = "Search", fontSize = 18.sp) },
@@ -213,7 +213,7 @@ fun LowTab(
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
-            .background(Color.White),
+            .background(Color(rgb(178, 235, 242))),
         state = state,
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -245,7 +245,7 @@ fun MidTab(
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
-            .background(Color.White),
+            .background(Color(rgb(178, 235, 242))),
         state = state,
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -280,7 +280,7 @@ fun HighTab(
         LazyColumn(
             modifier = Modifier
                 .fillMaxHeight()
-                .background(Color.White),
+                .background(Color(rgb(178, 235, 242))),
             state = state,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -366,9 +366,9 @@ private fun ObligationView(
                 )
             }
             Text(
-                text = title,
+                text = title + " " + obligationEntity.date,
                 color = Color.Black,
-                fontSize = 22.sp,
+                fontSize = 16.sp,
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 7.dp, top = 7.dp)//.background(Color.Blue)

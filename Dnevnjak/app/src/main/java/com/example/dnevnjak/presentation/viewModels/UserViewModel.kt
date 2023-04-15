@@ -65,8 +65,8 @@ class UserViewModel(
                 }
             }
             is UserEvent.SetEmail -> _loginState.value = _loginState.value.copy(email = event.email)
-            is UserEvent.SetUsername -> _loginState.value = _loginState.value.copy(email = event.username)
-            is UserEvent.SetPassword -> _loginState.value = _loginState.value.copy(email = event.password)
+            is UserEvent.SetUsername -> _loginState.value = _loginState.value.copy(username = event.username)
+            is UserEvent.SetPassword -> _loginState.value = _loginState.value.copy(password = event.password)
             UserEvent.Logout -> {
                 _loginState.value = LoginState()
                 sharedPreferences

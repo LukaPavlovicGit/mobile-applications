@@ -1,6 +1,7 @@
 package com.example.dnevnjak.presentation.states
 
 import com.example.dnevnjak.data.models.ObligationEntity
+import com.example.dnevnjak.utilities.Priority
 import java.time.LocalDate
 
 data class DailyPlanState(
@@ -9,5 +10,5 @@ data class DailyPlanState(
     val searchText: String = "",
     val isSearching: Boolean = false,
     val showPastObligations: Boolean = true,
-
+    val filterByPriority: Priority? = null
 )
