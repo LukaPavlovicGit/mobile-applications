@@ -1,13 +1,14 @@
 package com.example.dnevnjak.presentation.viewModels
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dnevnjak.data.models.ObligationEntity
 import com.example.dnevnjak.data.repository.ObligationRepository
-import com.example.dnevnjak.presentation.events.ObligationEvent
+import com.example.dnevnjak.presentation.events.DnevnjakEvent
+import com.example.dnevnjak.presentation.states.CalendarState
+import com.example.dnevnjak.presentation.states.DailyPlanState
 import com.example.dnevnjak.presentation.states.ObligationState
 import com.example.dnevnjak.utilities.Priority
 import com.example.dnevnjak.utilities.Utility
@@ -24,59 +25,16 @@ class MainViewModel(
     private val sharedPreferences: SharedPreferences
 ): ViewModel() {
 
-    private val _selectedDate = MutableStateFlow(LocalDate.now())
-    val selectedDate = _selectedDate.asStateFlow()
+    private val _calendarState = MutableStateFlow(CalendarState())
+    val calendarState = _calendarState.asStateFlow()
 
-    private val _priority = MutableStateFlow(Priority.High)
-
-    private val _showPastObligations = MutableStateFlow(true)
-    val showPastObligations = _showPastObligations.asStateFlow()
-
-    private val _searchText = MutableStateFlow("")
-    val searchText = _searchText.asStateFlow()
-
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching = _isSearching.asStateFlow()
-
-    private val _obligationsByDate = MutableStateFlow(emptyList<ObligationEntity>())
-    val obligationsByDate = _obligationsByDate.asStateFlow()
-
-    private val _allObligations = MutableStateFlow(emptyList<ObligationEntity>())
-    val allObligations = _allObligations.asStateFlow()
-
-    private val _dayColorMap = MutableStateFlow(hashMapOf<LocalDate, Color>())
-    val dayColorMap = _dayColorMap.asStateFlow()
-
-    private val _displayedMonth = MutableStateFlow(LocalDate.now().monthValue);
-    val displayedMonth = _displayedMonth.asStateFlow()
-
-    private val _displayedYear = MutableStateFlow(LocalDate.now().year);
-    val displayedYear = _displayedYear.asStateFlow()
-
-    private val _newObligationState = MutableStateFlow(ObligationState())
-    val newObligationState = _newObligationState.asStateFlow()
-
-    private val _headerDate = MutableStateFlow(LocalDate.now())
-    val headerDate = _headerDate.asStateFlow()
+    private val _dailyPlanState = MutableStateFlow(DailyPlanState())
+    val dailyPlanState = _dailyPlanState.asStateFlow()
 
     private val _obligationState = MutableStateFlow(ObligationState())
     val obligationState = _obligationState.asStateFlow()
 
-    // singleObligationMode needs to be combination of isRevOb, IsAddOb, isEditOb and idDelOb
-    private var _singleObligationMode = MutableStateFlow(false)
-    var singleObligationMode = _singleObligationMode.asStateFlow()
-
-    private var _isReviewingObligation = MutableStateFlow(false)
-    var isReviewingObligation = _isReviewingObligation.asStateFlow()
-
-    private var _isAddingObligation = MutableStateFlow(false)
-    var isAddingObligation = _isAddingObligation.asStateFlow()
-
-    private var _isEditingObligation = MutableStateFlow(false)
-    var isEditingObligation = _isEditingObligation.asStateFlow()
-
-    private var _isDeletingObligation = MutableStateFlow(false)
-    var isDeletingObligation = _isDeletingObligation.asStateFlow()
+    private val _priority = MutableStateFlow(Priority.High)
 
 
     init {
@@ -86,63 +44,83 @@ class MainViewModel(
         }
     }
 
-    fun onEvent(event: ObligationEvent){
+    fun onEvent(event: DnevnjakEvent){
         when(event) {
-            is ObligationEvent.SetHeaderDate -> {
-                _headerDate.value = event.localDate
-                _displayedMonth.value = event.localDate.monthValue
-                _displayedYear.value = event.localDate.year
+            is DnevnjakEvent.SetHeaderDate -> {
+                _calendarState.value = _calendarState.value.copy(
+                    displayedYear = event.localDate.year,
+                    displayedMonth = event.localDate.monthValue,
+                    headerDate = event.localDate
+                )
             }
-            is ObligationEvent.ShowPastObligations -> {
-                _showPastObligations.value = !showPastObligations.value
+            is DnevnjakEvent.ShowPastObligations -> {
+                val show = !_dailyPlanState.value.showPastObligations
                 when{
-                    !_showPastObligations.value -> {
+                    !show -> {
                         viewModelScope.launch {
                             val time = LocalTime.now().toSecondOfDay().toLong()
-                            _obligationsByDate.value = obligationRepository
-                                .getAllByDateAndTime(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), time)
+                            val obligations =
+                                obligationRepository
+                                .getAllByDateAndTime(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), time)
                                 .first()
+
+                            _dailyPlanState.value = _dailyPlanState.value.copy(
+                                obligations = obligations,
+                                showPastObligations = show
+                            )
                         }
                     }
                     else -> {
                         viewModelScope.launch {
-                            _obligationsByDate.value = obligationRepository
-                                .getAllByDate(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                            val obligations = obligationRepository
+                                .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
                                 .first()
+                            _dailyPlanState.value = _dailyPlanState.value.copy(
+                                obligations = obligations,
+                                showPastObligations = show
+                            )
                         }
                     }
                 }
             }
-            is ObligationEvent.SetSearchQuery -> {
-                _searchText.value = event.query
+            is DnevnjakEvent.SetSearchQuery -> {
                 viewModelScope.launch {
-                    _obligationsByDate.value = obligationRepository
-                        .getAllByDateAndTitle(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.query)
+                    val obligations = obligationRepository
+                        .getAllByDateAndTitle(dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.query)
                         .first()
+                    _dailyPlanState.value = _dailyPlanState.value.copy(
+                        obligations = obligations,
+                        searchText = event.query
+                    )
                 }
             }
-            is ObligationEvent.FilterByPriority -> {
+            is DnevnjakEvent.FilterByPriority -> {
                 _priority.value = event.priority
                 viewModelScope.launch {
-                    _obligationsByDate.value = obligationRepository
-                        .getAllByDateAndPriority(selectedDate.value.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.priority)
+                    val obligations = obligationRepository
+                        .getAllByDateAndPriority(dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(), event.priority)
                         .first()
+                    _dailyPlanState.value = _dailyPlanState.value.copy(obligations = obligations)
                 }
             }
-            is ObligationEvent.DateTouched -> {
-                _selectedDate.value = event.localDate
+            is DnevnjakEvent.DateTouched -> {
                 viewModelScope.launch {
-                    _obligationsByDate.value = obligationRepository
+                    val obligations = obligationRepository
                         .getAllByDate(event.localDate.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
                         .first()
+
+                    _dailyPlanState.value = _dailyPlanState.value.copy(
+                        obligations = obligations,
+                        date = event.localDate
+                    )
                 }
             }
-            ObligationEvent.SaveObligation -> {
+            DnevnjakEvent.SaveObligation -> {
                 viewModelScope.launch {
                     obligationRepository.update(
                         ObligationEntity(
                             id = _obligationState.value.id,
-                            date =  _selectedDate.value,
+                            date =  dailyPlanState.value.date,
                             priority = _obligationState.value.priority,
                             title = _obligationState.value.title,
                             description = _obligationState.value.description,
@@ -153,13 +131,13 @@ class MainViewModel(
                     resetObligationState()
                 }
             }
-            is ObligationEvent.SetDescription -> _obligationState.value = _obligationState.value.copy(description = event.description)
-            is ObligationEvent.SetPriority -> _obligationState.value = _obligationState.value.copy(priority = event.priority)
-            is ObligationEvent.SetStart -> _obligationState.value = _obligationState.value.copy(start = event.start)
-            is ObligationEvent.SetEnd -> _obligationState.value = _obligationState.value.copy(end = event.end)
-            is ObligationEvent.SetTitle ->_obligationState.value = _obligationState.value.copy(title = event.title )
-            ObligationEvent.ShowAll -> { }
-            is ObligationEvent.SelectedObligation -> {
+            is DnevnjakEvent.SetDescription -> _obligationState.value = _obligationState.value.copy(description = event.description)
+            is DnevnjakEvent.SetPriority -> _obligationState.value = _obligationState.value.copy(priority = event.priority)
+            is DnevnjakEvent.SetStart -> _obligationState.value = _obligationState.value.copy(start = event.start)
+            is DnevnjakEvent.SetEnd -> _obligationState.value = _obligationState.value.copy(end = event.end)
+            is DnevnjakEvent.SetTitle ->_obligationState.value = _obligationState.value.copy(title = event.title )
+            DnevnjakEvent.ShowAll -> { }
+            is DnevnjakEvent.SelectedObligation -> {
                 _obligationState.value.id = event.obligationEntity.id
                 _obligationState.value.date = event.obligationEntity.date
                 _obligationState.value.title = event.obligationEntity.title
@@ -171,11 +149,11 @@ class MainViewModel(
                 _obligationState.value.obligationMode = "Review Obligation"
                 setIsReviewingObligation()
             }
-            ObligationEvent.CreateObligation -> {
+            DnevnjakEvent.CreateObligation -> {
                 GlobalScope.launch {
                     obligationRepository.insert(
                         ObligationEntity(
-                            date =  _selectedDate.value,
+                            date =  dailyPlanState.value.date,
                             priority = _obligationState.value.priority,
                             title = _obligationState.value.title,
                             description = _obligationState.value.description,
@@ -187,14 +165,72 @@ class MainViewModel(
                     resetSingleObligationMode()
                 }
             }
-            ObligationEvent.EditObligation -> setIsEditingObligation()
-            ObligationEvent.DeleteObligation -> setIsDeletingObligation()
-            ObligationEvent.CancelObligation -> resetSingleObligationMode()
-            ObligationEvent.DeleteObligationConfirmed -> resetSingleObligationMode()
-            ObligationEvent.DeleteObligationCanceled -> setIsReviewingObligation()
-            ObligationEvent.AddObligation -> setIsCreatingObligation()
+            DnevnjakEvent.EditObligation -> {
+                setIsEditingObligation()
+                _obligationState.value = _obligationState.value.copy(obligationMode = "Edit obligation")
+            }
+            DnevnjakEvent.DeleteObligation -> {
+                setIsDeletingObligation()
+                _obligationState.value = _obligationState.value.copy(obligationMode = "Delete obligation")
+            }
+            DnevnjakEvent.CancelObligation -> resetSingleObligationMode()
+            DnevnjakEvent.DeleteObligationConfirmed -> resetSingleObligationMode()
+            DnevnjakEvent.DeleteObligationCanceled -> setIsReviewingObligation()
+            DnevnjakEvent.AddObligation -> setIsCreatingObligation()
         }
     }
+
+    private fun setIsReviewingObligation(){
+        _obligationState.value = _obligationState.value.copy(
+                isReviewing = true,
+                isAdding = false,
+                isDeleting = false,
+                isEditing = false,
+                isSingleObligationMode = true
+            )
+    }
+    private fun setIsCreatingObligation(){
+        _obligationState.value = _obligationState.value.copy(
+                isReviewing = false,
+                isAdding = true,
+                isDeleting = false,
+                isEditing = false,
+                isSingleObligationMode = true
+        )
+    }
+    private fun setIsDeletingObligation(){
+        _obligationState.value = _obligationState.value.copy(
+            isReviewing = false,
+            isAdding = false,
+            isDeleting = true,
+            isEditing = false,
+            isSingleObligationMode = true
+        )
+    }
+    private fun setIsEditingObligation(){
+        _obligationState.value = _obligationState.value.copy(
+            isReviewing = false,
+            isAdding = false,
+            isDeleting = false,
+            isEditing = true,
+            isSingleObligationMode = true
+        )
+    }
+
+    private fun resetSingleObligationMode(){
+        _obligationState.value = _obligationState.value.copy(
+            isReviewing = false,
+            isAdding = false,
+            isDeleting = false,
+            isEditing = false,
+            isSingleObligationMode = false
+        )
+    }
+
+    private fun resetObligationState(){
+        _obligationState.value = ObligationState()
+    }
+
 
     private suspend fun initData(){
 
@@ -219,23 +255,15 @@ class MainViewModel(
                 start = start,
                 end = end
             )
-            priority =
-                when(random.nextInt(100)){
-                    in 0..30 -> Priority.Low
-                    in 31..75 -> Priority.Mid
-                    else -> Priority.High
-                }
+            priority = when(random.nextInt(100)){
+                in 0..30 -> Priority.Low
+                in 31..75 -> Priority.Mid
+                else -> Priority.High
+            }
+            obligationRepository.insert(entity)
 
             start = start.plusHours(1)
             end = end.plusHours(1)
-
-            obligationRepository.insert(entity)
-
-            _dayColorMap.value[localDate] = when(priority){
-                Priority.High -> Color.Red
-                Priority.Mid -> Color.Yellow
-                Priority.Low -> Color.Green
-            }
 
             if(i % (random.nextInt(7) + 1) == 0){
                 localDate = localDate.plusDays(random.nextInt(3).toLong())
@@ -243,77 +271,37 @@ class MainViewModel(
                 end = LocalTime.now().plusHours(1)
             }
         }
+
     }
 
     private suspend fun setStates(){
-        _allObligations.value = obligationRepository.getAll().first()
-        _allObligations.value.forEach loop@{ (date, priority) ->
+        val colors = hashMapOf<LocalDate, Color>()
+        val obligations = obligationRepository.getAll().first()
+        obligations.forEach loop@{ (date, priority) ->
 
-            if(_dayColorMap.value[date] == null){
-                _dayColorMap.value[date] = when(priority){
+            if(colors[date] == null){
+                colors[date] = when(priority){
                     Priority.High -> Color.Red
                     Priority.Mid -> Color.Yellow
                     Priority.Low -> Color.Green
                 }
                 return@loop
             }
-            if(_dayColorMap.value[date] == Color.Red || priority == Priority.High) {
-                _dayColorMap.value[date] = Color.Red
+            if(colors[date] == Color.Red || priority == Priority.High) {
+                colors[date] = Color.Red
                 return@loop
             }
-            if(_dayColorMap.value[date] == Color.Yellow || priority == Priority.Mid) {
-                _dayColorMap.value[date] = Color.Yellow
+            if(colors[date] == Color.Yellow || priority == Priority.Mid) {
+                colors[date] = Color.Yellow
                 return@loop
             }
-
-            _dayColorMap.value[date] = Color.Green
+            colors[date] = Color.Green
         }
+
+        _calendarState.value = _calendarState.value.copy(
+            obligations = obligations,
+            colors = colors
+        )
     }
-
-    private fun setIsReviewingObligation(){
-        _singleObligationMode.value = true
-
-        _isReviewingObligation.value = true
-        _isAddingObligation.value = false
-        _isDeletingObligation.value = false
-        _isEditingObligation.value = false
-    }
-    private fun setIsCreatingObligation(){
-        _singleObligationMode.value = true
-
-        _isReviewingObligation.value = false
-        _isAddingObligation.value = true
-        _isDeletingObligation.value = false
-        _isEditingObligation.value = false
-    }
-    private fun setIsDeletingObligation(){
-        _singleObligationMode.value = true
-
-        _isReviewingObligation.value = false
-        _isAddingObligation.value = false
-        _isDeletingObligation.value = true
-        _isEditingObligation.value = false
-    }
-    private fun setIsEditingObligation(){
-        _singleObligationMode.value = true
-
-        _isReviewingObligation.value = false
-        _isAddingObligation.value = false
-        _isDeletingObligation.value = false
-        _isEditingObligation.value = true
-    }
-
-    private fun resetSingleObligationMode(){
-        _singleObligationMode.value = false
-        _isReviewingObligation.value = false
-        _isAddingObligation.value = false
-        _isDeletingObligation.value = false
-        _isEditingObligation.value = false
-    }
-
-    private fun resetObligationState(){
-        _obligationState.value = ObligationState()
-    }
-
 
 }

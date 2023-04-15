@@ -2,7 +2,6 @@ package com.example.dnevnjak.presentation.composable
 
 import android.annotation.SuppressLint
 import android.graphics.Color.rgb
-import android.util.Log
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,10 +17,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.dnevnjak.presentation.composable.navigationBar.BottomBar
-import com.example.dnevnjak.presentation.composable.navigationBar.BottomBar.DailyPlan.route
 import com.example.dnevnjak.presentation.composable.navigationBar.BottomNavGraph
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
-import com.example.dnevnjak.presentation.events.ObligationEvent
+import com.example.dnevnjak.presentation.events.DnevnjakEvent
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -32,11 +30,11 @@ fun MainPage(
     viewModel: MainViewModel = koinViewModel()
 ){
     val navController = rememberNavController()
-    val singleObligationMode by viewModel.singleObligationMode.collectAsState()
+    val obligationState by viewModel.obligationState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     when {
-        singleObligationMode -> {
+        obligationState.isSingleObligationMode -> {
             ObligationReviewPage(viewModel)
         }
         navBackStackEntry?.destination?.route == BottomBar.Profile.route -> {
@@ -54,7 +52,7 @@ fun MainPage(
             Scaffold(
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = { viewModel.onEvent(ObligationEvent.AddObligation) },
+                        onClick = { viewModel.onEvent(DnevnjakEvent.AddObligation) },
                         backgroundColor = Color(rgb(33, 33, 33)),
                         contentColor = Color.White
                     ) {

@@ -30,12 +30,11 @@ fun ProfilePage(
     viewModel:UserViewModel = koinViewModel()
 ) {
 
-    val username by viewModel.username.collectAsState()
-    val email by viewModel.email.collectAsState()
-    val isPasswordChanging by viewModel.isPasswordChanging.collectAsState()
+    val loginState by viewModel.loginState.collectAsState()
+    val passwordChangeState by viewModel.passwordChangeState.collectAsState()
 
-    if(isPasswordChanging){
-        PasswordChangeDialog(viewModel = viewModel)
+    when{
+        passwordChangeState.isPasswordChanging -> PasswordChangeDialog(viewModel = viewModel)
     }
 
     Column(
@@ -53,13 +52,13 @@ fun ProfilePage(
                 .background(Color(rgb(178, 235, 242))),
         )
         Text(
-            text = username,
+            text = loginState.username,
             fontSize = 30.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
-            text = email,
+            text = loginState.email,
             fontSize = 30.sp,
             style = TextStyle(textDecoration = TextDecoration.Underline),
             textAlign = TextAlign.Center,

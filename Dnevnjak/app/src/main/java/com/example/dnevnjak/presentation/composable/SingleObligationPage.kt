@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
-import com.example.dnevnjak.presentation.events.ObligationEvent
+import com.example.dnevnjak.presentation.events.DnevnjakEvent
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
 import com.example.dnevnjak.utilities.Priority
 import com.example.dnevnjak.utilities.Utility
@@ -36,9 +36,6 @@ import java.time.format.DateTimeFormatter
 fun ObligationReviewPage (
     viewModel: MainViewModel
 ){
-    val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
-    val obligation = remember { viewModel.obligationState.value }
-
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -56,7 +53,7 @@ fun ObligationReviewPage (
 private fun ObligationModeText(
     viewModel: MainViewModel
 ){
-    val mode = remember { viewModel.obligationState.value.obligationMode }
+    val obligationState by viewModel.obligationState.collectAsState()
 
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -65,7 +62,7 @@ private fun ObligationModeText(
             .background(Color(rgb(40, 53, 147)))
     ){
         Text(
-            text = mode,
+            text = obligationState.obligationMode,
             fontSize = 26.sp,
             color = Color.White,
             modifier = Modifier
@@ -78,7 +75,7 @@ private fun ObligationModeText(
 private fun Header(
     viewModel: MainViewModel
 ){
-    val headerDate = remember { Utility.fullDateFormatterStr(viewModel.selectedDate.value) }
+    val obligationState by viewModel.obligationState.collectAsState()
 
     Row(
         modifier = Modifier
@@ -86,12 +83,12 @@ private fun Header(
             .padding(top = 20.dp, bottom = 20.dp)
     ){
         Text(
-            text = headerDate,
+            text = Utility.fullDateFormatterStr(obligationState.date),
             fontSize = 32.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier
                 .padding(10.dp)
-                .clickable { viewModel.onEvent(ObligationEvent.CancelObligation) }
+                .clickable { viewModel.onEvent(DnevnjakEvent.CancelObligation) }
         )
     }
 }
@@ -101,19 +98,12 @@ private fun Header(
 private fun ObligationData(
     viewModel: MainViewModel
 ){
+
+    val obligationState by viewModel.obligationState.collectAsState()
     val pagerState = rememberPagerState()
     val list = remember { listOf("High","Mid","Low") }
     val colors = remember { listOf(Color.Red, Color.Yellow, Color.Green) }
-
     var tabIndex by remember { mutableStateOf(0) }
-
-    val obligationState by viewModel.obligationState.collectAsState()
-
-    val isReview by viewModel.isReviewingObligation.collectAsState()
-    val isAddingNew by viewModel.isAddingObligation.collectAsState()
-    val isEditing by viewModel.isEditingObligation.collectAsState()
-    val isDeleting by viewModel.isDeletingObligation.collectAsState()
-
 
     var from by remember { mutableStateOf(obligationState.start) }
     var to by remember { mutableStateOf(obligationState.end) }
@@ -139,10 +129,10 @@ private fun ObligationData(
     val mContext = LocalContext.current
 
     when{
-        isDeleting -> DeleteObligationDialog(viewModel = viewModel)
-        isAddingNew -> {}
-        isEditing -> {}
-        isReview->{
+        obligationState.isDeleting -> DeleteObligationDialog(viewModel = viewModel)
+        obligationState.isAdding -> {}
+        obligationState.isEditing -> {}
+        obligationState.isReviewing -> {
             tabIndex = when (obligationState.priority) {
                 Priority.High -> 0
                 Priority.Mid -> 1
@@ -162,7 +152,7 @@ private fun ObligationData(
         ) {
             list.forEachIndexed { index, _ ->
                 Tab(
-                    enabled = !isReview,
+                    enabled = !obligationState.isReviewing,
                     text = { Text(text = list[index], fontSize = 20.sp) },
                     modifier = if(tabIndex != index) Modifier
                         .background(Color.LightGray)
@@ -174,9 +164,9 @@ private fun ObligationData(
                     onClick = {
                         tabIndex = index
                         when(index){
-                            0 -> { viewModel.onEvent(ObligationEvent.SetPriority(Priority.High)) }
-                            1 -> { viewModel.onEvent(ObligationEvent.SetPriority(Priority.Mid)) }
-                            2 -> { viewModel.onEvent(ObligationEvent.SetPriority(Priority.Low)) }
+                            0 -> { viewModel.onEvent(DnevnjakEvent.SetPriority(Priority.High)) }
+                            1 -> { viewModel.onEvent(DnevnjakEvent.SetPriority(Priority.Mid)) }
+                            2 -> { viewModel.onEvent(DnevnjakEvent.SetPriority(Priority.Low)) }
                         }
                     }
                 )
@@ -185,9 +175,9 @@ private fun ObligationData(
 
         Row(modifier =  Modifier.padding(start = 10.dp, top = 20.dp, end = 10.dp, bottom = 10.dp)){
             OutlinedTextField(
-                enabled = !isReview,
+                enabled = !obligationState.isReviewing,
                 value = obligationState.title,
-                onValueChange = { viewModel.onEvent(ObligationEvent.SetTitle(it)) },
+                onValueChange = { viewModel.onEvent(DnevnjakEvent.SetTitle(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.4f),
@@ -202,9 +192,11 @@ private fun ObligationData(
             )
         }
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)){
+        Row(
+            modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+        ){
             OutlinedTextField(
                 enabled = false,
                 value = formattedTimeFrom,
@@ -213,8 +205,8 @@ private fun ObligationData(
                     .weight(1f)
                     .padding(end = 10.dp)
                     .clickable {
-                        when{
-                            isReview ->{}
+                        when {
+                            obligationState.isReviewing -> {}
                             else -> {
                                 timeDialogState1.show()
                             }
@@ -238,12 +230,12 @@ private fun ObligationData(
                     .weight(1f)
                     .padding(start = 10.dp)
                     .clickable {
-                               when{
-                                   isReview ->{}
-                                   else -> {
-                                       timeDialogState2.show()
-                                   }
-                               }
+                        when {
+                            obligationState.isReviewing -> {}
+                            else -> {
+                                timeDialogState2.show()
+                            }
+                        }
                     },
                 colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.4f),
@@ -268,7 +260,7 @@ private fun ObligationData(
                     title = "Pick a date",
                     timeRange = LocalTime.MIDNIGHT..LocalTime.NOON
                 ) {
-                    viewModel.onEvent(ObligationEvent.SetStart(it))
+                    viewModel.onEvent(DnevnjakEvent.SetStart(it))
                     from = it
                 }
             }
@@ -284,7 +276,7 @@ private fun ObligationData(
                     title = "Pick a time",
                     timeRange = LocalTime.MIDNIGHT..LocalTime.NOON
                 ) {
-                    viewModel.onEvent(ObligationEvent.SetEnd(it))
+                    viewModel.onEvent(DnevnjakEvent.SetEnd(it))
                     to = it
                 }
             }
@@ -292,11 +284,12 @@ private fun ObligationData(
 
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)){
+            .padding(10.dp)
+        ){
             OutlinedTextField(
-                enabled = !isReview,
+                enabled = !obligationState.isReviewing,
                 value = obligationState.description,
-                onValueChange = { viewModel.onEvent(ObligationEvent.SetDescription(it)) },
+                onValueChange = { viewModel.onEvent(DnevnjakEvent.SetDescription(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.7f),
@@ -307,7 +300,7 @@ private fun ObligationData(
 
                     ),
                 shape = RoundedCornerShape(12.dp),
-                singleLine = true,//
+                singleLine = true,
                 label = { Text(text = "Description", fontSize = 20.sp, color = Color.White) },
                 textStyle = TextStyle.Default.copy(fontSize = 25.sp, color = Color.Black, fontWeight = FontWeight.Normal)
             )
@@ -319,9 +312,9 @@ private fun ObligationData(
             Button(
                 onClick = {
                     when {
-                          isReview -> viewModel.onEvent(ObligationEvent.EditObligation)
-                          isEditing -> viewModel.onEvent(ObligationEvent.SaveObligation)
-                          isAddingNew -> viewModel.onEvent(ObligationEvent.CreateObligation)
+                        obligationState.isReviewing -> viewModel.onEvent(DnevnjakEvent.EditObligation)
+                        obligationState.isEditing -> viewModel.onEvent(DnevnjakEvent.SaveObligation)
+                        obligationState.isAdding -> viewModel.onEvent(DnevnjakEvent.CreateObligation)
                     }
                 },
                 shape = CutCornerShape(25),
@@ -335,7 +328,12 @@ private fun ObligationData(
 
             ) {
                 Text(
-                    text = if(isReview || isDeleting) "Edit" else if (isEditing) "Save" else "Create",
+                    text = if(obligationState.isReviewing || obligationState.isDeleting)
+                                "Edit"
+                            else if (obligationState.isEditing)
+                                "Save"
+                            else
+                                "Create",
                     fontSize = 20.sp
                 )
             }
@@ -343,9 +341,9 @@ private fun ObligationData(
             Button(
                 onClick = {
                     when {
-                        isReview -> viewModel.onEvent(ObligationEvent.DeleteObligation)
-                        isEditing -> viewModel.onEvent(ObligationEvent.CancelObligation)
-                        isAddingNew -> viewModel.onEvent(ObligationEvent.CancelObligation)
+                        obligationState.isReviewing -> viewModel.onEvent(DnevnjakEvent.DeleteObligation)
+                        obligationState.isEditing -> viewModel.onEvent(DnevnjakEvent.CancelObligation)
+                        obligationState.isAdding -> viewModel.onEvent(DnevnjakEvent.CancelObligation)
                     }
                 },
                 shape = CutCornerShape(25),
@@ -359,7 +357,12 @@ private fun ObligationData(
                     .padding(start = 20.dp, end = 10.dp)
             ) {
                 Text(
-                    text = if(isReview || isDeleting) "Delete" else if (isEditing) "Cancel" else "Cancel",
+                    text = if(obligationState.isReviewing || obligationState.isDeleting)
+                                "Delete"
+                            else if (obligationState.isEditing)
+                                "Cancel"
+                            else
+                                "Cancel",
                     fontSize = 20.sp
                 )
             }

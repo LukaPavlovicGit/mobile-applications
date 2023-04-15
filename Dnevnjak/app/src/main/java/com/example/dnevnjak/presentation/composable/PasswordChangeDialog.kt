@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.R
 import com.example.dnevnjak.presentation.composable.ui.theme.primaryColor
-import com.example.dnevnjak.presentation.events.ObligationEvent
 import com.example.dnevnjak.presentation.events.UserEvent
 import com.example.dnevnjak.presentation.viewModels.UserViewModel
 
@@ -30,13 +29,14 @@ fun PasswordChangeDialog(
 
     val passwordVisibility1 = remember { mutableStateOf(false) }
     val passwordVisibility2 = remember { mutableStateOf(false) }
-
-    val newPassword by viewModel.newPassword.collectAsState()
-    val newPasswordConfirmation by viewModel.newPasswordConfirmation.collectAsState()
     val context = LocalContext.current
+    val passwordChangeState by viewModel.passwordChangeState.collectAsState()
+
 
     AlertDialog(
-        modifier = Modifier.fillMaxHeight(0.6f).fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxHeight(0.6f)
+            .fillMaxWidth(),
         onDismissRequest = {
             viewModel.onEvent(UserEvent.HideDialog)
         },
@@ -47,7 +47,7 @@ fun PasswordChangeDialog(
             ) {
 
                 OutlinedTextField(
-                    value = newPassword,
+                    value = passwordChangeState.newPassword,
                     onValueChange = { viewModel.onEvent(UserEvent.SetNewPassword(it)) },
                     trailingIcon = {
                         IconButton(onClick = {
@@ -69,7 +69,7 @@ fun PasswordChangeDialog(
                 )
 
                 OutlinedTextField(
-                    value = newPasswordConfirmation,
+                    value = passwordChangeState.newPasswordConfirmation,
                     onValueChange = { viewModel.onEvent(UserEvent.SetNewPasswordConfirmation(it)) },
                     trailingIcon = {
                         IconButton(onClick = {
@@ -100,7 +100,7 @@ fun PasswordChangeDialog(
 
                 Button(
                     onClick = {
-                        when(newPassword == newPasswordConfirmation){
+                        when(passwordChangeState.newPassword == passwordChangeState.newPasswordConfirmation){
                             true -> viewModel.onEvent(UserEvent.SavePassword)
                             false -> mToast(context = context)
                         }

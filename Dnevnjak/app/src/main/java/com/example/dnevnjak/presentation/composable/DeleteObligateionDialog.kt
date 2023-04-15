@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.dnevnjak.presentation.events.ObligationEvent
+import com.example.dnevnjak.presentation.events.DnevnjakEvent
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
 
 @Composable
@@ -35,7 +35,7 @@ fun DeleteObligationDialog(
                     confirmButton = {
                         Button(
                             onClick = {
-                                viewModel.onEvent(ObligationEvent.DeleteObligationConfirmed)
+                                viewModel.onEvent(DnevnjakEvent.DeleteObligationConfirmed)
                             },
                             shape = CutCornerShape(25),
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
@@ -54,7 +54,7 @@ fun DeleteObligationDialog(
                     dismissButton = {
                         Button(
                             onClick = {
-                                viewModel.onEvent(ObligationEvent.DeleteObligationCanceled)
+                                viewModel.onEvent(DnevnjakEvent.DeleteObligationCanceled)
                             },
                             shape = CutCornerShape(25),
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green),

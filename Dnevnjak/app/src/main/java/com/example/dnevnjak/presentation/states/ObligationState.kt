@@ -16,4 +16,11 @@ data class ObligationState(
 
     var obligationMode: String = "",
     var dateDiffFormatStr: String = "",
+
+    var isReviewing: Boolean = false,
+    var isAdding: Boolean = false,
+    var isDeleting: Boolean = false,
+    var isEditing: Boolean = false,
+
+    var isSingleObligationMode: Boolean = false
 )

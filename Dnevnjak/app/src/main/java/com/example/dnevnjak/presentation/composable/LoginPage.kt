@@ -36,35 +36,30 @@ fun LoginPage(
 
     val passwordVisibility = remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-
-    val incorrectCredentials by viewModel.incorrectCredentials.collectAsState()
-    val incorrectPassword by viewModel.incorrectPassword.collectAsState()
-    val loginSuccess by viewModel.isLoginSuccessful.collectAsState()
-
-    val username by viewModel.username.collectAsState()
-    val email by viewModel.email.collectAsState()
-    val password by viewModel.password.collectAsState()
+    val loginState by viewModel.loginState.collectAsState()
 
     val mContext = LocalContext.current
 
-    if(incorrectCredentials){
-        mToastIncorrectCredentials(mContext)
-    }
-    if(incorrectPassword){
-        mToastIncorrectPassword(mContext)
-    }
-    if(loginSuccess){
-        mToastLoginSuccess(mContext)
-        onSuccess.invoke()
+    when{
+        loginState.incorrectCredentials -> mToastIncorrectCredentials(mContext)
+        loginState.incorrectPassword -> mToastIncorrectPassword(mContext)
+        loginState.loginSuccess -> {
+            mToastLoginSuccess(mContext)
+            onSuccess.invoke()
+        }
     }
 
 
     Box(
-        modifier = Modifier.fillMaxSize().background(Color.LightGray),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.LightGray),
         contentAlignment = Alignment.BottomCenter
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().background(Color.White),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
             contentAlignment = Alignment.TopCenter
         ) {
 
@@ -91,7 +86,7 @@ fun LoginPage(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                     OutlinedTextField(
-                        value = email,
+                        value = loginState.email,
                         onValueChange = { viewModel.onEvent(UserEvent.SetEmail(it)) },
                         label = { Text(text = "Email Address") },
                         placeholder = { Text(text = "Email Address") },
@@ -104,7 +99,7 @@ fun LoginPage(
                     )
 
                     OutlinedTextField(
-                        value = username,
+                        value = loginState.username,
                         onValueChange = { viewModel.onEvent(UserEvent.SetUsername(it)) },
                         label = { Text(text = "Username") },
                         placeholder = { Text(text = "Username") },
@@ -116,7 +111,7 @@ fun LoginPage(
 //                        }
                     )
                     OutlinedTextField(
-                        value = password,
+                        value = loginState.password,
                         onValueChange = { viewModel.onEvent(UserEvent.SetPassword(it)) },
                         trailingIcon = {
                             IconButton(onClick = {
