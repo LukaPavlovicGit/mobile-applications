@@ -5,8 +5,6 @@ import android.graphics.Color.rgb
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -51,7 +49,7 @@ fun DailyPlanPage(
             Header(viewModel = viewModel)
             ShowPastObligationRow(viewModel = viewModel)
             SearchQueryRow(viewModel = viewModel)
-            ObligationDate(viewModel = viewModel, pagerState = pagerState)
+            ObligationData(viewModel = viewModel, pagerState = pagerState)
             TabsContent(viewModel = viewModel, pagerState = pagerState)
         }
     }
@@ -151,7 +149,7 @@ private fun SearchQueryRow(
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @Composable
-fun ObligationDate(
+fun ObligationData(
     viewModel: MainViewModel,
     pagerState: PagerState
 ){

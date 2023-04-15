@@ -10,7 +10,10 @@ class ObligationRepositoryImpl(
     private val obligationDao: ObligationDao
 ): ObligationRepository {
 
-    override fun insert(obligationEntity: ObligationEntity) = obligationDao.insert(obligationEntity)
+    override fun insert(obligationEntity: ObligationEntity) {
+        obligationDao.insert(obligationEntity)
+    }
+    override fun update(obligationEntity: ObligationEntity) = obligationDao.update(obligationEntity)
     override fun getAll() = obligationDao.getAll()
     override fun getAllByDate(date: Long) = obligationDao.getAllByDate(date)
     override fun getAllByDateAndPriority(dateLong: Long, priority: Priority) = obligationDao.getAllByDateAndPriority(dateLong, priority)

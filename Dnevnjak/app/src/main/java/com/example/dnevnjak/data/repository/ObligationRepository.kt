@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ObligationRepository {
     fun insert(obligationEntity: ObligationEntity)
+    fun update(obligationEntity: ObligationEntity)
     fun getAll(): Flow<List<ObligationEntity>>
     fun getAllByDate(date: Long): Flow<List<ObligationEntity>>
     fun getAllByDateAndPriority(dateLong: Long, priority: Priority): Flow<List<ObligationEntity>>

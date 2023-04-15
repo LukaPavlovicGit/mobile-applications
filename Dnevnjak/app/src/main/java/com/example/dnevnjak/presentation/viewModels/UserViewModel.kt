@@ -99,6 +99,8 @@ class UserViewModel(
             is UserEvent.SetUsername -> _username.value = event.username
             is UserEvent.SetPassword -> _password.value = event.password
             UserEvent.Logout -> {
+                _email.value = ""
+                _username.value = ""
                 sharedPreferences
                     .edit()
                     .clear()
@@ -108,9 +110,13 @@ class UserViewModel(
                 _isPasswordChanging.value = true
             }
             UserEvent.HideDialog -> {
+                _newPassword.value = ""
+                _newPasswordConfirmation.value = ""
                 _isPasswordChanging.value = false
             }
-            UserEvent.SavePassword -> { }
+            UserEvent.SavePassword -> {
+                _isPasswordChanging.value = false
+            }
             is UserEvent.SetNewPassword -> {
                 _newPassword.value = event.newPassword
             }

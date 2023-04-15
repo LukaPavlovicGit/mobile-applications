@@ -32,6 +32,8 @@ sealed interface ObligationEvent {
 
     data class SelectedObligation(val obligationEntity: ObligationEntity): ObligationEvent
 
+    object AddObligation: ObligationEvent
+
     object EditObligation: ObligationEvent
 
     object SaveObligation: ObligationEvent

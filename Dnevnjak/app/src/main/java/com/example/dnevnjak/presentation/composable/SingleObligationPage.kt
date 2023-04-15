@@ -1,9 +1,7 @@
 package com.example.dnevnjak.presentation.composable
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Color.rgb
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -49,7 +47,7 @@ fun ObligationReviewPage (
 
         ObligationModeText(viewModel = viewModel)
         Header(viewModel = viewModel)
-        ObligationDate(viewModel = viewModel)
+        ObligationData(viewModel = viewModel)
 
     }
 }
@@ -100,7 +98,7 @@ private fun Header(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun ObligationDate(
+private fun ObligationData(
     viewModel: MainViewModel
 ){
     val pagerState = rememberPagerState()
@@ -135,13 +133,10 @@ private fun ObligationDate(
         }
     }
 
-
-
     val timeDialogState1 = rememberMaterialDialogState()
     val timeDialogState2 = rememberMaterialDialogState()
 
     val mContext = LocalContext.current
-
 
     when{
         isDeleting -> DeleteObligationDialog(viewModel = viewModel)
@@ -161,7 +156,6 @@ private fun ObligationDate(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.fillMaxHeight()
     ) {
-
         TabRow(
             selectedTabIndex = tabIndex,
             contentColor = Color.Black,

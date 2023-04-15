@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.R
+import com.example.dnevnjak.presentation.events.UserEvent
 import com.example.dnevnjak.presentation.viewModels.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -32,6 +33,10 @@ fun ProfilePage(
     val username by viewModel.username.collectAsState()
     val email by viewModel.email.collectAsState()
     val isPasswordChanging by viewModel.isPasswordChanging.collectAsState()
+
+    if(isPasswordChanging){
+        PasswordChangeDialog(viewModel = viewModel)
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -62,7 +67,7 @@ fun ProfilePage(
         )
         Spacer(modifier = Modifier.padding(55.dp))
         Button(
-            onClick = { },
+            onClick = { viewModel.onEvent(UserEvent.PasswordChange) },
             shape = CutCornerShape(25),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(rgb(100, 181, 246))),
             border = BorderStroke(4.dp, Color.DarkGray),

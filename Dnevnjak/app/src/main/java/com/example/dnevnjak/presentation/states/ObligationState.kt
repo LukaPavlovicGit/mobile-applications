@@ -16,9 +16,4 @@ data class ObligationState(
 
     var obligationMode: String = "",
     var dateDiffFormatStr: String = "",
-
-    var isReviewingObligation : Boolean = false,
-    var isAddingObligation: Boolean = false,
-    var isEditingObligation: Boolean = false,
-    var isDeletingObligation : Boolean = false,
 )

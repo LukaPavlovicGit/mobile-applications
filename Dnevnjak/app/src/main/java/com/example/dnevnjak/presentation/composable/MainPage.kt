@@ -54,7 +54,7 @@ fun MainPage(
             Scaffold(
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = { viewModel.onEvent(ObligationEvent.CreateObligation) },
+                        onClick = { viewModel.onEvent(ObligationEvent.AddObligation) },
                         backgroundColor = Color(rgb(33, 33, 33)),
                         contentColor = Color.White
                     ) {

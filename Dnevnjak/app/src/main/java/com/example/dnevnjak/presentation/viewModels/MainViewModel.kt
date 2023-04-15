@@ -14,7 +14,6 @@ import com.example.dnevnjak.utilities.Utility
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
@@ -83,7 +82,7 @@ class MainViewModel(
     init {
         GlobalScope.launch(Dispatchers.IO){
             initData()
-            initStates()
+            setStates()
         }
     }
 
@@ -138,12 +137,27 @@ class MainViewModel(
                         .first()
                 }
             }
-            ObligationEvent.SaveObligation -> { }
-            is ObligationEvent.SetDescription -> _obligationState.value.description = event.description
-            is ObligationEvent.SetPriority -> _obligationState.value.priority = event.priority
-            is ObligationEvent.SetStart -> _obligationState.value.start = event.start
-            is ObligationEvent.SetEnd -> _obligationState.value.end = event.end
-            is ObligationEvent.SetTitle -> _obligationState.value.title = event.title
+            ObligationEvent.SaveObligation -> {
+                viewModelScope.launch {
+                    obligationRepository.update(
+                        ObligationEntity(
+                            id = _obligationState.value.id,
+                            date =  _selectedDate.value,
+                            priority = _obligationState.value.priority,
+                            title = _obligationState.value.title,
+                            description = _obligationState.value.description,
+                            start = _obligationState.value.start,
+                            end = _obligationState.value.end
+                        )
+                    )
+                    resetObligationState()
+                }
+            }
+            is ObligationEvent.SetDescription -> _obligationState.value = _obligationState.value.copy(description = event.description)
+            is ObligationEvent.SetPriority -> _obligationState.value = _obligationState.value.copy(priority = event.priority)
+            is ObligationEvent.SetStart -> _obligationState.value = _obligationState.value.copy(start = event.start)
+            is ObligationEvent.SetEnd -> _obligationState.value = _obligationState.value.copy(end = event.end)
+            is ObligationEvent.SetTitle ->_obligationState.value = _obligationState.value.copy(title = event.title )
             ObligationEvent.ShowAll -> { }
             is ObligationEvent.SelectedObligation -> {
                 _obligationState.value.id = event.obligationEntity.id
@@ -156,26 +170,29 @@ class MainViewModel(
                 _obligationState.value.dateDiffFormatStr = Utility.fullDateFormatterStr(event.obligationEntity.date)
                 _obligationState.value.obligationMode = "Review Obligation"
                 setIsReviewingObligation()
-                _singleObligationMode.value = true
             }
             ObligationEvent.CreateObligation -> {
-                setIsCreatingObligation()
-                _singleObligationMode.value = true
+                GlobalScope.launch {
+                    obligationRepository.insert(
+                        ObligationEntity(
+                            date =  _selectedDate.value,
+                            priority = _obligationState.value.priority,
+                            title = _obligationState.value.title,
+                            description = _obligationState.value.description,
+                            start = _obligationState.value.start,
+                            end = _obligationState.value.end
+                        )
+                    )
+                    setStates()
+                    resetSingleObligationMode()
+                }
             }
-            ObligationEvent.EditObligation ->  {
-                setIsEditingObligation()
-                _singleObligationMode.value = true
-            }
-            ObligationEvent.DeleteObligation -> {
-                setIsDeletingObligation()
-                _singleObligationMode.value = true
-            }
-            ObligationEvent.CancelObligation -> resetObligationMode()
-            ObligationEvent.DeleteObligationConfirmed -> resetObligationMode()
-            ObligationEvent.DeleteObligationCanceled -> {
-                setIsReviewingObligation()
-                _singleObligationMode.value = true
-            }
+            ObligationEvent.EditObligation -> setIsEditingObligation()
+            ObligationEvent.DeleteObligation -> setIsDeletingObligation()
+            ObligationEvent.CancelObligation -> resetSingleObligationMode()
+            ObligationEvent.DeleteObligationConfirmed -> resetSingleObligationMode()
+            ObligationEvent.DeleteObligationCanceled -> setIsReviewingObligation()
+            ObligationEvent.AddObligation -> setIsCreatingObligation()
         }
     }
 
@@ -228,10 +245,7 @@ class MainViewModel(
         }
     }
 
-    private suspend fun initStates(){
-
-        Log.e("TAG", "USAO?!")
-
+    private suspend fun setStates(){
         _allObligations.value = obligationRepository.getAll().first()
         _allObligations.value.forEach loop@{ (date, priority) ->
 
@@ -257,10 +271,7 @@ class MainViewModel(
     }
 
     private fun setIsReviewingObligation(){
-        _obligationState.value.isReviewingObligation = true
-        _obligationState.value.isAddingObligation = false
-        _obligationState.value.isDeletingObligation = false
-        _obligationState.value.isEditingObligation = false
+        _singleObligationMode.value = true
 
         _isReviewingObligation.value = true
         _isAddingObligation.value = false
@@ -268,10 +279,7 @@ class MainViewModel(
         _isEditingObligation.value = false
     }
     private fun setIsCreatingObligation(){
-        _obligationState.value.isReviewingObligation = false
-        _obligationState.value.isAddingObligation = true
-        _obligationState.value.isDeletingObligation = false
-        _obligationState.value.isEditingObligation = false
+        _singleObligationMode.value = true
 
         _isReviewingObligation.value = false
         _isAddingObligation.value = true
@@ -279,10 +287,7 @@ class MainViewModel(
         _isEditingObligation.value = false
     }
     private fun setIsDeletingObligation(){
-        _obligationState.value.isReviewingObligation = false
-        _obligationState.value.isAddingObligation = false
-        _obligationState.value.isDeletingObligation = true
-        _obligationState.value.isEditingObligation = false
+        _singleObligationMode.value = true
 
         _isReviewingObligation.value = false
         _isAddingObligation.value = false
@@ -290,10 +295,7 @@ class MainViewModel(
         _isEditingObligation.value = false
     }
     private fun setIsEditingObligation(){
-        _obligationState.value.isReviewingObligation = false
-        _obligationState.value.isAddingObligation = false
-        _obligationState.value.isDeletingObligation = false
-        _obligationState.value.isEditingObligation = true
+        _singleObligationMode.value = true
 
         _isReviewingObligation.value = false
         _isAddingObligation.value = false
@@ -301,12 +303,16 @@ class MainViewModel(
         _isEditingObligation.value = true
     }
 
-    private fun resetObligationMode(){
+    private fun resetSingleObligationMode(){
         _singleObligationMode.value = false
         _isReviewingObligation.value = false
         _isAddingObligation.value = false
         _isDeletingObligation.value = false
         _isEditingObligation.value = false
+    }
+
+    private fun resetObligationState(){
+        _obligationState.value = ObligationState()
     }
 
 
