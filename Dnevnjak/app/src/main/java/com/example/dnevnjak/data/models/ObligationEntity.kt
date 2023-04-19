@@ -2,11 +2,9 @@ package com.example.dnevnjak.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.data.models.priorityEnum.Priority
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.*
 
 @Entity(tableName = "obligations")
 data class ObligationEntity (

@@ -1,7 +1,7 @@
 package com.example.dnevnjak.presentation.states
 
 import com.example.dnevnjak.data.models.ObligationEntity
-import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.data.models.priorityEnum.Priority
 import java.time.LocalDate
 
 data class DailyPlanState(

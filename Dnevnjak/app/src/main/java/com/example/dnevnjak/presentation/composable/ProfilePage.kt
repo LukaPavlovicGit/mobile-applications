@@ -1,6 +1,9 @@
 package com.example.dnevnjak.presentation.composable
 
+import android.content.Context
 import android.graphics.Color.rgb
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -32,9 +36,12 @@ fun ProfilePage(
 
     val loginState by viewModel.loginState.collectAsState()
     val passwordChangeState by viewModel.passwordChangeState.collectAsState()
+    val mContext = LocalContext.current
 
     when{
         passwordChangeState.isPasswordChanging -> PasswordChangeDialog(viewModel = viewModel)
+        passwordChangeState.successfulPasswordChange -> mToastSuccess(mContext)
+        passwordChangeState.passwordNotValid -> mToastNotValid(mContext)
     }
 
     Column(
@@ -88,4 +95,15 @@ fun ProfilePage(
             Text(text = "Log out", fontSize = 20.sp)
         }
     }
+}
+
+// Function to generate a Toast
+private fun mToastSuccess(context: Context){
+    Toast.makeText(context, "Password changed successfully!", Toast.LENGTH_LONG).show()
+}
+
+// Function to generate a Toast
+private fun mToastNotValid(context: Context){
+    Log.e("TAG", "ZASTO")
+    Toast.makeText(context, "Password is not valid!", Toast.LENGTH_LONG).show()
 }

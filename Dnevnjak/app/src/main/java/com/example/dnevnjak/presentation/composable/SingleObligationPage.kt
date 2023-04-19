@@ -2,6 +2,7 @@ package com.example.dnevnjak.presentation.composable
 
 import android.content.Context
 import android.graphics.Color.rgb
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
 import com.example.dnevnjak.presentation.events.DnevnjakEvent
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
-import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.data.models.priorityEnum.Priority
 import com.example.dnevnjak.utilities.Utility
 import com.google.accompanist.pager.*
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -43,12 +44,18 @@ fun SingleObligationPage (
     when {
         obligationState.isReviewing -> {
             val previous = SwipeAction(
-                onSwipe = { viewModel.onEvent(DnevnjakEvent.PreviousObligation) },
+                onSwipe = {
+                    Log.e("SWIPE", "SWIPE PREVIOUS")
+                    viewModel.onEvent(DnevnjakEvent.PreviousObligation)
+                },
                 icon = {},
                 background = Color.Green
             )
             val next = SwipeAction(
-                onSwipe = { viewModel.onEvent(DnevnjakEvent.NextObligation) },
+                onSwipe = {
+                    Log.e("SWIPE", "SWIPE NEXT")
+                    viewModel.onEvent(DnevnjakEvent.NextObligation)
+                  },
                 icon = {},
                 background = Color.Green
             )
@@ -162,6 +169,7 @@ private fun ObligationData(
     val mContext = LocalContext.current
 
     when{
+        obligationState.timeOverlap -> mToastTimeOverlap(mContext)
         obligationState.isDeleting -> DeleteObligationDialog(viewModel = viewModel)
         obligationState.isAdding -> {}
         obligationState.isEditing -> {}
@@ -232,7 +240,10 @@ private fun ObligationData(
         ){
             OutlinedTextField(
                 enabled = false,
-                value = formattedTimeFrom,
+                value = when{
+                    obligationState.isReviewing -> Utility.timeFormatterStr(obligationState.start)
+                    else -> formattedTimeFrom
+                },
                 onValueChange = {  },
                 modifier = Modifier
                     .weight(1f)
@@ -257,7 +268,10 @@ private fun ObligationData(
             )
             OutlinedTextField(
                 enabled = false,
-                value = formattedTimeTo,
+                value = when{
+                    obligationState.isReviewing -> Utility.timeFormatterStr(obligationState.end)
+                    else -> formattedTimeTo
+                },
                 onValueChange = {  },
                 modifier = Modifier
                     .weight(1f)
@@ -284,7 +298,7 @@ private fun ObligationData(
             MaterialDialog(
                 dialogState = timeDialogState1,
                 buttons = {
-                    positiveButton(text = "Ok") { mToast(mContext) }
+                    positiveButton(text = "Ok")
                     negativeButton(text = "Cancel")
                 }
             ) {
@@ -300,7 +314,7 @@ private fun ObligationData(
             MaterialDialog(
                 dialogState = timeDialogState2,
                 buttons = {
-                    positiveButton(text = "Ok") { mToast(mContext) }
+                    positiveButton(text = "Ok")
                     negativeButton(text = "Cancel")
                 }
             ) {
@@ -347,8 +361,18 @@ private fun ObligationData(
                 onClick = {
                     when {
                         obligationState.isReviewing -> viewModel.onEvent(DnevnjakEvent.EditObligation)
-                        obligationState.isEditing -> viewModel.onEvent(DnevnjakEvent.SaveObligation)
-                        obligationState.isAdding -> viewModel.onEvent(DnevnjakEvent.CreateObligation)
+                        obligationState.isEditing -> {
+                            if(from.isAfter(to) || from == to)
+                                mToastTimeError(context = mContext)
+                            else
+                                viewModel.onEvent(DnevnjakEvent.SaveObligation)
+                        }
+                        obligationState.isAdding -> {
+                            if(from.isAfter(to) || from == to)
+                                mToastTimeError(context = mContext)
+                            else
+                                viewModel.onEvent(DnevnjakEvent.CreateObligation)
+                        }
                     }
                 },
                 shape = CutCornerShape(25),
@@ -406,6 +430,11 @@ private fun ObligationData(
 }
 
 // Function to generate a Toast
-private fun mToast(context: Context){
-    Toast.makeText(context, "This is a Sample Toast", Toast.LENGTH_LONG).show()
+private fun mToastTimeError(context: Context){
+    Toast.makeText(context, "Invalid time specification", Toast.LENGTH_LONG).show()
+}
+
+// Function to generate a Toast
+private fun mToastTimeOverlap(context: Context){
+    Toast.makeText(context, "Obligation time overlap!!", Toast.LENGTH_LONG).show()
 }

@@ -1,8 +1,7 @@
 package com.example.dnevnjak.presentation.states
 
-import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.data.models.priorityEnum.Priority
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class ObligationState(
@@ -22,5 +21,7 @@ data class ObligationState(
     var isDeleting: Boolean = false,
     var isEditing: Boolean = false,
 
-    var isSingleObligationMode: Boolean = false
+    var isSingleObligationMode: Boolean = false,
+
+    var timeOverlap: Boolean = false
 )

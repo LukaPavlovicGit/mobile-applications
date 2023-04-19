@@ -18,17 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.data.models.ObligationEntity
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
 import com.example.dnevnjak.presentation.events.DnevnjakEvent
 import com.example.dnevnjak.presentation.viewModels.MainViewModel
-import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.data.models.priorityEnum.Priority
 import com.example.dnevnjak.utilities.Utility
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
@@ -276,9 +273,8 @@ fun LowTab(
                         .height(90.dp)
                         .border(1.dp, Color.Black)
                         .background(
-                            if (currDate.isAfter(obligation.date) || (currDate.isEqual(obligation.date) && currTime.isAfter(
-                                    obligation.end
-                                ))
+                            if (currDate.isAfter(obligation.date) ||
+                                (currDate.isEqual(obligation.date) && currTime.isAfter(obligation.end))
                             )
                                 Color(rgb(97, 97, 97))
                             else
@@ -321,9 +317,8 @@ fun MidTab(
                         .height(90.dp)
                         .border(1.dp, Color.Black)
                         .background(
-                            if (currDate.isAfter(obligation.date) || (currDate.isEqual(obligation.date) && currTime.isAfter(
-                                    obligation.end
-                                ))
+                            if (currDate.isAfter(obligation.date) ||
+                                (currDate.isEqual(obligation.date) && currTime.isAfter(obligation.end))
                             )
                                 Color(rgb(97, 97, 97))
                             else
@@ -368,9 +363,8 @@ fun HighTab(
                             .height(90.dp)
                             .border(1.dp, Color.Black)
                             .background(
-                                if (currDate.isAfter(obligation.date) || (currDate.isEqual(
-                                        obligation.date
-                                    ) && currTime.isAfter(obligation.end))
+                                if (currDate.isAfter(obligation.date) ||
+                                    (currDate.isEqual(obligation.date) && currTime.isAfter(obligation.end))
                                 )
                                     Color(rgb(97, 97, 97))
                                 else
@@ -470,7 +464,10 @@ private fun ObligationView(
                 modifier = Modifier
                     .size(35.dp)
                     .weight(1f)
-                    .clickable { viewModel.onEvent(DnevnjakEvent.EditObligation) }
+                    .clickable {
+                        viewModel.onEvent(DnevnjakEvent.SelectedObligation(obligationEntity))
+                        viewModel.onEvent(DnevnjakEvent.EditObligation)
+                    }
             )
             Icon(
                 imageVector = Icons.Default.Delete,
@@ -478,7 +475,10 @@ private fun ObligationView(
                 modifier = Modifier
                     .size(35.dp)
                     .weight(1f)
-                    .clickable { viewModel.onEvent(DnevnjakEvent.DeleteObligation) }
+                    .clickable {
+                        viewModel.onEvent(DnevnjakEvent.SelectedObligation(obligationEntity))
+                        viewModel.onEvent(DnevnjakEvent.DeleteObligation)
+                    }
             )
         }
     }

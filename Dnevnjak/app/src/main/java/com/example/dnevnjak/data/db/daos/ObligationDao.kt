@@ -1,16 +1,12 @@
 package com.example.dnevnjak.data.db.daos
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.dnevnjak.data.models.ObligationEntity
-import com.example.dnevnjak.utilities.Priority
-import io.reactivex.Observable
+import com.example.dnevnjak.data.models.priorityEnum.Priority
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Dao
 interface ObligationDao {
@@ -18,8 +14,8 @@ interface ObligationDao {
     @Insert
     fun insert(obligation: ObligationEntity)
 
-    @Delete
-    fun delete(obligation: ObligationEntity)
+    @Query("DELETE FROM obligations WHERE id = :id ")
+    fun delete(id: Int)
 
     @Update
     fun update(obligationEntity: ObligationEntity)

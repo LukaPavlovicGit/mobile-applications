@@ -9,6 +9,7 @@ import com.example.dnevnjak.presentation.fragments.MainFragment
 import com.example.dnevnjak.utilities.Constants
 import com.example.dnevnjak.utilities.Constants.Companion.LOGIN_FRAGMENT_TAG
 import com.example.dnevnjak.utilities.Constants.Companion.MAIN_FRAGMENT_TAG
+import kotlinx.coroutines.delay
 
 class MainActivity : AppCompatActivity() {
 

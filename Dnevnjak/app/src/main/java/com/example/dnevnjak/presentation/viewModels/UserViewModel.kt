@@ -8,6 +8,8 @@ import com.example.dnevnjak.presentation.events.UserEvent
 import com.example.dnevnjak.presentation.states.LoginState
 import com.example.dnevnjak.presentation.states.PasswordChangeState
 import com.example.dnevnjak.utilities.Constants
+import com.example.dnevnjak.utilities.meetsRequirements
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -76,7 +78,32 @@ class UserViewModel(
             }
             UserEvent.PasswordChange -> _passwordChangeState.value = _passwordChangeState.value.copy(isPasswordChanging = true)
             UserEvent.HideDialog -> _passwordChangeState.value = PasswordChangeState()
-            UserEvent.SavePassword -> _passwordChangeState.value = _passwordChangeState.value.copy(isPasswordChanging = false)
+            UserEvent.SavePassword -> {
+                GlobalScope.launch {
+                    if(_passwordChangeState.value.newPasswordConfirmation.meetsRequirements){
+                        val userEntity = userRepository.getUserByUsernameAndEmail(_loginState.value.username, _loginState.value.email).first()
+                        userEntity.password = _passwordChangeState.value.newPasswordConfirmation
+                        userRepository.update(userEntity)
+                        _passwordChangeState.value = _passwordChangeState.value.copy(
+                            isPasswordChanging = false,
+                            successfulPasswordChange = true
+                        )
+                        delay(2000)
+                        _passwordChangeState.value = _passwordChangeState.value.copy(
+                            isPasswordChanging = false,
+                            successfulPasswordChange = false
+                        )
+                    }
+                    else{
+                        _passwordChangeState.value = _passwordChangeState.value.copy(
+                            passwordNotValid = true,
+                            isPasswordChanging = false
+                        )
+                        delay(2000)
+                        _passwordChangeState.value = _passwordChangeState.value.copy(passwordNotValid = false)
+                    }
+                }
+            }
             is UserEvent.SetNewPassword -> _passwordChangeState.value = _passwordChangeState.value.copy(newPassword = event.newPassword)
             is UserEvent.SetNewPasswordConfirmation -> _passwordChangeState.value = _passwordChangeState.value.copy(newPasswordConfirmation = event.newPasswordConfirmation)
         }

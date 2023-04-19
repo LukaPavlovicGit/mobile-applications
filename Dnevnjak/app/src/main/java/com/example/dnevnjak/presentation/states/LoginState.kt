@@ -7,5 +7,5 @@ data class LoginState(
 
     var incorrectCredentials: Boolean = false,
     var incorrectPassword: Boolean = false,
-    var loginSuccess: Boolean = false,
+    var loginSuccess: Boolean = false
 )

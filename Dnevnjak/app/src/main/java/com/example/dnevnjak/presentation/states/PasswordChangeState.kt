@@ -4,5 +4,7 @@ data class PasswordChangeState(
     var newPassword: String = "",
     var newPasswordConfirmation: String = "",
 
-    var isPasswordChanging: Boolean = false
+    var isPasswordChanging: Boolean = false,
+    var successfulPasswordChange: Boolean = false,
+    var passwordNotValid: Boolean = false
 )

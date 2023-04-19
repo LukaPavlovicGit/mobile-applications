@@ -102,7 +102,7 @@ fun PasswordChangeDialog(
                     onClick = {
                         when(passwordChangeState.newPassword == passwordChangeState.newPasswordConfirmation){
                             true -> viewModel.onEvent(UserEvent.SavePassword)
-                            false -> mToast(context = context)
+                            false -> mToastSuccess(context = context)
                         }
                     },
                     shape = CutCornerShape(25),
@@ -131,6 +131,6 @@ fun PasswordChangeDialog(
 }
 
 
-private fun mToast(context: Context){
+private fun mToastSuccess(context: Context){
     Toast.makeText(context, "Passwords don't match. Try again...", Toast.LENGTH_LONG).show()
 }

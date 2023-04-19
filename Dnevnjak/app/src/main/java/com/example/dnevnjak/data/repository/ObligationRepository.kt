@@ -1,12 +1,13 @@
 package com.example.dnevnjak.data.repository
 
 import com.example.dnevnjak.data.models.ObligationEntity
-import com.example.dnevnjak.utilities.Priority
+import com.example.dnevnjak.data.models.priorityEnum.Priority
 import kotlinx.coroutines.flow.Flow
 
 interface ObligationRepository {
     fun insert(obligationEntity: ObligationEntity)
     fun update(obligationEntity: ObligationEntity)
+    fun delete(id: Int)
     fun getAll(): Flow<List<ObligationEntity>>
     fun getAllByDate(date: Long): Flow<List<ObligationEntity>>
     fun getAllByDateAndPriority(dateLong: Long, priority: Priority): Flow<List<ObligationEntity>>
