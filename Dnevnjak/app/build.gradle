@@ -127,4 +127,7 @@ dependencies {
     // time picker
     implementation "io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc"
 
+    // swipe
+    implementation "me.saket.swipe:swipe:1.1.1"
+
 }

@@ -10,5 +10,6 @@ data class DailyPlanState(
     val searchText: String = "",
     val isSearching: Boolean = false,
     val showPastObligations: Boolean = true,
+    val showAllObligations: Boolean = true,
     val filterByPriority: Priority? = null
 )

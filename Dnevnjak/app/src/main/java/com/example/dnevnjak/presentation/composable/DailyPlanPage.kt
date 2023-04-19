@@ -17,8 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.dnevnjak.data.models.ObligationEntity
 import com.example.dnevnjak.presentation.composable.ui.theme.PRIMARY_COLOR
@@ -28,6 +32,8 @@ import com.example.dnevnjak.utilities.Priority
 import com.example.dnevnjak.utilities.Utility
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 
@@ -49,6 +55,9 @@ fun DailyPlanPage(
     ) {
             Header(viewModel = viewModel)
             ShowPastObligationRow(viewModel = viewModel)
+            Divider(color = Color.Black, thickness = 1.dp)
+            ShowAllObligationRow(viewModel = viewModel)
+            Divider(color = Color.Black, thickness = 1.dp)
             SearchQueryRow(viewModel = viewModel)
             ObligationData(viewModel = viewModel, pagerState = pagerState)
             TabsContent(viewModel = viewModel, pagerState = pagerState)
@@ -92,10 +101,12 @@ private fun ShowPastObligationRow(
     ){
         Text(
             text = "Show past obligations",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium,
+            color = Color(rgb(13, 71, 161)),
+            fontSize = 23.sp,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Normal,
             modifier = Modifier
-                .padding(15.dp)
+                .padding(start = 15.dp, top = 5.dp, end = 15.dp, bottom = 5.dp)
         )
         Checkbox(
             checked = dailyPlanState.showPastObligations,
@@ -106,6 +117,41 @@ private fun ShowPastObligationRow(
                         checkedColor = Color.Black,
                         uncheckedColor = Color.Black
                     )
+        )
+    }
+}
+
+@Composable
+private fun ShowAllObligationRow(
+    viewModel: MainViewModel
+){
+    val dailyPlanState by viewModel.dailyPlanState.collectAsState()
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(rgb(178, 235, 242)))
+    ){
+        Text(
+            text = "Show all obligations",
+            color = Color(rgb(13, 71, 161)),
+            fontSize = 23.sp,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier
+                .padding(start = 15.dp, top = 5.dp, end = 15.dp, bottom = 5.dp)
+        )
+        Checkbox(
+            checked = dailyPlanState.showAllObligations,
+            onCheckedChange = {
+                viewModel.onEvent(DnevnjakEvent.ShowAllDailyPlans)
+            },
+            colors = CheckboxDefaults.colors(
+                checkedColor = Color.Black,
+                uncheckedColor = Color.Black
+            )
         )
     }
 }
@@ -126,7 +172,7 @@ private fun SearchQueryRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(rgb(179, 229, 252)))
-                .padding(start = 5.dp, top = 15.dp, end = 5.dp, bottom = 15.dp),
+                .padding(start = 5.dp, top = 10.dp, end = 5.dp, bottom = 10.dp),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             placeholder = { Text(text = "Search", fontSize = 18.sp) },
@@ -208,6 +254,8 @@ fun LowTab(
     viewModel: MainViewModel
 ){
     val dailyPlanState by viewModel.dailyPlanState.collectAsState()
+    val currDate = remember { LocalDate.now() }
+    val currTime = remember { LocalTime.now() }
     val state = rememberLazyListState()
 
     LazyColumn(
@@ -219,16 +267,26 @@ fun LowTab(
         horizontalAlignment = Alignment.CenterHorizontally,
         content = {
             items(dailyPlanState.obligations.size){ idx ->
+                val obligation = dailyPlanState.obligations[idx]
                 Box(
                     modifier = Modifier
                         .clickable {
-                            viewModel.onEvent(DnevnjakEvent.SelectedObligation(dailyPlanState.obligations[idx]))
+                            viewModel.onEvent(DnevnjakEvent.SelectedObligation(obligation))
                         }
                         .height(90.dp)
-                        .border(1.dp, Color.Black),
+                        .border(1.dp, Color.Black)
+                        .background(
+                            if (currDate.isAfter(obligation.date) || (currDate.isEqual(obligation.date) && currTime.isAfter(
+                                    obligation.end
+                                ))
+                            )
+                                Color(rgb(97, 97, 97))
+                            else
+                                Color(rgb(178, 235, 242))
+                        ),
                     contentAlignment = Alignment.Center
                 ){
-                    ObligationView(viewModel = viewModel, obligationEntity = dailyPlanState.obligations[idx])
+                    ObligationView(viewModel = viewModel, obligationEntity = obligation)
                 }
             }
         }
@@ -240,6 +298,8 @@ fun MidTab(
     viewModel: MainViewModel
 ){
     val dailyPlanState by viewModel.dailyPlanState.collectAsState()
+    val currDate = remember { LocalDate.now() }
+    val currTime = remember { LocalTime.now() }
     val state = rememberLazyListState()
 
     LazyColumn(
@@ -252,16 +312,26 @@ fun MidTab(
         contentPadding = PaddingValues(bottom = 30.dp),
         content = {
             items(dailyPlanState.obligations.size){ idx ->
+                val obligation = dailyPlanState.obligations[idx]
                 Box(
                     modifier = Modifier
                         .clickable {
-                            viewModel.onEvent(DnevnjakEvent.SelectedObligation(dailyPlanState.obligations[idx]))
+                            viewModel.onEvent(DnevnjakEvent.SelectedObligation(obligation))
                         }
                         .height(90.dp)
-                        .border(1.dp, Color.Black),
+                        .border(1.dp, Color.Black)
+                        .background(
+                            if (currDate.isAfter(obligation.date) || (currDate.isEqual(obligation.date) && currTime.isAfter(
+                                    obligation.end
+                                ))
+                            )
+                                Color(rgb(97, 97, 97))
+                            else
+                                Color(rgb(178, 235, 242))
+                        ),
                     contentAlignment = Alignment.Center
                 ){
-                    ObligationView(viewModel = viewModel, obligationEntity = dailyPlanState.obligations[idx])
+                    ObligationView(viewModel = viewModel, obligationEntity = obligation)
                 }
 
             }
@@ -275,6 +345,8 @@ fun HighTab(
     viewModel: MainViewModel
 ){
     val dailyPlanState by viewModel.dailyPlanState.collectAsState()
+    val currDate = remember { LocalDate.now() }
+    val currTime = remember { LocalTime.now() }
     val state = rememberLazyListState()
 
         LazyColumn(
@@ -287,16 +359,26 @@ fun HighTab(
             contentPadding = PaddingValues(bottom = 30.dp),
             content = {
                 items(dailyPlanState.obligations.size){ idx ->
+                    val obligation = dailyPlanState.obligations[idx]
                     Box(
                         modifier = Modifier
                             .clickable {
-                                viewModel.onEvent(DnevnjakEvent.SelectedObligation(dailyPlanState.obligations[idx]))
+                                viewModel.onEvent(DnevnjakEvent.SelectedObligation(obligation))
                             }
                             .height(90.dp)
-                            .border(1.dp, Color.Black),
+                            .border(1.dp, Color.Black)
+                            .background(
+                                if (currDate.isAfter(obligation.date) || (currDate.isEqual(
+                                        obligation.date
+                                    ) && currTime.isAfter(obligation.end))
+                                )
+                                    Color(rgb(97, 97, 97))
+                                else
+                                    Color(rgb(178, 235, 242))
+                            ),
                         contentAlignment = Alignment.Center
                     ){
-                        ObligationView(viewModel = viewModel, obligationEntity = dailyPlanState.obligations[idx])
+                        ObligationView(viewModel = viewModel, obligationEntity = obligation)
                     }
                 }
             }
@@ -321,10 +403,11 @@ private fun ObligationView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
+
     ){
 
         Icon(
-            imageVector = Icons.Default.BrightnessLow
+            imageVector = Icons.Default.EventNote
 //                when(priority){
 //                    Priority.High -> Icons.Default.BrightnessHigh
 //                    Priority.Mid -> Icons.Default.BrightnessMedium
@@ -355,7 +438,7 @@ private fun ObligationView(
                 modifier = Modifier.fillMaxWidth()//.background(Color.Red)
             ){
                 Icon(
-                    imageVector = Icons.Default.Timer,
+                    imageVector = Icons.Default.Schedule,
                     contentDescription = "Navigation Icon",
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
@@ -366,9 +449,9 @@ private fun ObligationView(
                 )
             }
             Text(
-                text = title + " " + obligationEntity.date,
+                text = title,
                 color = Color.Black,
-                fontSize = 16.sp,
+                fontSize = 25.sp,
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 7.dp, top = 7.dp)//.background(Color.Blue)

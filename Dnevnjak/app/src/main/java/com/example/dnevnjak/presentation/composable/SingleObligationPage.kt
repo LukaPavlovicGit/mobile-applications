@@ -29,11 +29,45 @@ import com.google.accompanist.pager.*
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ObligationReviewPage (
+fun SingleObligationPage (
+    viewModel: MainViewModel
+){
+    val obligationState by viewModel.obligationState.collectAsState()
+
+    when {
+        obligationState.isReviewing -> {
+            val previous = SwipeAction(
+                onSwipe = { viewModel.onEvent(DnevnjakEvent.PreviousObligation) },
+                icon = {},
+                background = Color.Green
+            )
+            val next = SwipeAction(
+                onSwipe = { viewModel.onEvent(DnevnjakEvent.NextObligation) },
+                icon = {},
+                background = Color.Green
+            )
+
+            SwipeableActionsBox(
+                startActions = listOf(previous),
+                endActions = listOf(next)
+            ) {
+                MainColumn(viewModel = viewModel)
+            }
+        }
+        else -> {
+            MainColumn(viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+private fun MainColumn(
     viewModel: MainViewModel
 ){
     Column(
@@ -45,7 +79,6 @@ fun ObligationReviewPage (
         ObligationModeText(viewModel = viewModel)
         Header(viewModel = viewModel)
         ObligationData(viewModel = viewModel)
-
     }
 }
 
@@ -194,8 +227,8 @@ private fun ObligationData(
 
         Row(
             modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
+                .fillMaxWidth()
+                .padding(10.dp)
         ){
             OutlinedTextField(
                 enabled = false,
@@ -299,6 +332,7 @@ private fun ObligationData(
                     unfocusedIndicatorColor = Color.Black,
 
                     ),
+
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
                 label = { Text(text = "Description", fontSize = 20.sp, color = Color.White) },

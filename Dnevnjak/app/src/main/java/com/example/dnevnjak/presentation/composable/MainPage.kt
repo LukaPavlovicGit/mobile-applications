@@ -35,7 +35,7 @@ fun MainPage(
 
     when {
         obligationState.isSingleObligationMode -> {
-            ObligationReviewPage(viewModel)
+            SingleObligationPage(viewModel)
         }
         navBackStackEntry?.destination?.route == BottomBar.Profile.route -> {
             Scaffold(

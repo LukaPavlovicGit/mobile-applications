@@ -55,60 +55,58 @@ class MainViewModel(
             }
             is DnevnjakEvent.ShowPastObligations -> {
                 val show = !_dailyPlanState.value.showPastObligations
-                when{
-                    !show -> {
-                        viewModelScope.launch {
-                            var obligations = when (_dailyPlanState.value.filterByPriority) {
-                                null -> {
-                                    obligationRepository
-                                        .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
-                                        .first()
+                viewModelScope.launch {
+                    when {
+                        !show -> {
+                                var obligations = when (_dailyPlanState.value.filterByPriority) {
+                                    null -> {
+                                        obligationRepository
+                                            .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                                            .first()
+                                    }
+                                    else -> {
+                                        obligationRepository
+                                            .getAllByDateAndPriority(
+                                                _dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(),
+                                                _dailyPlanState.value.filterByPriority!!
+                                            ).first()
+                                    }
                                 }
-                                else -> {
-                                    obligationRepository
-                                        .getAllByDateAndPriority(
-                                            _dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(),
-                                            _dailyPlanState.value.filterByPriority!!
-                                        ).first()
+                                val currDate = LocalDate.now()
+                                val currTime = LocalTime.now()
+                                obligations = obligations.filter {
+                                        obligationEntity -> obligationEntity.date > currDate ||
+                                        obligationEntity.date == currDate && obligationEntity.start > currTime
                                 }
-                            }
 
-                            val currDate = LocalDate.now()
-                            val currTime = LocalTime.now()
-                            obligations = obligations.filter {
-                                    obligationEntity -> obligationEntity.date > currDate ||
-                                    obligationEntity.date == currDate && obligationEntity.start > currTime
-                            }
+                                _dailyPlanState.value = _dailyPlanState.value.copy(
+                                    obligations = obligations,
+                                    showPastObligations = false
+                                )
 
-                            _dailyPlanState.value = _dailyPlanState.value.copy(
-                                obligations = obligations,
-                                showPastObligations = false
-                            )
+                        }
+                        else -> {
+                                val obligations = when (_dailyPlanState.value.filterByPriority) {
+                                    null -> {
+                                        obligationRepository
+                                            .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                                            .first()
+                                    }
+                                    else -> {
+                                        obligationRepository
+                                            .getAllByDateAndPriority(
+                                                _dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(),
+                                                _dailyPlanState.value.filterByPriority!!
+                                            ).first()
+                                    }
+                                }
+                                _dailyPlanState.value = _dailyPlanState.value.copy(
+                                    obligations = obligations,
+                                    showPastObligations = true
+                                )
+                            }
                         }
                     }
-                    else -> {
-                        viewModelScope.launch {
-                            val obligations = when (_dailyPlanState.value.filterByPriority) {
-                                null -> {
-                                    obligationRepository
-                                        .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
-                                        .first()
-                                }
-                                else -> {
-                                    obligationRepository
-                                        .getAllByDateAndPriority(
-                                            _dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond(),
-                                            _dailyPlanState.value.filterByPriority!!
-                                        ).first()
-                                }
-                            }
-                            _dailyPlanState.value = _dailyPlanState.value.copy(
-                                obligations = obligations,
-                                showPastObligations = true
-                            )
-                        }
-                    }
-                }
             }
             is DnevnjakEvent.SetSearchQuery -> {
                 _dailyPlanState.value = _dailyPlanState.value.copy( searchText = event.query )
@@ -136,7 +134,10 @@ class MainViewModel(
                                 obligationEntity.date == currDate && obligationEntity.start > currTime
                         }
                     }
-                    _dailyPlanState.value = _dailyPlanState.value.copy(obligations = obligations)
+                    _dailyPlanState.value = _dailyPlanState.value.copy(
+                        obligations = obligations,
+                        showAllObligations = false,
+                    )
                 }
             }
             is DnevnjakEvent.DateTouched -> {
@@ -153,7 +154,7 @@ class MainViewModel(
                 }
             }
             DnevnjakEvent.SaveObligation -> {
-                viewModelScope.launch {
+                GlobalScope.launch {
                     obligationRepository.update(
                         ObligationEntity(
                             id = _obligationState.value.id,
@@ -165,6 +166,7 @@ class MainViewModel(
                             end = _obligationState.value.end
                         )
                     )
+                    setStates()
                     resetObligationState()
                 }
             }
@@ -173,7 +175,19 @@ class MainViewModel(
             is DnevnjakEvent.SetStart -> _obligationState.value = _obligationState.value.copy(start = event.start)
             is DnevnjakEvent.SetEnd -> _obligationState.value = _obligationState.value.copy(end = event.end)
             is DnevnjakEvent.SetTitle ->_obligationState.value = _obligationState.value.copy(title = event.title )
-            DnevnjakEvent.ShowAll -> { }
+            DnevnjakEvent.ShowAllDailyPlans -> {
+               viewModelScope.launch {
+                   val obligations = obligationRepository
+                       .getAllByDate(_dailyPlanState.value.date.atStartOfDay(ZoneId.systemDefault()).toEpochSecond())
+                       .first()
+
+                   _dailyPlanState.value = _dailyPlanState.value.copy(
+                       obligations = obligations,
+                       showAllObligations = true,
+                       showPastObligations = true
+                   )
+               }
+            }
             is DnevnjakEvent.SelectedObligation -> {
                 _obligationState.value.id = event.obligationEntity.id
                 _obligationState.value.date = event.obligationEntity.date
@@ -183,7 +197,6 @@ class MainViewModel(
                 _obligationState.value.start = event.obligationEntity.start
                 _obligationState.value.end = event.obligationEntity.end
                 _obligationState.value.dateDiffFormatStr = Utility.fullDateFormatterStr(event.obligationEntity.date)
-                _obligationState.value.obligationMode = "Review Obligation"
                 setIsReviewingObligation()
             }
             DnevnjakEvent.CreateObligation -> {
@@ -202,18 +215,18 @@ class MainViewModel(
                     resetSingleObligationMode()
                 }
             }
-            DnevnjakEvent.EditObligation -> {
-                setIsEditingObligation()
-                _obligationState.value = _obligationState.value.copy(obligationMode = "Edit obligation")
-            }
-            DnevnjakEvent.DeleteObligation -> {
-                setIsDeletingObligation()
-                _obligationState.value = _obligationState.value.copy(obligationMode = "Delete obligation")
-            }
+            DnevnjakEvent.EditObligation -> setIsEditingObligation()
+            DnevnjakEvent.DeleteObligation -> setIsDeletingObligation()
             DnevnjakEvent.CancelObligation -> resetSingleObligationMode()
             DnevnjakEvent.DeleteObligationConfirmed -> resetSingleObligationMode()
             DnevnjakEvent.DeleteObligationCanceled -> setIsReviewingObligation()
             DnevnjakEvent.AddObligation -> setIsCreatingObligation()
+            DnevnjakEvent.NextObligation -> {
+
+            }
+            DnevnjakEvent.PreviousObligation -> {
+
+            }
         }
     }
 
@@ -223,7 +236,8 @@ class MainViewModel(
                 isAdding = false,
                 isDeleting = false,
                 isEditing = false,
-                isSingleObligationMode = true
+                isSingleObligationMode = true,
+                obligationMode = "Review Obligation"
             )
     }
     private fun setIsCreatingObligation(){
@@ -232,7 +246,8 @@ class MainViewModel(
                 isAdding = true,
                 isDeleting = false,
                 isEditing = false,
-                isSingleObligationMode = true
+                isSingleObligationMode = true,
+                obligationMode = "Create obligation"
         )
     }
     private fun setIsDeletingObligation(){
@@ -241,7 +256,8 @@ class MainViewModel(
             isAdding = false,
             isDeleting = true,
             isEditing = false,
-            isSingleObligationMode = true
+            isSingleObligationMode = true,
+            obligationMode = "Delete obligation"
         )
     }
     private fun setIsEditingObligation(){
@@ -250,7 +266,8 @@ class MainViewModel(
             isAdding = false,
             isDeleting = false,
             isEditing = true,
-            isSingleObligationMode = true
+            isSingleObligationMode = true,
+            obligationMode = "Edit obligation"
         )
     }
 
