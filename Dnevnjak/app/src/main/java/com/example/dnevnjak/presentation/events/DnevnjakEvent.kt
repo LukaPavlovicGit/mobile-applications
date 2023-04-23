@@ -28,5 +28,5 @@ sealed interface DnevnjakEvent {
     object CancelObligation: DnevnjakEvent
     object PreviousObligation: DnevnjakEvent
     object NextObligation: DnevnjakEvent
-
 }
+

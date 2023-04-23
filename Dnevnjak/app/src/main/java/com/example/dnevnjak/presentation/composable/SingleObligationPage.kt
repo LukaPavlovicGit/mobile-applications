@@ -122,7 +122,7 @@ private fun Header(
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 20.dp)
     ){
-        Text(
+        Text(//Utility.fullDateFormatterStr(dailyPlanState.date)
             text = Utility.fullDateFormatterStr(obligationState.date),
             fontSize = 32.sp,
             fontWeight = FontWeight.Medium,
