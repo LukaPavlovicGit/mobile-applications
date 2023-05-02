@@ -67,7 +67,7 @@ password: 'admin123'<br>
 To login as ordinary user you can enter any credentials as long as they are not empty field.<br>
 Example of user's credentials:<br>
 username: 'user'<br>
-username: 'user3@gmail.com'<br>
+username: 'user@gmail.com'<br>
 password: 'user'<br>
 
 ### Technologies:
@@ -93,4 +93,3 @@ password: 'user'<br>
 
 ### [RafTrading](RafTrading/RafTrading_specification.pdf)
 IN PROGRESS...
-
