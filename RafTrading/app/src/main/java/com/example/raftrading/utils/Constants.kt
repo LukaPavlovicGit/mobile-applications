@@ -1,14 +1,15 @@
-package com.example.raftrading.utilities
+package com.example.raftrading.utils
 
 class Constants {
     companion object{
-        const val SHARED_PREFERENCES_NAME = "shared_preferences_key";
+        const val SHARED_PREFERENCES_PATH = "com.example.raftrading.application";
 
+        const val EMAIL_KEY = "email_key"
         const val USERNAME_KEY = "username_key"
 
+        const val MAIN_FRAGMENT_TAG = "main_fragment_tag"
         const val LOGIN_FRAGMENT_TAG = "login_fragment_tag"
-
-        const val USER_PASSWORD = "password"
+        const val REGISTRATION_FRAGMENT_TAG = "registration_fragment_tag"
     }
 }
 
