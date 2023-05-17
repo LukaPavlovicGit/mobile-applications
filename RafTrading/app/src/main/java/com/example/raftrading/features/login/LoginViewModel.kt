@@ -46,11 +46,7 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }
-            LoginEvent.ResetUiState ->
-                viewModelScope.launch {
-                    delay(2000)
-                    _uiState.value = UiState.Nothing
-                }
+            LoginEvent.ResetUiState -> _uiState.value = UiState.Nothing
             is LoginEvent.SetEmail -> _loginDataState.value = _loginDataState.value.copy(email = event.email)
             is LoginEvent.SetPassword -> _loginDataState.value = _loginDataState.value.copy(password = event.password)
         }

@@ -8,8 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.example.raftrading.R
 import com.example.raftrading.features.registration.RegistrationFragment
-import com.example.raftrading.features.registration.RegistrationScreen
-import com.example.raftrading.presentation.MainFragment
+import com.example.raftrading.features.navigation.MainFragment
 import com.example.raftrading.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,12 +22,12 @@ class LoginFragment: Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-                LoginScreen( onLoginSuccess = { seMainFragment() }, register = { setRegisterFragment() } )
+                LoginScreen( onLoginSuccess = { setMainFragment() }, register = { setRegisterFragment() } )
             }
         }
     }
 
-    private fun seMainFragment(){
+    private fun setMainFragment(){
         val transaction = activity?.supportFragmentManager?.beginTransaction()
         transaction?.replace(R.id.activity_main_fragment_container, MainFragment(), Constants.MAIN_FRAGMENT_TAG)
         transaction?.commit()

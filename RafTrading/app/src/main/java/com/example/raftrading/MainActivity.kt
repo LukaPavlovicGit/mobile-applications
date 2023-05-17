@@ -2,12 +2,10 @@ package com.example.raftrading
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.raftrading.application.SharedPreferencesManager
 import com.example.raftrading.features.login.LoginFragment
-import com.example.raftrading.features.registration.RegistrationFragment
-import com.example.raftrading.presentation.MainFragment
+import com.example.raftrading.features.navigation.MainFragment
 import com.example.raftrading.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
