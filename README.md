@@ -7,7 +7,7 @@ TaskPlanner is an Android application written in Kotlin using Android Studio. Th
 ### How To Login
 Login credentials:<br>
 username: username<br>
-email: sername@gmail.com<br>
+email: username@gmail.com<br>
 password: passWord7<br>
 
 
