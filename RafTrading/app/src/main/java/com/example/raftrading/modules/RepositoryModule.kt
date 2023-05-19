@@ -1,12 +1,12 @@
 package com.example.raftrading.modules
 
-import android.content.SharedPreferences
-import com.example.raftrading.application.SharedPreferencesManager
-import com.example.raftrading.dataSource.UserRepository
-import com.example.raftrading.dataSource.firebaseDB.UserRepositoryFirebaseImpl
+import com.example.raftrading.data.NewsRepository
+import com.example.raftrading.data.UserRepository
+import com.example.raftrading.data.dataSource.remote.NewsService
+import com.example.raftrading.data.firebaseDB.UserRepositoryFirebaseImpl
+import com.example.raftrading.data.retrofit.NewsRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.mlkit.common.sdkinternal.SharedPrefManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +24,12 @@ object RepositoryModule {
         auth: FirebaseAuth,
         @Named("Users")  usersRoot: DatabaseReference
     ): UserRepository = UserRepositoryFirebaseImpl(auth, usersRoot)
+
+    @Provides
+    @Singleton
+    fun provideNewsRepository(
+        newsService: NewsService
+    ): NewsRepository = NewsRepositoryImpl(newsService)
 
 
 }

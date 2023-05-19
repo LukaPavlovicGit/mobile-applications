@@ -1,7 +1,9 @@
 package com.example.raftrading.modules
 
 import com.example.raftrading.application.SharedPreferencesManager
-import com.example.raftrading.dataSource.UserRepository
+import com.example.raftrading.data.NewsRepository
+import com.example.raftrading.data.UserRepository
+import com.example.raftrading.features.discovery.DiscoveryViewModel
 import com.example.raftrading.features.login.LoginViewModel
 import com.example.raftrading.features.registration.RegistrationViewModel
 import dagger.Module
@@ -27,5 +29,11 @@ object ViewModelModule {
         userRepository: UserRepository,
         sharedPrefManager: SharedPreferencesManager
     ): LoginViewModel = LoginViewModel(userRepository, sharedPrefManager)
+
+    @Singleton
+    @Provides
+    fun provideDiscoveryViewModel(
+        newsRepository: NewsRepository,
+    ): DiscoveryViewModel = DiscoveryViewModel(newsRepository)
 
 }

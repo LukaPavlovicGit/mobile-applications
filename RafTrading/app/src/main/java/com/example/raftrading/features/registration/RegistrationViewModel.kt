@@ -3,13 +3,12 @@ package com.example.raftrading.features.registration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.raftrading.application.SharedPreferencesManager
-import com.example.raftrading.dataSource.UserRepository
+import com.example.raftrading.data.UserRepository
 import com.example.raftrading.dtos.UserRegisterDto
 import com.example.raftrading.features.UiState
 import com.example.raftrading.features.registration.passwordValidation.isPasswordValid
 import com.example.raftrading.states.RequestState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -49,12 +48,7 @@ class RegistrationViewModel @Inject constructor(
                    }
                 }
             }
-            RegistrationEvent.ResetUiState -> {
-                viewModelScope.launch {
-                    delay(2000)
-                    _uiState.value = UiState.Nothing
-                }
-            }
+            RegistrationEvent.ResetUiState -> _uiState.value = UiState.Nothing
             is RegistrationEvent.SetConfirmedPassword -> _registrationDataState.value = _registrationDataState.value.copy(confirmedPassword = event.confirmedPassword)
             is RegistrationEvent.SetEmail -> _registrationDataState.value = _registrationDataState.value.copy(email = event.email)
             is RegistrationEvent.SetPassword -> _registrationDataState.value = _registrationDataState.value.copy(password = event.password)

@@ -3,7 +3,7 @@ package com.example.raftrading.features.navigation.viewPager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.example.raftrading.features.discover.DiscoverFragment
+import com.example.raftrading.features.discovery.DiscoveryFragment
 import com.example.raftrading.features.login.LoginFragment
 
 class PagerAdapterMainFragment(fm: FragmentManager) :  FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
@@ -13,7 +13,7 @@ class PagerAdapterMainFragment(fm: FragmentManager) :  FragmentPagerAdapter(fm, 
     override fun getItem(position: Int): Fragment {
 
         when(position){
-            FRAGMENT_1 -> return DiscoverFragment()
+            FRAGMENT_1 -> return DiscoveryFragment()
             FRAGMENT_2 -> {}
             FRAGMENT_3 -> {}
         }

@@ -1,4 +1,4 @@
-package com.example.raftrading.dataSource
+package com.example.raftrading.data
 
 import com.example.raftrading.dtos.UserDto
 import com.example.raftrading.dtos.UserLoginDto

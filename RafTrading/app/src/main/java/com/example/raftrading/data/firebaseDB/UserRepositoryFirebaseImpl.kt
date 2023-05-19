@@ -1,6 +1,6 @@
-package com.example.raftrading.dataSource.firebaseDB
+package com.example.raftrading.data.firebaseDB
 
-import com.example.raftrading.dataSource.UserRepository
+import com.example.raftrading.data.UserRepository
 import com.example.raftrading.dtos.UserDto
 import com.example.raftrading.dtos.UserLoginDto
 import com.example.raftrading.dtos.UserRegisterDto
