@@ -28,9 +28,7 @@ fun DiscoveryScreen(
                 .background(Color.Blue)
                 .align(Alignment.TopCenter)
         ) {
-            Button(onClick = { viewMode.onEvent(DiscoveryEvent.FetchNews) } ) {
-
-            }
+            
         }
         Box(
             modifier = Modifier
