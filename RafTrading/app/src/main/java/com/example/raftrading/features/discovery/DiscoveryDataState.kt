@@ -1,6 +1,6 @@
 package com.example.raftrading.features.discovery
-import com.example.raftrading.dtos.Root
 
 data class DiscoveryDataState(
-    val news: Root? = null
+    val news: NewsModel? = null,
+    val stocks: MutableList<StockModel> = mutableListOf()
 )

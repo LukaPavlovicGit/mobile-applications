@@ -139,4 +139,15 @@ dependencies {
     // Material3
     implementation "androidx.compose.material3:material3:1.0.1"
 
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.13.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+
+    //Charts
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
 }

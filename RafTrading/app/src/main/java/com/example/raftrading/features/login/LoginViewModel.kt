@@ -25,6 +25,11 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Nothing)
     val uiState = _uiState.asStateFlow()
 
+
+    init{
+        onEvent(LoginEvent.Submit)
+    }
+
     fun onEvent(event: LoginEvent){
         when(event) {
             LoginEvent.Submit -> {

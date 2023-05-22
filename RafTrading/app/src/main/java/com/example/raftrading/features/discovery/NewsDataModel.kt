@@ -1,12 +1,12 @@
-package com.example.raftrading.dtos
+package com.example.raftrading.features.discovery
 
 import com.google.gson.annotations.SerializedName
 
-data class Root (
-    @SerializedName("data" ) var data : Data? = Data()
+data class NewsModel (
+    @SerializedName("data" ) var newsData : NewsData? = NewsData()
 )
 
-data class Data (
+data class NewsData (
     @SerializedName("newsItems" ) var newsItems : ArrayList<NewsItems> = arrayListOf()
 )
 
@@ -17,3 +17,6 @@ data class NewsItems (
     @SerializedName("date"    ) var date    : String? = null,
     @SerializedName("image"   ) var image   : String? = null
 )
+
+
+

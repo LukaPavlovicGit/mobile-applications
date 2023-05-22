@@ -1,10 +1,13 @@
 package com.example.raftrading.modules
 
 import com.example.raftrading.data.NewsRepository
+import com.example.raftrading.data.StocksRepository
 import com.example.raftrading.data.UserRepository
 import com.example.raftrading.data.dataSource.remote.NewsService
+import com.example.raftrading.data.dataSource.remote.StockService
 import com.example.raftrading.data.firebaseDB.UserRepositoryFirebaseImpl
 import com.example.raftrading.data.retrofit.NewsRepositoryImpl
+import com.example.raftrading.data.retrofit.StocksRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import dagger.Module
@@ -30,6 +33,12 @@ object RepositoryModule {
     fun provideNewsRepository(
         newsService: NewsService
     ): NewsRepository = NewsRepositoryImpl(newsService)
+
+    @Provides
+    @Singleton
+    fun provideStocksRepository(
+        stocksService: StockService
+    ): StocksRepository = StocksRepositoryImpl(stocksService)
 
 
 }

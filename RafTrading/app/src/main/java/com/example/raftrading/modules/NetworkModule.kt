@@ -1,6 +1,7 @@
 package com.example.raftrading.modules
 
 import com.example.raftrading.data.dataSource.remote.NewsService
+import com.example.raftrading.data.dataSource.remote.StockService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,8 +34,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    @Named("news")
-    fun provideRetrofit(
+    fun provideNewsRetrofit(
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
@@ -46,7 +46,12 @@ object NetworkModule {
     }
     @Singleton
     @Provides
-    fun provideNewsService(@Named("news") retrofit: Retrofit): NewsService =
+    fun provideNewsService(retrofit: Retrofit): NewsService =
         retrofit.create(NewsService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideStocksService(retrofit: Retrofit): StockService =
+        retrofit.create(StockService::class.java)
 
 }
