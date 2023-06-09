@@ -150,8 +150,11 @@ dependencies {
     //Charts
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
+<<<<<<< HEAD
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation("com.google.code.gson:gson:2.7")
 
 
+=======
+>>>>>>> 91a31dcc44b48c7e53ab742c1fa67cd723b87c29
 }

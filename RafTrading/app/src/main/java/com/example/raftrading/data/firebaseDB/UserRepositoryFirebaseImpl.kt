@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.database.DatabaseReference
+<<<<<<< HEAD
 import com.google.gson.Gson
 import java.time.LocalDateTime
 
@@ -17,6 +18,12 @@ class UserRepositoryFirebaseImpl (
     private val auth: FirebaseAuth,
     private val usersRoot: DatabaseReference,
     private val gson: Gson
+=======
+
+class UserRepositoryFirebaseImpl (
+    private val auth: FirebaseAuth,
+    private val usersRoot: DatabaseReference
+>>>>>>> 91a31dcc44b48c7e53ab742c1fa67cd723b87c29
 ) : UserRepository {
 
     override suspend fun register(userRegisterDto: UserRegisterDto, result: (RequestState<String>) -> Unit) {
@@ -64,6 +71,7 @@ class UserRepositoryFirebaseImpl (
         val map = hashMapOf<String, Any>()
         map["username"] = userDto.username
         map["email"] = userDto.email
+<<<<<<< HEAD
         map["cash_assets"] = 10000
         map["portfolio"] = 0
 
@@ -76,13 +84,19 @@ class UserRepositoryFirebaseImpl (
 
         map["portfolio_history"] = gson.toJson(portfolioHistory)
         map["stocks"] = gson.toJson(stocks)
+=======
+>>>>>>> 91a31dcc44b48c7e53ab742c1fa67cd723b87c29
 
         val userRef =  usersRoot.child(userDto.id)
         userRef.setValue(map)
             .addOnCompleteListener {
+<<<<<<< HEAD
                 if(it.isSuccessful) {
                     result.invoke(RequestState.Success(null,"User has been saved successfully"))
                 }
+=======
+                if(it.isSuccessful) result.invoke(RequestState.Success(null,"User has been saved successfully"))
+>>>>>>> 91a31dcc44b48c7e53ab742c1fa67cd723b87c29
                 else result.invoke(RequestState.Failure(it.exception?.localizedMessage))
             }
             .addOnFailureListener {
