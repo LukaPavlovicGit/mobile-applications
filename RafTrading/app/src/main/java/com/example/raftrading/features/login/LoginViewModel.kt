@@ -27,7 +27,11 @@ class LoginViewModel @Inject constructor(
 
 
     init{
+<<<<<<< HEAD
+        //onEvent(LoginEvent.Submit)
+=======
         onEvent(LoginEvent.Submit)
+>>>>>>> 91a31dcc44b48c7e53ab742c1fa67cd723b87c29
     }
 
     fun onEvent(event: LoginEvent){
