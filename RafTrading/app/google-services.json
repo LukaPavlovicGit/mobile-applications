@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "519566137795",
+    "project_id": "raftrading-8fc90",
+    "storage_bucket": "raftrading-8fc90.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519566137795:android:61ceb53c8568c453024576",
+        "android_client_info": {
+          "package_name": "com.example.raftrading"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "519566137795-8ic56iibr2ppt5e7pfcfhj22f88fm8sm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiFdhKm1IUs0ra9VcQU8jfzqaFQanGuYo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "519566137795-8ic56iibr2ppt5e7pfcfhj22f88fm8sm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
