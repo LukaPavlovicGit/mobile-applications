@@ -16,30 +16,30 @@ interface MealService {
 
     @Headers("Accept: application/json")
     @GET("/categories.php")
-    suspend fun getAllCategories(): Response<AllCategoriesModel>
+    suspend fun fetchAllCategories(): Response<AllCategoriesModel>
 
     @Headers("Accept: application/json")
     @GET("/filter.php")
-    suspend fun getMealsByCategory(@Query("c") category: String): Response<MealsByCategoryModel>
+    suspend fun fetchMealsByCategory(@Query("c") category: String): Response<MealsByCategoryModel>
 
     @Headers("Accept: application/json")
     @GET("/filter.php")
-    suspend fun getMealsByArea(@Query("a") category: String): Response<MealsByAreaModel>
+    suspend fun fetchMealsByArea(@Query("a") category: String): Response<MealsByAreaModel>
 
     @Headers("Accept: application/json")
     @GET("/filter.php")
-    suspend fun getMealsByIngredient(@Query("i") category: String): Response<MealsByIngredientModel>
+    suspend fun fetchMealsByIngredient(@Query("i") category: String): Response<MealsByIngredientModel>
 
     @Headers("Accept: application/json")
     @GET("/list.php?c=list")
-    suspend fun getAllCategoryNames(): Response<AllCategoryNamesModel>
+    suspend fun fetchAllCategoryNames(): Response<AllCategoryNamesModel>
 
     @Headers("Accept: application/json")
     @GET("/list.php?a=list")
-    suspend fun getAllAreaNames(): Response<AllAreaNamesModel>
+    suspend fun fetchAllAreaNames(): Response<AllAreaNamesModel>
 
     @Headers("Accept: application/json")
     @GET("/list.php?i=list")
-    suspend fun getAllIngredients(): Response<AllingredientsModel>
+    suspend fun fetchAllIngredients(): Response<AllingredientsModel>
 
 }
