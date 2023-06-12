@@ -15,13 +15,18 @@ class MealRepositoryImpl (
     private val mealService: MealService
 ): MealRepository {
     override suspend fun fetchAllCategories(result: (RequestState<AllCategoriesModel>) -> Unit) {
-        TODO("Not yet implemented")
-
+       val ans = mealService.fetchAllCategories()
+        if(ans.isSuccessful){
+            result.invoke(RequestState.Success(data = ans.body(), message = "Categories fetched successfully..."))
+        }
+        else {
+            result.invoke(RequestState.Failure(error = "Something went wrong.. Categories are NOT fetched!"))
+        }
     }
 
     override suspend fun fetchMealsByCategories(
         category: String,
-        result: (RequestState<MealsByCategoryModel>) -> Unit
+        result: (RequestState<MealsByCategoryModel>) -> Unit//Response{protocol=h2, code=404, message=, url=https://www.themealdb.com/categories.php}
     ) {
         TODO("Not yet implemented")
     }

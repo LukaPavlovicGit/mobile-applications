@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    private val userRepository: AuthRepository,
+    private val authRepository: AuthRepository,
     private val sharedPrefManager: SharedPreferencesManager
 ): ViewModel() {
 
@@ -39,7 +39,7 @@ class RegistrationViewModel @Inject constructor(
                            val username = _registrationDataState.value.username
                            val email = _registrationDataState.value.email
                            val password = _registrationDataState.value.password
-                           userRepository.register(UserRegisterDto(username, email, password)){
+                           authRepository.register(UserRegisterDto(username, email, password)){
                                when(it){
                                    RequestState.Processing -> _uiState.value = UiState.Processing
                                    is RequestState.Success -> _uiState.value = UiState.Success(it.message!!)

@@ -17,6 +17,7 @@ class AuthRepositoryImpl (
         auth.createUserWithEmailAndPassword(userRegisterDto.email, userRegisterDto.password)
             .addOnCompleteListener {
                 if(it.isSuccessful) {
+                    result.invoke(RequestState.Success(null,"User registered successfully"))
 //                    val userDto = UserDto(it.result.user?.uid!!, userRegisterDto.username, userRegisterDto.email, userRegisterDto.password)
 //                    saveUser(userDto){ state ->
 //                        when(state){

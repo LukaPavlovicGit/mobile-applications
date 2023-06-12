@@ -1,46 +1,37 @@
 package com.example.nutritiontracker
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.nutritiontracker.ui.theme.NutritionTrackerTheme
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.nutritiontracker.application.SharedPreferencesManager
+import com.example.nutritiontracker.presentation.fragments.LoginFragment
+import com.example.nutritiontracker.presentation.fragments.MainFragment
+import com.example.raftrading.utils.Constants
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var sharedPreferencesManager: SharedPreferencesManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            NutritionTrackerTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
+
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                val transaction = supportFragmentManager.beginTransaction()
+                when (sharedPreferencesManager.isAuthenticated()){
+                    true -> transaction.replace(R.id.activity_main_fragment_container, MainFragment(), Constants.MAIN_FRAGMENT_TAG)
+                    false -> transaction.replace(R.id.activity_main_fragment_container, LoginFragment(), Constants.LOGIN_FRAGMENT_TAG)
                 }
+                transaction.commit()
+                false
             }
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NutritionTrackerTheme {
-        Greeting("Android")
+        supportActionBar!!.hide()
+        setContentView(R.layout.activity_main)
     }
 }

@@ -15,31 +15,31 @@ import retrofit2.http.Query
 interface MealService {
 
     @Headers("Accept: application/json")
-    @GET("/categories.php")
+    @GET("/api/json/v1/1/categories.php")
     suspend fun fetchAllCategories(): Response<AllCategoriesModel>
 
     @Headers("Accept: application/json")
-    @GET("/filter.php")
+    @GET("/api/json/v1/1/filter.php")
     suspend fun fetchMealsByCategory(@Query("c") category: String): Response<MealsByCategoryModel>
 
     @Headers("Accept: application/json")
-    @GET("/filter.php")
+    @GET("/api/json/v1/1/filter.php")
     suspend fun fetchMealsByArea(@Query("a") category: String): Response<MealsByAreaModel>
 
     @Headers("Accept: application/json")
-    @GET("/filter.php")
+    @GET("/api/json/v1/1/filter.php")
     suspend fun fetchMealsByIngredient(@Query("i") category: String): Response<MealsByIngredientModel>
 
     @Headers("Accept: application/json")
-    @GET("/list.php?c=list")
+    @GET("/api/json/v1/1/list.php?c=list")
     suspend fun fetchAllCategoryNames(): Response<AllCategoryNamesModel>
 
     @Headers("Accept: application/json")
-    @GET("/list.php?a=list")
+    @GET("/api/json/v1/1/list.php?a=list")
     suspend fun fetchAllAreaNames(): Response<AllAreaNamesModel>
 
     @Headers("Accept: application/json")
-    @GET("/list.php?i=list")
+    @GET("/api/json/v1/1/list.php?i=list")
     suspend fun fetchAllIngredients(): Response<AllingredientsModel>
 
 }

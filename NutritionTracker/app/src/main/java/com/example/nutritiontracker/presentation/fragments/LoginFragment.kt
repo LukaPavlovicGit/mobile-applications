@@ -27,14 +27,14 @@ class LoginFragment: Fragment() {
     }
 
     private fun setMainFragment(){
-//        val transaction = activity?.supportFragmentManager?.beginTransaction()
-//        transaction?.replace(R.id.activity_main_fragment_container, MainFragment(), Constants.MAIN_FRAGMENT_TAG)
-//        transaction?.commit()
+        val transaction = activity?.supportFragmentManager?.beginTransaction()
+        transaction?.replace(R.id.activity_main_fragment_container, MainFragment(), Constants.MAIN_FRAGMENT_TAG)
+        transaction?.commit()
     }
 
     private fun setRegisterFragment(){
-//        val transaction = activity?.supportFragmentManager?.beginTransaction()
-//        transaction?.replace(R.id.activity_main_fragment_container, RegistrationFragment(), Constants.REGISTRATION_FRAGMENT_TAG)
-//        transaction?.commit()
+        val transaction = activity?.supportFragmentManager?.beginTransaction()
+        transaction?.replace(R.id.activity_main_fragment_container, RegistrationFragment(), Constants.REGISTRATION_FRAGMENT_TAG)
+        transaction?.commit()
     }
 }

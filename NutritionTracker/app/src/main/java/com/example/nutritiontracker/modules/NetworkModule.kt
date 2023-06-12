@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -33,12 +34,13 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    @Named("MEAL_RETROFIT")
     fun provideMealRetrofit(
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://www.themealdb.com/api/json/v1/1/")
+            .baseUrl("https://www.themealdb.com/")
             .client(okHttpClient)
             .addConverterFactory(gsonConverterFactory)
             .build()
@@ -46,6 +48,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    @Named("NUTRITION_RETROFIT")
     fun provideNutritionRetrofit(
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
@@ -59,12 +62,12 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideNewsService(retrofit: Retrofit): MealService =
+    fun provideMealService(@Named("MEAL_RETROFIT") retrofit: Retrofit): MealService =
         retrofit.create(MealService::class.java)
 
     @Singleton
     @Provides
-    fun provideStocksService(retrofit: Retrofit): NutritionService =
+    fun provideNutritionService(@Named("NUTRITION_RETROFIT") retrofit: Retrofit): NutritionService =
         retrofit.create(NutritionService::class.java)
 
 }
