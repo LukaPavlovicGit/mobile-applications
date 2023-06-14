@@ -7,8 +7,8 @@ import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.dtos.UserRegisterDto
 import com.example.nutritiontracker.events.RegistrationEvent
 import com.example.nutritiontracker.passwordValidation.isPasswordValid
-import com.example.nutritiontracker.presentation.UiState
-import com.example.nutritiontracker.requestState.RequestState
+import com.example.nutritiontracker.states.UiState
+import com.example.nutritiontracker.states.RequestState
 import com.example.nutritiontracker.states.RegistrationDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

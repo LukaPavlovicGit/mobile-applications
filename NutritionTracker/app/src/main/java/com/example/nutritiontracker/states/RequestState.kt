@@ -1,4 +1,4 @@
-package com.example.nutritiontracker.requestState
+package com.example.nutritiontracker.states
 
 sealed class RequestState<out T>{
     object Processing: RequestState<Nothing>()

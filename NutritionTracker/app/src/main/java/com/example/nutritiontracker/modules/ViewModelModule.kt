@@ -3,7 +3,7 @@ package com.example.nutritiontracker.modules
 import com.example.nutritiontracker.application.SharedPreferencesManager
 import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.data.repositories.MealRepository
-import com.example.nutritiontracker.viewModel.CategoriesViewModel
+import com.example.nutritiontracker.viewModel.MainViewModel
 import com.example.nutritiontracker.viewModel.LoginViewModel
 import com.example.nutritiontracker.viewModel.RegistrationViewModel
 import dagger.Module
@@ -32,7 +32,7 @@ object ViewModelModule {
 
     @Singleton
     @Provides
-    fun provideCategoriesViewModel(
+    fun provideMainViewModel(
         mealRepository: MealRepository
-    ): CategoriesViewModel = CategoriesViewModel(mealRepository)
+    ): MainViewModel = MainViewModel(mealRepository)
 }

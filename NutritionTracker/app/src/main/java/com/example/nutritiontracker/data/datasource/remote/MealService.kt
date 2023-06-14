@@ -3,7 +3,8 @@ package com.example.nutritiontracker.data.datasource.remote
 import com.example.nutritiontracker.models.AllAreaNamesModel
 import com.example.nutritiontracker.models.AllCategoriesModel
 import com.example.nutritiontracker.models.AllCategoryNamesModel
-import com.example.nutritiontracker.models.AllingredientsModel
+import com.example.nutritiontracker.models.AllIngredientsModel
+import com.example.nutritiontracker.models.MealById
 import com.example.nutritiontracker.models.MealsByAreaModel
 import com.example.nutritiontracker.models.MealsByCategoryModel
 import com.example.nutritiontracker.models.MealsByIngredientModel
@@ -40,6 +41,10 @@ interface MealService {
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/list.php?i=list")
-    suspend fun fetchAllIngredients(): Response<AllingredientsModel>
+    suspend fun fetchAllIngredients(): Response<AllIngredientsModel>
+
+    @Headers("Accept: application/json")
+    @GET("/api/json/v1/1/lookup.php")
+    suspend fun fetchMealById(@Query("i") id: String): Response<MealById>
 
 }

@@ -1,4 +1,4 @@
-package com.example.nutritiontracker.presentation
+package com.example.nutritiontracker.states
 
 
 sealed class UiState {
