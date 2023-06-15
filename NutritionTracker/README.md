@@ -1,1 +1,1 @@
-# [specification](https://github.com/LukaPavlovicGit/MAD/blob/main/NutritionTracker/RafJira_specification.pdf)
+# [specification](https://github.com/LukaPavlovicGit/MAD/blob/main/NutritionTracker/Nutrition%20tracker.docx.pdf)
