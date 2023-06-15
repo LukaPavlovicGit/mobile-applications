@@ -1,5 +1,6 @@
 package com.example.nutritiontracker.presentation.composable
 
+import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
@@ -26,6 +29,7 @@ import com.example.nutritiontracker.presentation.composable.navigation.BottomNav
 @Composable
 fun NavigationScreen(){
     val navController = rememberNavController()
+    Log.e("NavigationScreen", "DA")
     Scaffold(
         bottomBar = { BottomBar(navController = navController) },
         content = { paddingValues ->
@@ -42,6 +46,7 @@ fun NavigationScreen(){
 private fun BottomBar(navController: NavHostController){
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
     val screens = listOf(
         BottomBar.Menu,
         BottomBar.Filter,
@@ -67,6 +72,7 @@ private fun RowScope.AddItem(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
+
     BottomNavigationItem(
         label = {
             Text(text = screen.title)

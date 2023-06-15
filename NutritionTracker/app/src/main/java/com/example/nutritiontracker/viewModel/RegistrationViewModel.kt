@@ -8,8 +8,8 @@ import com.example.nutritiontracker.dtos.UserRegisterDto
 import com.example.nutritiontracker.events.RegistrationEvent
 import com.example.nutritiontracker.passwordValidation.isPasswordValid
 import com.example.nutritiontracker.states.UiState
-import com.example.nutritiontracker.states.RequestState
-import com.example.nutritiontracker.states.RegistrationDataState
+import com.example.nutritiontracker.states.requests.RequestState
+import com.example.nutritiontracker.states.data.RegistrationDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +25,7 @@ class RegistrationViewModel @Inject constructor(
     private val _registrationDataState = MutableStateFlow(RegistrationDataState())
     val registrationDateState = _registrationDataState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Nothing)
+    private val _uiState = MutableStateFlow<UiState>(UiState.NotFound)
     val uiState = _uiState.asStateFlow()
 
     fun onEvent(event: RegistrationEvent){
@@ -41,16 +41,17 @@ class RegistrationViewModel @Inject constructor(
                            val password = _registrationDataState.value.password
                            authRepository.register(UserRegisterDto(username, email, password)){
                                when(it){
-                                   RequestState.Processing -> _uiState.value = UiState.Processing
+                                   is RequestState.Processing -> _uiState.value = UiState.Processing
                                    is RequestState.Success -> _uiState.value = UiState.Success(it.message!!)
                                    is RequestState.Failure -> _uiState.value = UiState.Failure(it.error!!)
+                                   is RequestState.NotFound -> TODO()
                                }
                            }
                        }
                    }
                 }
             }
-            RegistrationEvent.ResetUiState -> _uiState.value = UiState.Nothing
+            RegistrationEvent.ResetUiState -> _uiState.value = UiState.NotFound
             is RegistrationEvent.SetConfirmedPassword -> _registrationDataState.value = _registrationDataState.value.copy(confirmedPassword = event.confirmedPassword)
             is RegistrationEvent.SetEmail -> _registrationDataState.value = _registrationDataState.value.copy(email = event.email)
             is RegistrationEvent.SetPassword -> _registrationDataState.value = _registrationDataState.value.copy(password = event.password)

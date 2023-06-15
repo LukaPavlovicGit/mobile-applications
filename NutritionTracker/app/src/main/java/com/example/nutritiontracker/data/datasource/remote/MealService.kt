@@ -6,7 +6,7 @@ import com.example.nutritiontracker.models.AllCategoryNamesModel
 import com.example.nutritiontracker.models.AllIngredientsModel
 import com.example.nutritiontracker.models.MealById
 import com.example.nutritiontracker.models.MealsByAreaModel
-import com.example.nutritiontracker.models.MealsByCategoryModel
+import com.example.nutritiontracker.models.MealsByCriteriaModel
 import com.example.nutritiontracker.models.MealsByIngredientModel
 import retrofit2.Response
 import retrofit2.http.GET
@@ -21,15 +21,15 @@ interface MealService {
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/filter.php")
-    suspend fun fetchMealsByCategory(@Query("c") category: String): Response<MealsByCategoryModel>
+    suspend fun fetchMealsByCategory(@Query("c") category: String): Response<MealsByCriteriaModel>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/filter.php")
-    suspend fun fetchMealsByArea(@Query("a") category: String): Response<MealsByAreaModel>
+    suspend fun fetchMealsByArea(@Query("a") area: String): Response<MealsByCriteriaModel>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/filter.php")
-    suspend fun fetchMealsByIngredient(@Query("i") category: String): Response<MealsByIngredientModel>
+    suspend fun fetchMealsByIngredient(@Query("i") ingredient: String): Response<MealsByCriteriaModel>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/list.php?c=list")

@@ -1,4 +1,4 @@
-package com.example.nutritiontracker.presentation.composable
+package com.example.nutritiontracker.presentation.composable.cammon
 
 import androidx.compose.runtime.Composable
 import coil.compose.AsyncImage

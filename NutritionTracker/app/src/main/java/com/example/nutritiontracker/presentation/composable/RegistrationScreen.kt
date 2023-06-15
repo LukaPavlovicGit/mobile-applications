@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutritiontracker.events.RegistrationEvent
+import com.example.nutritiontracker.presentation.composable.cammon.LoadingScreen
+import com.example.nutritiontracker.presentation.composable.cammon.toast
 import com.example.nutritiontracker.states.UiState
 import com.example.nutritiontracker.viewModel.RegistrationViewModel
 
@@ -38,7 +40,7 @@ fun RegistrationScreen(
 
     val uiState = viewModel.uiState.collectAsState()
     when (uiState.value) {
-        UiState.Nothing -> RegistrationForm(login = login)
+        UiState.NotFound -> RegistrationForm(login = login)
         UiState.Processing -> LoadingScreen()
         is UiState.Success -> {
             toast(LocalContext.current, (uiState.value as UiState.Success).message)
@@ -49,6 +51,7 @@ fun RegistrationScreen(
             toast(LocalContext.current, (uiState.value as UiState.Failure).message)
             viewModel.onEvent(RegistrationEvent.ResetUiState)
         }
+        UiState.Nothing -> {  }
     }
 }
 

@@ -4,7 +4,7 @@ import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.dtos.UserDto
 import com.example.nutritiontracker.dtos.UserLoginDto
 import com.example.nutritiontracker.dtos.UserRegisterDto
-import com.example.nutritiontracker.states.RequestState
+import com.example.nutritiontracker.states.requests.RequestState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException

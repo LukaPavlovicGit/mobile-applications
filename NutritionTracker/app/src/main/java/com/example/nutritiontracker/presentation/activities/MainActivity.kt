@@ -1,8 +1,9 @@
-package com.example.nutritiontracker
+package com.example.nutritiontracker.presentation.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.nutritiontracker.R
 import com.example.nutritiontracker.application.SharedPreferencesManager
 import com.example.nutritiontracker.presentation.fragments.LoginFragment
 import com.example.nutritiontracker.presentation.fragments.MainFragment

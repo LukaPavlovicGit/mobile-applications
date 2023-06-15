@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutritiontracker.data.repositories.MealRepository
 import com.example.nutritiontracker.events.MainEvent
-import com.example.nutritiontracker.states.MainScreenState
-import com.example.nutritiontracker.states.UiState
-import com.example.nutritiontracker.states.RequestState
-import com.example.nutritiontracker.states.MainDataState
+import com.example.nutritiontracker.states.screens.FilterScreenState
+import com.example.nutritiontracker.states.requests.RequestState
+import com.example.nutritiontracker.states.data.MainDataState
+import com.example.nutritiontracker.states.data.energyData.MenuScreenEnergyData
+import com.example.nutritiontracker.states.screens.MenuScreenState
+import com.example.nutritiontracker.states.data.energyData.FilterScreenEnergyData
+import com.example.nutritiontracker.states.requests.EnergyRequestState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,122 +25,180 @@ class MainViewModel @Inject constructor(
     private val _mainDataState = MutableStateFlow(MainDataState())
     val mainDataState = _mainDataState.asStateFlow()
 
-    private val _mainUiState = MutableStateFlow<UiState>(UiState.Nothing)
-    val mainUiState = _mainUiState.asStateFlow()
+    // **************
+    private val _menuScreenEnergyData = MutableStateFlow(MenuScreenEnergyData())
+    val menuScreenEnergyData = _menuScreenEnergyData.asStateFlow()
 
-    private val _mainScreenState = MutableStateFlow<MainScreenState>(MainScreenState.NavigationBarState)
-    val mainScreenState = _mainScreenState.asStateFlow()
+    private val _filterScreenEnergyData = MutableStateFlow(FilterScreenEnergyData())
+    val filterScreenEnergyData = _filterScreenEnergyData.asStateFlow()
+
+    private val _menuScreenState = MutableStateFlow<MenuScreenState>(MenuScreenState.Default)
+    val menuScreenState = _menuScreenState.asStateFlow()
+
+    private val _filterScreenState = MutableStateFlow<FilterScreenState>(FilterScreenState.Default)
+    val filterScreenState = _filterScreenState.asStateFlow()
 
 
     init {
         viewModelScope.launch {
-            fetchAllCategories()
-            fetchAllCategoryNames()
-            fetchAllAreaNames()
-            fetchAllIngredients()
+            getEnergyForMenuScreen()
+           getEnergyForFilterScreen()
         }
     }
 
     fun onEvent(event: MainEvent){
         when(event){
             is MainEvent.CategorySelection -> {
-                _mainScreenState.value = MainScreenState.ListOfMealsState
-                _mainUiState.value = UiState.Processing
+                _menuScreenState.value = MenuScreenState.Processing
                 viewModelScope.launch {
                     mealRepository.fetchMealsByCategory(event.category!!.strCategory){
                         when(it){
-                            is RequestState.Failure -> _mainUiState.value = UiState.Failure(message = it.error!!)
-                            is RequestState.Processing -> _mainUiState.value = UiState.Processing
+                            is RequestState.Failure -> _menuScreenState.value = MenuScreenState.Error
+                            is RequestState.Processing -> _menuScreenState.value = MenuScreenState.Processing
                             is RequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealsByCategoryModel = it.data)
-                                _mainUiState.value = UiState.Success(message = it.message!!)
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data!!)
+                                _menuScreenState.value = MenuScreenState.ListOfMeals(data = it.data!!)
                             }
+                            is RequestState.NotFound -> _menuScreenState.value = MenuScreenState.Default
                         }
                     }
                 }
-
             }
             is MainEvent.MealSelection -> {
-                _mainScreenState.value = MainScreenState.SingleMealState
-                _mainUiState.value = UiState.Processing
+
                 viewModelScope.launch {
                     mealRepository.fetchMealById(event.meal!!.idMeal){
                         when(it){
-                            is RequestState.Failure -> _mainUiState.value = UiState.Failure(message = it.error!!)
-                            is RequestState.Processing -> _mainUiState.value = UiState.Processing
+                            is RequestState.Failure -> { }
+                            is RequestState.Processing -> { }
                             is RequestState.Success -> {
                                 _mainDataState.value = _mainDataState.value.copy(mealById = it.data)
-                                _mainUiState.value = UiState.Success(message = it.message!!)
                             }
+                            is RequestState.NotFound -> {  }
                         }
                     }
                 }
             }
-            is MainEvent.SetMainScreenState -> {
-                _mainScreenState.value = event.mainScreenState
+            is MainEvent.FilterMealsByCategory -> {
+                _filterScreenState.value = FilterScreenState.Processing
+                viewModelScope.launch {
+                    mealRepository.fetchMealsByCategory(event.category){
+                        when(it){
+                            is RequestState.Failure -> _filterScreenState.value = FilterScreenState.Error
+                            is RequestState.Processing -> _filterScreenState.value = FilterScreenState.Processing
+                            is RequestState.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data)
+                                _filterScreenState.value = FilterScreenState.ListOfMeals(data = it.data!!)
+                            }
+                            is RequestState.NotFound -> _filterScreenState.value = FilterScreenState.Default
+                        }
+                    }
+                }
             }
+            is MainEvent.FilterMealsByArea -> {
+                _filterScreenState.value = FilterScreenState.Processing
+                viewModelScope.launch {
+                    mealRepository.fetchMealsByArea(event.area){
+                        when(it){
+                            is RequestState.Failure -> _filterScreenState.value = FilterScreenState.Error
+                            is RequestState.Processing -> _filterScreenState.value = FilterScreenState.Processing
+                            is RequestState.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data)
+                                _filterScreenState.value = FilterScreenState.ListOfMeals(data = it.data!!)
+                            }
+                            is RequestState.NotFound -> _filterScreenState.value = FilterScreenState.Default
+                        }
+                    }
+                }
+            }
+            is MainEvent.FilterMealsByIngredient -> {
+                _filterScreenState.value = FilterScreenState.Processing
+                viewModelScope.launch {
+                    mealRepository.fetchMealsByIngredient(event.ingredient){
+                        when(it){
+                            is RequestState.Failure -> _filterScreenState.value = FilterScreenState.Error
+                            is RequestState.Processing -> _filterScreenState.value = FilterScreenState.Processing
+                            is RequestState.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data)
+                                _filterScreenState.value = FilterScreenState.ListOfMeals(data = it.data!!)
+                            }
+                            is RequestState.NotFound -> _filterScreenState.value = FilterScreenState.Default
+                        }
+                    }
+                }
+            }
+            is MainEvent.SetFilterScreenState -> _filterScreenState.value = event.state
+            is MainEvent.SetMenuScreenState -> _menuScreenState.value = event.state
         }
     }
 
 
-    private suspend fun fetchAllCategories(){
-        _mainUiState.value = UiState.Processing
+    private suspend fun getEnergyForMenuScreen(){
         mealRepository.fetchAllCategories {
             when(it){
-                is RequestState.Failure -> _mainUiState.value = UiState.Failure(message = it.error!!)
-                is RequestState.Processing -> _mainUiState.value = UiState.Processing
-                is RequestState.Success -> {
-                    _mainDataState.value = _mainDataState.value.copy(allCategoriesModel = it.data)
-                    _mainUiState.value = UiState.Success(message = it.message!!)
-                }
+                is EnergyRequestState.Failure -> _menuScreenEnergyData.value = _menuScreenEnergyData.value.copy(allCategoriesModel = null)
+                is EnergyRequestState.Success -> _menuScreenEnergyData.value = _menuScreenEnergyData.value.copy(allCategoriesModel = it.data)
             }
         }
     }
-    private suspend fun fetchAllCategoryNames(){
-        mealRepository.fetchAllCategoryNames {first ->
-            when(first){
-                is RequestState.Failure -> TODO("need not figured out")
-                is RequestState.Processing -> TODO("need not figured out")
-                is RequestState.Success -> {
-                    _mainDataState.value = _mainDataState.value.copy(categoryNamesModel = first.data)
 
-                }
+    private suspend fun getEnergyForFilterScreen(){
+
+        mealRepository.fetchAllCategoryNames {
+            when(it){
+                is EnergyRequestState.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNamesModel = null)
+                is EnergyRequestState.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNamesModel = it.data)
             }
         }
-    }
-    private suspend fun fetchAllAreaNames(){
         mealRepository.fetchAllAreaNames {
             when(it){
-                is RequestState.Failure -> TODO("need not figured out")
-                is RequestState.Processing -> TODO("not figured out")
-                is RequestState.Success -> {
-                    _mainDataState.value = _mainDataState.value.copy(areaNamesModel = it.data)
-
-                }
+                is EnergyRequestState.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNamesModel = null)
+                is EnergyRequestState.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNamesModel = it.data)
             }
         }
-    }
-    private suspend fun fetchAllIngredients(){
         mealRepository.fetchAllIngredient {
             when(it){
-                is RequestState.Failure -> TODO("need not figured out")
-                is RequestState.Processing -> TODO("need not figured out")
-                is RequestState.Success -> {
-                    _mainDataState.value = _mainDataState.value.copy(allIngredientsModel = it.data)
-                    _mainDataState.value = _mainDataState.value.copy(allIngredientsNames = it.data!!.meals.map { ingredient -> ingredient.strIngredient })
-
+                is EnergyRequestState.Failure -> {
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsModel = null)
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsNames = null)
+                }
+                is EnergyRequestState.Success -> {
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsModel = it.data)
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsNames = it.data!!.meals.map { ingredient -> ingredient.strIngredient })
                 }
             }
         }
     }
 
+//    private suspend fun fetchAllCategoryNames(){
+//        mealRepository.fetchAllCategoryNames {
+//            when(it){
+//                is EnergyRequestState.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNamesModel = null)
+//                is EnergyRequestState.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNamesModel = it.data)
+//            }
+//        }
+//    }
+//    private suspend fun fetchAllAreaNames(){
+//        mealRepository.fetchAllAreaNames {
+//            when(it){
+//                is EnergyRequestState.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNamesModel = null)
+//                is EnergyRequestState.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNamesModel = it.data)
+//            }
+//        }
+//    }
+//    private suspend fun fetchAllIngredients(){
+//        mealRepository.fetchAllIngredient {
+//            when(it){
+//                is EnergyRequestState.Failure -> {
+//                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsModel = null)
+//                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsNames = null)
+//                }
+//                is EnergyRequestState.Success -> {
+//                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsModel = it.data)
+//                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsNames = it.data!!.meals.map { ingredient -> ingredient.strIngredient })
+//                }
+//            }
+//        }
+//    }
+
 }
-
-/*
-
-    val categoryNamesModel: AllCategoryNamesModel? = null,
-    val areaNamesModel: AllAreaNamesModel? = null,
-    val allIngredientsModel: AllIngredientsModel? = null,
-    val allIngredientsNames: List<String> = emptyList(),
-
-* */

@@ -17,7 +17,7 @@
         android:theme="@style/Theme.App.Starting"
         tools:targetApi="33">
         <activity
-            android:name="com.example.nutritiontracker.MainActivity"
+            android:name="com.example.nutritiontracker.presentation.activities.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.NutritionTracker">

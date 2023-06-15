@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutritiontracker.events.LoginEvent
+import com.example.nutritiontracker.presentation.composable.cammon.LoadingScreen
+import com.example.nutritiontracker.presentation.composable.cammon.toast
 import com.example.nutritiontracker.states.UiState
 import com.example.nutritiontracker.viewModel.LoginViewModel
 
@@ -37,7 +39,7 @@ fun LoginScreen(
 ){
     val uiState = viewModel.uiState.collectAsState()
     when(uiState.value){
-        UiState.Nothing -> LoginForm(register = register)
+        UiState.NotFound -> LoginForm(register = register)
         UiState.Processing -> LoadingScreen()
         is UiState.Success -> {
             toast(LocalContext.current, (uiState.value as UiState.Success).message)
@@ -48,6 +50,7 @@ fun LoginScreen(
             toast(LocalContext.current, (uiState.value as UiState.Failure).message)
             viewModel.onEvent(LoginEvent.ResetUiState)
         }
+        UiState.Nothing -> TODO()
     }
 }
 

@@ -1,5 +1,5 @@
 package com.example.nutritiontracker.models
 
-data class MealsByCategoryModel(
+data class MealsByCriteriaModel(
     val meals: List<Meal>
 )

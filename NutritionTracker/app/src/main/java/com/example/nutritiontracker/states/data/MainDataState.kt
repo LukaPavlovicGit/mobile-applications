@@ -1,15 +1,14 @@
-package com.example.nutritiontracker.states
+package com.example.nutritiontracker.states.data
 
 import com.example.nutritiontracker.models.AllAreaNamesModel
 import com.example.nutritiontracker.models.AllCategoriesModel
 import com.example.nutritiontracker.models.AllCategoryNamesModel
 import com.example.nutritiontracker.models.AllIngredientsModel
 import com.example.nutritiontracker.models.MealById
-import com.example.nutritiontracker.models.MealsByCategoryModel
+import com.example.nutritiontracker.models.MealsByCriteriaModel
 
 data class MainDataState(
-    val allCategoriesModel: AllCategoriesModel? = null,
-    val mealsByCategoryModel: MealsByCategoryModel? = null,
+    val mealsByCriteriaModel: MealsByCriteriaModel? = null,
     val mealById: MealById? = null,
     val categoryNamesModel: AllCategoryNamesModel? = null,
     val areaNamesModel: AllAreaNamesModel? = null,

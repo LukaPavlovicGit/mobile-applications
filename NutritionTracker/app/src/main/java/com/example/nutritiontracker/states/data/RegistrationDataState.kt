@@ -1,4 +1,4 @@
-package com.example.nutritiontracker.states
+package com.example.nutritiontracker.states.data
 
 data class RegistrationDataState(
     var username: String = "username",

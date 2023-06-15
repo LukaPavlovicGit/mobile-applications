@@ -29,10 +29,10 @@ fun BottomNavGraph(
             FilterScreen(viewModel = viewModel)
         }
         composable(route = BottomBar.Stats.route){
-            StatsScreen()
+            StatsScreen(viewModel = viewModel)
         }
         composable(route = BottomBar.Plan.route){
-            CreatePlanScreen()
+            CreatePlanScreen(viewModel = viewModel)
         }
     }
 }

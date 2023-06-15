@@ -1,4 +1,4 @@
-package com.example.nutritiontracker.presentation.composable
+package com.example.nutritiontracker.presentation.composable.cammon
 
 import android.content.Context
 import android.widget.Toast

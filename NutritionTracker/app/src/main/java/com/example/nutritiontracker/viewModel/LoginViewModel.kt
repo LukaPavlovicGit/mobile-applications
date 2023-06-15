@@ -7,8 +7,8 @@ import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.dtos.UserLoginDto
 import com.example.nutritiontracker.events.LoginEvent
 import com.example.nutritiontracker.states.UiState
-import com.example.nutritiontracker.states.RequestState
-import com.example.nutritiontracker.states.LoginDataState
+import com.example.nutritiontracker.states.requests.RequestState
+import com.example.nutritiontracker.states.data.LoginDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +24,7 @@ class LoginViewModel @Inject constructor(
     private val _loginDataState = MutableStateFlow(LoginDataState())
     val loginDataState = _loginDataState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Nothing)
+    private val _uiState = MutableStateFlow<UiState>(UiState.NotFound)
     val uiState = _uiState.asStateFlow()
 
 
@@ -41,18 +41,18 @@ class LoginViewModel @Inject constructor(
                     val password = _loginDataState.value.password
                     userRepository.login(UserLoginDto(email, password)){
                         when(it){
-                            RequestState.Processing -> _uiState.value = UiState.Processing
+                            is RequestState.Processing -> _uiState.value = UiState.Processing
                             is RequestState.Success -> {
                                 _uiState.value = UiState.Success(it.message!!)
                                 sharedPrefManager.saveUser(it.data!!)
                             }
                             is RequestState.Failure -> _uiState.value = UiState.Failure(it.error!!)
-
+                            is RequestState.NotFound -> TODO()
                         }
                     }
                 }
             }
-            LoginEvent.ResetUiState -> _uiState.value = UiState.Nothing
+            LoginEvent.ResetUiState -> _uiState.value = UiState.NotFound
             is LoginEvent.SetEmail -> _loginDataState.value = _loginDataState.value.copy(email = event.email)
             is LoginEvent.SetPassword -> _loginDataState.value = _loginDataState.value.copy(password = event.password)
         }
