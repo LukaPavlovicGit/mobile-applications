@@ -5,6 +5,7 @@ import com.example.nutritiontracker.models.AllCategoriesModel
 import com.example.nutritiontracker.models.AllCategoryNamesModel
 import com.example.nutritiontracker.models.AllIngredientsModel
 import com.example.nutritiontracker.models.MealById
+import com.example.nutritiontracker.models.MealByName
 import com.example.nutritiontracker.models.MealsByAreaModel
 import com.example.nutritiontracker.models.MealsByCriteriaModel
 import com.example.nutritiontracker.models.MealsByIngredientModel
@@ -46,5 +47,9 @@ interface MealService {
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/lookup.php")
     suspend fun fetchMealById(@Query("i") id: String): Response<MealById>
+
+    @Headers("Accept: application/json")
+    @GET("/api/json/v1/1/search.php")
+    suspend fun fetchMealByName(@Query("s") name: String): Response<MealByName>
 
 }

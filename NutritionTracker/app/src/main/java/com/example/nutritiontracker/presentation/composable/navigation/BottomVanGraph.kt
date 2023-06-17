@@ -1,6 +1,9 @@
 package com.example.nutritiontracker.presentation.composable.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,11 +18,12 @@ import com.example.nutritiontracker.viewModel.MainViewModel
 @Composable
 fun BottomNavGraph(
     viewModel: MainViewModel = viewModel(),
-    navController: NavHostController
+    navController: NavHostController,
+    startDestination: String = BottomBar.Menu.route
 ){
     NavHost(
         navController = navController,
-        startDestination =  BottomBar.Menu.route
+        startDestination = startDestination
     ){
 
         composable(route = BottomBar.Menu.route){
@@ -35,6 +39,7 @@ fun BottomNavGraph(
             CreatePlanScreen(viewModel = viewModel)
         }
     }
+
 }
 
 

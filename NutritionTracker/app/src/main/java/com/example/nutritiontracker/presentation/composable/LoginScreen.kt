@@ -88,7 +88,6 @@ fun LoginForm(
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(0.8f)
-
             )
             TextField(
                 value = loginDataState.value.password,
@@ -98,7 +97,6 @@ fun LoginForm(
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(0.8f)
-
             )
             Spacer(modifier = Modifier.padding(20.dp))
             Button(
@@ -122,7 +120,5 @@ fun LoginForm(
             }
 
         }
-
     }
-
 }

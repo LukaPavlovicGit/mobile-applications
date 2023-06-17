@@ -7,6 +7,7 @@ import com.example.nutritiontracker.models.AllCategoriesModel
 import com.example.nutritiontracker.models.AllCategoryNamesModel
 import com.example.nutritiontracker.models.AllIngredientsModel
 import com.example.nutritiontracker.models.MealById
+import com.example.nutritiontracker.models.MealByName
 import com.example.nutritiontracker.models.MealsByCriteriaModel
 import com.example.nutritiontracker.states.requests.EnergyRequestState
 import com.example.nutritiontracker.states.requests.RequestState
@@ -79,6 +80,20 @@ class MealRepositoryImpl (
         }
     }
 
+    override suspend fun fetchMealByName(name: String, result: (RequestState<MealByName>) -> Unit) {
+        val ans = mealService.fetchMealByName(name)
+        if(ans.isSuccessful){
+            if(ans.body() == null || ans.body()!!.meals == null){
+                result.invoke(RequestState.NotFound(message = "Not found..."))
+            }
+            else{
+                result.invoke(RequestState.Success(data = ans.body() , message = "Meal fetched successfully..."))
+            }
+        }
+        else {
+            result.invoke(RequestState.Failure(error = "Something went wrong.. Meal is NOT fetched!"))
+        }
+    }
 
 
     // energy data

@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.sp
 import com.example.nutritiontracker.viewModel.MainViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutritiontracker.events.MainEvent
-import com.example.nutritiontracker.presentation.composable.cammon.ListMeals
-import com.example.nutritiontracker.presentation.composable.cammon.LoadingScreen
+import com.example.nutritiontracker.presentation.composable.navigation.BottomBar
 import com.example.nutritiontracker.states.screens.FilterScreenState
+import com.example.nutritiontracker.states.screens.MainScreenState
 
 @Composable
 fun FilterScreen(
@@ -41,9 +41,6 @@ fun FilterScreen(
     when(menuScreenState.value){
         FilterScreenState.Default -> TabScreen(viewModel = viewModel)
         FilterScreenState.Error -> TODO()
-        is FilterScreenState.ListOfMeals -> ListMeals(viewModel = viewModel, callBack = { viewModel.onEvent(MainEvent.SetFilterScreenState(
-            FilterScreenState.Default)) })
-        FilterScreenState.Processing -> LoadingScreen()
     }
 
 }
@@ -129,7 +126,7 @@ private fun CategoriesTab(
         )
         Spacer(modifier = Modifier.padding(50.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByCategory(inputText.value)) },
+            onClick = { viewModel.onEvent(MainEvent.FilterMealsByCategory(category = inputText.value, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen(startDestination = BottomBar.Filter.route))) } )) },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -194,7 +191,7 @@ private fun AreasTab(
         )
         Spacer(modifier = Modifier.padding(50.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByArea(inputText.value)) },
+            onClick = { viewModel.onEvent(MainEvent.FilterMealsByArea(area = inputText.value, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen(startDestination = BottomBar.Filter.route))) } )) },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -259,7 +256,7 @@ private fun IngredientsTab(
         )
         Spacer(modifier = Modifier.padding(50.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByIngredient(inputText.value)) },
+            onClick = { viewModel.onEvent(MainEvent.FilterMealsByIngredient(ingredient = inputText.value, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen(startDestination = BottomBar.Filter.route))) } )) },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
