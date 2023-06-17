@@ -140,7 +140,6 @@ class MainViewModel @Inject constructor(
                 }
             }
             is MainEvent.SearchMealsByName -> {
-
                 viewModelScope.launch {
                     mealRepository.fetchMealByName(event.name){
                         when(it){
