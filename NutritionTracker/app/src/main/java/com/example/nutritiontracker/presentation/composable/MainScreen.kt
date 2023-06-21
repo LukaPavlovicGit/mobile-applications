@@ -8,30 +8,29 @@ import com.example.nutritiontracker.viewModel.MainViewModel
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    onUrlClicked: (String?) -> Unit
 ){
 
     val mainScreenState = viewModel.mainScreenState.collectAsState()
     when(mainScreenState.value){
         is MainScreenState.NavigationBarScreen -> {
-            NavigationScreen(
-                startDestination = (mainScreenState.value as MainScreenState.NavigationBarScreen).startDestination
-            )
+            val startDestination = (mainScreenState.value as MainScreenState.NavigationBarScreen).startDestination
+            val menuScreenTabIdx = (mainScreenState.value as MainScreenState.NavigationBarScreen).menuScreenTabIdx
+            val filterScreenTabIdx = (mainScreenState.value as MainScreenState.NavigationBarScreen).filterScreenTabIdx
+            NavigationScreen(startDestination = startDestination, menuScreenTabIdx = menuScreenTabIdx, filterScreenTabIdx = filterScreenTabIdx)
         }
         is MainScreenState.ListOfMealsScreen -> {
-            ListMealsScreen(
-                viewModel = viewModel,
-                onBack = (mainScreenState.value as MainScreenState.ListOfMealsScreen).onBack,
-                onErrorCallBack = {  }
-            )
+            val onBack = (mainScreenState.value as MainScreenState.ListOfMealsScreen).onBack
+            ListMealsScreen(viewModel = viewModel, onBack = onBack, onErrorCallBack = {  })
         }
         is MainScreenState.SingleMealScreen -> {
-            SingleMealScreen(
-                viewModel = viewModel,
-                onBack = (mainScreenState.value as MainScreenState.SingleMealScreen).onBack
-            )
+            val onBack = (mainScreenState.value as MainScreenState.SingleMealScreen).onBack
+            SingleMealScreen(viewModel = viewModel, onUrlClicked = onUrlClicked, onBack = onBack)
         }
-        MainScreenState.Error -> { }
+        MainScreenState.Error -> {
+
+        }
     }
 
 }

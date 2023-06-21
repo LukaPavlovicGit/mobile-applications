@@ -10,7 +10,7 @@ import com.example.nutritiontracker.states.screens.FilterScreenState
 import com.example.nutritiontracker.states.requests.RequestState
 import com.example.nutritiontracker.states.data.MainDataState
 import com.example.nutritiontracker.states.data.energyData.MenuScreenEnergyData
-import com.example.nutritiontracker.states.screens.MenuScreenState
+import com.example.nutritiontracker.states.screens.RemoteMenuScreenState
 import com.example.nutritiontracker.states.data.energyData.FilterScreenEnergyData
 import com.example.nutritiontracker.states.requests.EnergyRequestState
 import com.example.nutritiontracker.states.screens.MainScreenState
@@ -37,8 +37,8 @@ class MainViewModel @Inject constructor(
     private val _mainScreenState = MutableStateFlow<MainScreenState>(MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route))
     val mainScreenState = _mainScreenState.asStateFlow()
 
-    private val _menuScreenState = MutableStateFlow<MenuScreenState>(MenuScreenState.Default)
-    val menuScreenState = _menuScreenState.asStateFlow()
+    private val _remoteRemoteMenuScreenState = MutableStateFlow<RemoteMenuScreenState>(RemoteMenuScreenState.Default)
+    val remoteMenuScreenState = _remoteRemoteMenuScreenState.asStateFlow()
 
     private val _filterScreenState = MutableStateFlow<FilterScreenState>(FilterScreenState.Default)
     val filterScreenState = _filterScreenState.asStateFlow()
@@ -50,7 +50,7 @@ class MainViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getEnergyForMenuScreen()
-           getEnergyForFilterScreen()
+            getEnergyForFilterScreen()
         }
     }
 
@@ -171,7 +171,7 @@ class MainViewModel @Inject constructor(
                 }
             }
             is MainEvent.SetFilterScreenState -> _filterScreenState.value = event.state
-            is MainEvent.SetMenuScreenState -> _menuScreenState.value = event.state
+            is MainEvent.SetRemoteMenuScreenState -> _remoteRemoteMenuScreenState.value = event.state
             is MainEvent.SetMainScreenState -> _mainScreenState.value = event.state
         }
     }

@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -29,42 +30,78 @@ import com.example.nutritiontracker.presentation.composable.cammon.LoadImageFrom
 import com.example.nutritiontracker.presentation.composable.cammon.SearchMeals
 import com.example.nutritiontracker.presentation.composable.navigation.BottomBar
 import com.example.nutritiontracker.states.screens.MainScreenState
-import com.example.nutritiontracker.states.screens.MenuScreenState
+import com.example.nutritiontracker.states.screens.RemoteMenuScreenState
 import com.example.nutritiontracker.viewModel.MainViewModel
+
+
 
 @Composable
 fun MenuScreen(
+    viewModel: MainViewModel = viewModel(),
+    menuScreenTabIdx: Int
+){
+    TabScreen(viewModel = viewModel, menuScreenTabIdx = menuScreenTabIdx)
+}
+
+@Composable
+private fun TabScreen(
+    viewModel: MainViewModel = viewModel(),
+    menuScreenTabIdx: Int
+) {
+    val tabOptions = listOf("Local", "Remote")
+    val selectedTabIndex = remember { mutableStateOf(menuScreenTabIdx) }
+
+    Column {
+        TabRow(selectedTabIndex = selectedTabIndex.value) {
+            tabOptions.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTabIndex.value == index,
+                    onClick = { selectedTabIndex.value = index }
+                ) {
+                    Text(text = title)
+                }
+            }
+        }
+
+        when (selectedTabIndex.value) {
+            0 -> LocalMenuScreen(viewModel = viewModel)
+            1 -> RemoteMenuScreen(viewModel = viewModel)
+        }
+    }
+}
+
+
+@Composable
+fun RemoteMenuScreen(
     viewModel: MainViewModel = viewModel()
 ){
     val energy = viewModel.menuScreenEnergyData.collectAsState()
     when(energy.value.allCategoriesModel){
         null -> { Log.e("MenuScreen", "MENU SCREEN DON'T HAVE ENERGY") }
         else -> {
-            EnergizeMenuScreen(viewModel = viewModel)
+            EnergizeRemoteMenuScreen(viewModel = viewModel)
         }
     }
 }
 
 @Composable
-private fun EnergizeMenuScreen(
+private fun EnergizeRemoteMenuScreen(
     viewModel: MainViewModel = viewModel()
 ){
 
-    val menuScreenState = viewModel.menuScreenState.collectAsState()
-    when(menuScreenState.value){
-        MenuScreenState.Default -> DefaultMenuScreen(viewModel = viewModel)
-        MenuScreenState.Error -> TODO()
+    val remoteMenuScreenState = viewModel.remoteMenuScreenState.collectAsState()
+    when(remoteMenuScreenState.value){
+        RemoteMenuScreenState.Default -> DefaultRemoteMenuScreen(viewModel = viewModel)
+        RemoteMenuScreenState.Error -> TODO()
     }
 }
 
 @Composable
-private fun DefaultMenuScreen(
+private fun DefaultRemoteMenuScreen(
     viewModel: MainViewModel = viewModel()
 ){
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
+        modifier = Modifier.fillMaxWidth().padding(10.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ){
@@ -74,7 +111,10 @@ private fun DefaultMenuScreen(
             callBack = {
                 viewModel.onEvent(MainEvent.SearchMealsByName(
                     name = it,
-                    onNotFound = { viewModel.onEvent(MainEvent.SetMenuScreenState(MenuScreenState.Default)) }))
+                    onNotFound = {
+//                        viewModel.onEvent(MainEvent.SetRemoteMenuScreenState(RemoteMenuScreenState.Default))
+                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 1)))
+                    }))
             }
         )
         SearchMeals(
@@ -83,7 +123,10 @@ private fun DefaultMenuScreen(
             callBack = {
                 viewModel.onEvent(MainEvent.SearchMealsByIngredient(
                     ingredient = it,
-                    onNotFound = { viewModel.onEvent(MainEvent.SetMenuScreenState(MenuScreenState.Default)) }))
+                    onNotFound = {
+//                        viewModel.onEvent(MainEvent.SetRemoteMenuScreenState(RemoteMenuScreenState.Default))
+                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 1)))
+                    }))
             }
         )
         ListCategories(viewModel = viewModel)
@@ -105,9 +148,8 @@ private fun ListCategories(
             Box(
                 modifier = Modifier.clickable {
                     viewModel.onEvent(MainEvent.CategorySelection(category = category, onBack = {
-                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route)))
+                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 1)))
                     }))
-                    //viewModel.onEvent(MainEvent.CategorySelection(category))
                 }
             ){
                 Row(
@@ -153,42 +195,9 @@ private fun ListCategories(
     }
 }
 
-
 @Composable
-private fun ListMealsByCategoryScreen(
+private fun LocalMenuScreen(
     viewModel: MainViewModel = viewModel()
 ){
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ){
-        SearchMeals(
-            viewModel = viewModel,
-            placeholder = "search by name",
-            callBack = {
-                viewModel.onEvent(MainEvent.SearchMealsByName(
-                    name = it,
-                    onNotFound = {  }))
-            }
-        )
-        SearchMeals(
-            viewModel = viewModel,
-            placeholder = "search by ingredient",
-            callBack = {
-                viewModel.onEvent(MainEvent.SearchMealsByIngredient(
-                    ingredient = it,
-                    onNotFound = {  }))
-            }
-        )
-        ListMealsScreen(
-            viewModel = viewModel,
-            onBack = { viewModel.onEvent(MainEvent.SetMenuScreenState(MenuScreenState.Default)) },
-            onErrorCallBack = { viewModel.onEvent(MainEvent.SetMenuScreenState(MenuScreenState.Default)) }
-        )
-    }
 }

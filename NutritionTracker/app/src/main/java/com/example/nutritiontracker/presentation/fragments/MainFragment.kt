@@ -1,5 +1,7 @@
 package com.example.nutritiontracker.presentation.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +21,14 @@ class MainFragment: Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-                MainScreen()
+                MainScreen(onUrlClicked = { onUrlClicked(url = it) })
             }
         }
+    }
+
+    private fun onUrlClicked(url :String?){
+        val i = Intent(Intent.ACTION_VIEW)
+        i.data = Uri.parse(url)
+        startActivity(i)
     }
 }

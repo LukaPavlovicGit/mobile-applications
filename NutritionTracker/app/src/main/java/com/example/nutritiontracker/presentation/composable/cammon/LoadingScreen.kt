@@ -13,9 +13,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoadingScreen() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 20.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         CircularProgressIndicator(

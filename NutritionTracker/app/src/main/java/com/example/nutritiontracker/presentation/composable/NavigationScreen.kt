@@ -25,7 +25,9 @@ import com.example.nutritiontracker.presentation.composable.navigation.BottomNav
 
 @Composable
 fun NavigationScreen(
-    startDestination: String
+    startDestination: String,
+    menuScreenTabIdx: Int,
+    filterScreenTabIdx: Int,
 ){
     val navController = rememberNavController()
 
@@ -35,7 +37,9 @@ fun NavigationScreen(
             Row(modifier = Modifier.padding(paddingValues)){
                 BottomNavGraph(
                     navController = navController,
-                    startDestination = startDestination
+                    startDestination = startDestination,
+                    menuScreenTabIdx = menuScreenTabIdx,
+                    filterScreenTabIdx = filterScreenTabIdx,
                 )
             }
         }
@@ -47,7 +51,6 @@ fun NavigationScreen(
 private fun BottomBar(navController: NavHostController){
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    //Log.e("CURRENT DESTINATION", currentDestination?.route.toString())
 
     val screens = listOf(
         BottomBar.Menu,
