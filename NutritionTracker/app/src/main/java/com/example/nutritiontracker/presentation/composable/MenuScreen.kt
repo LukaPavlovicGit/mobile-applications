@@ -48,7 +48,7 @@ private fun TabScreen(
     viewModel: MainViewModel = viewModel(),
     menuScreenTabIdx: Int
 ) {
-    val tabOptions = listOf("Local", "Remote")
+    val tabOptions = listOf("Remote", "Local")
     val selectedTabIndex = remember { mutableStateOf(menuScreenTabIdx) }
 
     Column {
@@ -64,8 +64,8 @@ private fun TabScreen(
         }
 
         when (selectedTabIndex.value) {
-            0 -> LocalMenuScreen(viewModel = viewModel)
-            1 -> RemoteMenuScreen(viewModel = viewModel)
+            0 -> RemoteMenuScreen(viewModel = viewModel)
+            1 -> LocalMenuScreen(viewModel = viewModel)
         }
     }
 }
@@ -111,10 +111,8 @@ private fun DefaultRemoteMenuScreen(
             callBack = {
                 viewModel.onEvent(MainEvent.SearchMealsByName(
                     name = it,
-                    onNotFound = {
-//                        viewModel.onEvent(MainEvent.SetRemoteMenuScreenState(RemoteMenuScreenState.Default))
-                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 1)))
-                    }))
+                    onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 0))) }
+                ))
             }
         )
         SearchMeals(
@@ -123,15 +121,14 @@ private fun DefaultRemoteMenuScreen(
             callBack = {
                 viewModel.onEvent(MainEvent.SearchMealsByIngredient(
                     ingredient = it,
-                    onNotFound = {
-//                        viewModel.onEvent(MainEvent.SetRemoteMenuScreenState(RemoteMenuScreenState.Default))
-                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 1)))
-                    }))
+                    onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 0))) }
+                ))
             }
         )
         ListCategories(viewModel = viewModel)
     }
 }
+
 
 @Composable
 private fun ListCategories(
@@ -148,7 +145,7 @@ private fun ListCategories(
             Box(
                 modifier = Modifier.clickable {
                     viewModel.onEvent(MainEvent.CategorySelection(category = category, onBack = {
-                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 1)))
+                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 0)))
                     }))
                 }
             ){

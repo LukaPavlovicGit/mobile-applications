@@ -8,6 +8,7 @@ import com.example.nutritiontracker.models.MealByName
 import com.example.nutritiontracker.models.MealsByCriteriaModel
 
 data class MainDataState(
+    val savedMealsByCriteriaModel: MealsByCriteriaModel? = null,
     val mealsByCriteriaModel: MealsByCriteriaModel? = null,
     val mealById: MealById? = null,
     val mealByName: MealByName? = null,

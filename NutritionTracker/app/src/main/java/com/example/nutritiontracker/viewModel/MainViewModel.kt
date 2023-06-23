@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutritiontracker.data.repositories.MealRepository
 import com.example.nutritiontracker.events.MainEvent
+import com.example.nutritiontracker.models.Meal
+import com.example.nutritiontracker.models.MealsByCriteriaModel
 import com.example.nutritiontracker.presentation.composable.navigation.BottomBar
 import com.example.nutritiontracker.states.ListOfMealsState
 import com.example.nutritiontracker.states.screens.FilterScreenState
@@ -65,7 +67,7 @@ class MainViewModel @Inject constructor(
                             is RequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(message = "ERROR", onError = event.onBack)
                             is RequestState.Processing -> _listOfMealsState.value = ListOfMealsState.Processing
                             is RequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data!!)
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data!!, savedMealsByCriteriaModel = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
                             is RequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(message = "NOT FOUND", onNotFound = event.onBack)
@@ -97,7 +99,7 @@ class MainViewModel @Inject constructor(
                             is RequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(message = "ERROR", onError = event.onBack)
                             is RequestState.Processing -> _listOfMealsState.value = ListOfMealsState.Processing
                             is RequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data)
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data, savedMealsByCriteriaModel = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
                             is RequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(message = "NOT FOUND", onNotFound = event.onBack)
@@ -114,7 +116,7 @@ class MainViewModel @Inject constructor(
                             is RequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(message = "ERROR", onError = event.onBack)
                             is RequestState.Processing -> _listOfMealsState.value = ListOfMealsState.Processing
                             is RequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data)
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data, savedMealsByCriteriaModel = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
                             is RequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(message = "NOT FOUND", onNotFound = event.onBack)
@@ -131,7 +133,7 @@ class MainViewModel @Inject constructor(
                             is RequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(message = "ERROR", onError = event.onBack)
                             is RequestState.Processing -> _listOfMealsState.value = ListOfMealsState.Processing
                             is RequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data)
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data, savedMealsByCriteriaModel = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
                             is RequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(message = "NOT FOUND", onNotFound = event.onBack)
@@ -140,32 +142,36 @@ class MainViewModel @Inject constructor(
                 }
             }
             is MainEvent.SearchMealsByName -> {
+                _listOfMealsState.value = ListOfMealsState.Processing
+                _mainScreenState.value = MainScreenState.ListOfMealsScreen(onBack = event.onBack)
                 viewModelScope.launch {
                     mealRepository.fetchMealByName(event.name){
                         when(it){
-                            is RequestState.Failure -> { }
-                            RequestState.Processing -> { }
+                            is RequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(message = "ERROR", onError = event.onBack)
+                            RequestState.Processing -> _listOfMealsState.value = ListOfMealsState.Processing
                             is RequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealByName = it.data!!)
-
+                                val mealsByCriteriaModel = MealsByCriteriaModel(meals = it.data!!.meals.map { meal -> Meal(meal.idMeal, meal.strMeal, meal.strMealThumb) })
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = mealsByCriteriaModel, savedMealsByCriteriaModel = mealsByCriteriaModel)
+                                _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RequestState.NotFound -> event.onNotFound.invoke()
+                            is RequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(message = "NOT FOUND", onNotFound = event.onBack)
                         }
                     }
                 }
             }
             is MainEvent.SearchMealsByIngredient -> {
                 _listOfMealsState.value = ListOfMealsState.Processing
+                _mainScreenState.value = MainScreenState.ListOfMealsScreen(onBack = event.onBack)
                 viewModelScope.launch {
                     mealRepository.fetchMealsByIngredient(event.ingredient){
                         when(it){
-                            is RequestState.Failure -> { }
+                            is RequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(message = "ERROR", onError = event.onBack)
                             is RequestState.Processing -> _listOfMealsState.value = ListOfMealsState.Processing
                             is RequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data!!)
+                                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = it.data!!, savedMealsByCriteriaModel = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RequestState.NotFound -> event.onNotFound.invoke()
+                            is RequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(message = "NOT FOUND", onNotFound = event.onBack)
                         }
                     }
                 }
@@ -173,6 +179,30 @@ class MainViewModel @Inject constructor(
             is MainEvent.SetFilterScreenState -> _filterScreenState.value = event.state
             is MainEvent.SetRemoteMenuScreenState -> _remoteRemoteMenuScreenState.value = event.state
             is MainEvent.SetMainScreenState -> _mainScreenState.value = event.state
+            is MainEvent.SearchMealsListByName -> {
+                _listOfMealsState.value = ListOfMealsState.Processing
+                val filtered = _mainDataState.value.savedMealsByCriteriaModel!!.meals.filter { it.strMeal.startsWith(event.name) }
+                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = MealsByCriteriaModel(meals = filtered) )
+                _listOfMealsState.value = ListOfMealsState.Success
+            }
+            is MainEvent.SortMealsListByName -> {
+                _listOfMealsState.value = ListOfMealsState.Processing
+                val sorted = _mainDataState.value.savedMealsByCriteriaModel!!.meals.sortedBy { it.strMeal }
+                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = MealsByCriteriaModel(meals = sorted) )
+                _listOfMealsState.value = ListOfMealsState.Success
+            }
+            is MainEvent.MealsListAscOrder -> {
+                _listOfMealsState.value = ListOfMealsState.Processing
+                val sorted = _mainDataState.value.mealsByCriteriaModel!!.meals.reversed()
+                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = MealsByCriteriaModel(meals = sorted) )
+                _listOfMealsState.value = ListOfMealsState.Success
+            }
+            is MainEvent.MealsListDescOrder -> {
+                _listOfMealsState.value = ListOfMealsState.Processing
+                val sorted = _mainDataState.value.mealsByCriteriaModel!!.meals.reversed()
+                _mainDataState.value = _mainDataState.value.copy(mealsByCriteriaModel = MealsByCriteriaModel(meals = sorted) )
+                _listOfMealsState.value = ListOfMealsState.Success
+            }
         }
     }
 

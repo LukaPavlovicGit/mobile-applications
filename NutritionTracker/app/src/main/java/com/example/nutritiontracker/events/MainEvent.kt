@@ -15,6 +15,10 @@ interface MainEvent {
     data class SetMainScreenState(val state: MainScreenState): MainEvent
     data class SetRemoteMenuScreenState(val state: RemoteMenuScreenState): MainEvent
     data class SetFilterScreenState(val state: FilterScreenState): MainEvent
-    data class SearchMealsByName(val name: String, val onNotFound: () -> Unit): MainEvent
-    data class SearchMealsByIngredient(val ingredient: String, val onNotFound: () -> Unit): MainEvent
+    data class SearchMealsByName(val name: String, val onBack: () -> Unit): MainEvent
+    data class SearchMealsByIngredient(val ingredient: String, val onBack: () -> Unit): MainEvent
+    data class SearchMealsListByName(val name: String): MainEvent
+    object SortMealsListByName: MainEvent
+    object MealsListAscOrder: MainEvent
+    object MealsListDescOrder: MainEvent
 }

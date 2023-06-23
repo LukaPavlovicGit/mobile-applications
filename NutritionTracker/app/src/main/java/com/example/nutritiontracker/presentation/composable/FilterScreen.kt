@@ -159,9 +159,7 @@ private fun AreasTab(
                 text = "CLICK TO SELECT AN AREA",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clickable { expanded.value = true }
+                modifier = Modifier.padding(16.dp).clickable { expanded.value = true }
             )
 
             DropdownMenu(
