@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.Fragment
 import com.example.nutritiontracker.R
 import com.example.nutritiontracker.presentation.composable.LoginScreen
+import com.example.nutritiontracker.presentation.composable.cammon.toast
 import com.example.raftrading.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,6 +29,7 @@ class LoginFragment: Fragment() {
     }
 
     private fun setMainFragment(){
+        toast(requireContext(), "WELCOME")
         val transaction = activity?.supportFragmentManager?.beginTransaction()
         transaction?.replace(R.id.activity_main_fragment_container, MainFragment(), Constants.MAIN_FRAGMENT_TAG)
         transaction?.commit()

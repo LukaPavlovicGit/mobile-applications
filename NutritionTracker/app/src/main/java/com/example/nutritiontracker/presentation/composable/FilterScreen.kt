@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,12 @@ private fun TabScreen(
 
 
     Column {
-        TabRow(selectedTabIndex = selectedTabIndex.value) {
+        TabRow(
+            selectedTabIndex = selectedTabIndex.value,
+            modifier = Modifier.height(40.dp),
+            backgroundColor = Color.DarkGray,
+            contentColor = Color.White
+        ) {
             tabOptions.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTabIndex.value == index,
@@ -137,7 +143,7 @@ private fun CategoriesTab(
                 .fillMaxWidth(0.4f)
                 .height(50.dp)
         ) {
-            Text(text = "Filter", fontSize = 20.sp)
+            Text(text = "Search", fontSize = 20.sp)
         }
     }
 }
@@ -200,7 +206,7 @@ private fun AreasTab(
                 .fillMaxWidth(0.4f)
                 .height(50.dp)
         ) {
-            Text(text = "Filter", fontSize = 20.sp)
+            Text(text = "Search", fontSize = 20.sp)
         }
     }
 }
@@ -265,7 +271,7 @@ private fun IngredientsTab(
                 .fillMaxWidth(0.4f)
                 .height(50.dp)
         ) {
-            Text(text = "Filter", fontSize = 20.sp)
+            Text(text = "Search", fontSize = 20.sp)
         }
     }
 }

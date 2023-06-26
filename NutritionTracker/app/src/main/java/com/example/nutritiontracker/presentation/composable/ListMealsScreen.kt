@@ -49,11 +49,11 @@ fun ListMealsScreen(
         ListOfMealsState.Processing -> LoadingScreen()
         ListOfMealsState.Success -> ListMeals()
         is ListOfMealsState.NotFound -> {
-            toast(context = LocalContext.current, message = (listOfMealsState.value as ListOfMealsState.NotFound).message)
+            toast(context = LocalContext.current, message = "NOT FOUND")
             (listOfMealsState.value as ListOfMealsState.NotFound).onNotFound.invoke()
         }
         is ListOfMealsState.Error -> {
-            toast(context = LocalContext.current, message = (listOfMealsState.value as ListOfMealsState.Error).message)
+            toast(context = LocalContext.current, message = "ERROR")
             (listOfMealsState.value as ListOfMealsState.Error).onError.invoke()
         }
     }

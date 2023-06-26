@@ -3,6 +3,7 @@ package com.example.nutritiontracker.events
 import com.example.nutritiontracker.data.datasource.local.entities.mealType.MealType
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Category
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
+import com.example.nutritiontracker.states.data.LocalSearchFilters
 import com.example.nutritiontracker.states.data.NavigationData
 import com.example.nutritiontracker.states.screens.FilterScreenState
 import com.example.nutritiontracker.states.screens.ListOfMealsState
@@ -47,6 +48,8 @@ interface MainEvent {
 
     data class SetMealPictureUri(val uri: String): MainEvent
 
+    data class SetLocalSearchFilters(val filters: LocalSearchFilters): MainEvent
+
     data class SaveMeal(val dataToEat: LocalDate, val mealType: MealType): MainEvent
 
     object DeleteMeal: MainEvent
@@ -59,5 +62,7 @@ interface MainEvent {
 
     object MealsListDescOrder: MainEvent
 
-    object PROBE: MainEvent
+    object GetSavedMeals: MainEvent
+
+    object LocalSearchFilter: MainEvent
 }

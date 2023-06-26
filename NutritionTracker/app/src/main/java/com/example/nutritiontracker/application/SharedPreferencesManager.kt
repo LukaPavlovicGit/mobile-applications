@@ -9,21 +9,17 @@ class SharedPreferencesManager @Inject constructor(
 ) {
 
     fun isAuthenticated(): Boolean =
-        sharedPref.getString("username", "")!!.isNotEmpty()
+        sharedPref.getString("email", "")!!.isNotEmpty()
 
-    fun saveUser(userDto: UserDto) =
+    fun saveUser(email: String) =
         sharedPref
             .edit()
-            .putString("id", userDto.id)
-            .putString("username", userDto.username)
-            .putString("email", userDto.email)
+            .putString("email", email)
             .apply()
 
     fun clearRegistration() =
         sharedPref
             .edit()
-            .remove("id")
-            .remove("username")
             .remove("email")
             .apply()
 

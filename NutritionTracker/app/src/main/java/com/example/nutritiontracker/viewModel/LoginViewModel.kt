@@ -9,7 +9,11 @@ import com.example.nutritiontracker.events.LoginEvent
 import com.example.nutritiontracker.states.UiState
 import com.example.nutritiontracker.states.requests.RetrofitRequestState
 import com.example.nutritiontracker.states.data.LoginDataState
+import com.example.nutritiontracker.states.requests.AuthRequestState
+import com.example.nutritiontracker.states.screens.LoginScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -24,32 +28,32 @@ class LoginViewModel @Inject constructor(
     private val _loginDataState = MutableStateFlow(LoginDataState())
     val loginDataState = _loginDataState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.NotFound)
-    val uiState = _uiState.asStateFlow()
+    private val _loginScreenState = MutableStateFlow<LoginScreenState>(LoginScreenState.Default)
+    val loginScreenState = _loginScreenState.asStateFlow()
 
 
     fun onEvent(event: LoginEvent){
         when(event) {
             LoginEvent.Submit -> {
-                _uiState.value = UiState.Processing
-                viewModelScope.launch {
+                _loginScreenState.value = LoginScreenState.Processing
+                // ZASTO NE RADI KADA SE KORISTI viewModelScope.launch
+                GlobalScope.launch(Dispatchers.IO) {
                     val email = _loginDataState.value.email
                     val password = _loginDataState.value.password
                     userRepository.login(UserLoginDto(email, password)){
                         when(it){
-                            is RetrofitRequestState.Success -> {
-                                _uiState.value = UiState.Success(it.message!!)
-                                sharedPrefManager.saveUser(it.data!!)
+                            is AuthRequestState.Failure -> _loginScreenState.value = LoginScreenState.Failure(it.message)
+                            AuthRequestState.Success -> {
+                                _loginScreenState.value = LoginScreenState.Success
+                                sharedPrefManager.saveUser(email)
                             }
-                            is RetrofitRequestState.Failure -> _uiState.value = UiState.Failure(it.error!!)
-                            is RetrofitRequestState.NotFound -> TODO()
                         }
                     }
                 }
             }
-            LoginEvent.ResetUiState -> _uiState.value = UiState.NotFound
             is LoginEvent.SetEmail -> _loginDataState.value = _loginDataState.value.copy(email = event.email)
             is LoginEvent.SetPassword -> _loginDataState.value = _loginDataState.value.copy(password = event.password)
+            is LoginEvent.SetLoginScreenState -> _loginScreenState.value = event.state
         }
     }
 

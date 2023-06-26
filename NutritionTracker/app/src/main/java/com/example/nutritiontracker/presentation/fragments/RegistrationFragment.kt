@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.example.nutritiontracker.R
 import com.example.nutritiontracker.presentation.composable.RegistrationScreen
+import com.example.nutritiontracker.presentation.composable.cammon.toast
 import com.example.raftrading.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,9 +22,16 @@ class RegistrationFragment: Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-                RegistrationScreen( onRegisterSuccess = { setLoginFragment() }, login = { setLoginFragment() } )
+                RegistrationScreen( onRegisterSuccess = { onSuccess() }, login = { setLoginFragment() } )
             }
         }
+    }
+
+    private fun onSuccess(){
+        toast(requireContext(), "Login now...")
+        val transaction = activity?.supportFragmentManager?.beginTransaction()
+        transaction?.replace(R.id.activity_main_fragment_container, LoginFragment(), Constants.LOGIN_FRAGMENT_TAG)
+        transaction?.commit()
     }
 
     private fun setLoginFragment(){

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -23,7 +24,6 @@ import com.example.nutritiontracker.viewModel.MainViewModel
 
 @Composable
 fun SearchMeals(
-    viewModel: MainViewModel = viewModel(),
     placeholder: String,
     callBack: (String) -> Unit
 ){
@@ -38,9 +38,9 @@ fun SearchMeals(
             value = textValue.value,
             onValueChange = { textValue.value = it },
             placeholder = { Text(text = placeholder) },
-            shape = RoundedCornerShape(12.dp),
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(0.6f).padding(5.dp),
+            shape = RoundedCornerShape(6.dp),
+            modifier = Modifier.fillMaxWidth(0.6f).padding(bottom = 8.dp),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
@@ -49,7 +49,8 @@ fun SearchMeals(
         )
         Button(
             onClick = { callBack.invoke(textValue.value.text) },
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(6.dp),
+            //colors = ButtonDefaults.buttonColors(backgroundColor = Color.Yellow)
         ) {
             Text(text = "Search", fontSize = 20.sp)
         }
