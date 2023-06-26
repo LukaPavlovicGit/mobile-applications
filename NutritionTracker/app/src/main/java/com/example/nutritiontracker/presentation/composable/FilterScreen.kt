@@ -35,12 +35,11 @@ import com.example.nutritiontracker.states.screens.MainScreenState
 
 @Composable
 fun FilterScreen(
-    viewModel: MainViewModel = viewModel(),
-    filterScreenTabIdx: Int
+    viewModel: MainViewModel = viewModel()
 ){
     val menuScreenState = viewModel.filterScreenState.collectAsState()
     when(menuScreenState.value){
-        FilterScreenState.Default -> TabScreen(viewModel = viewModel, filterScreenTabIdx = filterScreenTabIdx)
+        FilterScreenState.Default -> TabScreen(viewModel = viewModel)
         FilterScreenState.Error -> TODO()
     }
 
@@ -48,18 +47,22 @@ fun FilterScreen(
 
 @Composable
 private fun TabScreen(
-    viewModel: MainViewModel = viewModel(),
-    filterScreenTabIdx: Int
+    viewModel: MainViewModel = viewModel()
 ) {
     val tabOptions = listOf("Categories", "Areas", "Ingredients")
-    val selectedTabIndex = remember { mutableStateOf(filterScreenTabIdx) }
+    val selectedTabIndex = remember { mutableStateOf(viewModel.navigationData.lastFilterScreenTabIdx) }
+
+
 
     Column {
         TabRow(selectedTabIndex = selectedTabIndex.value) {
             tabOptions.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTabIndex.value == index,
-                    onClick = { selectedTabIndex.value = index }
+                    onClick = {
+                        selectedTabIndex.value = index
+                        viewModel.onEvent(MainEvent.SetNavigationData(viewModel.navigationData.copy(lastFilterScreenTabIdx = index)))
+                    }
                 ) {
                     Text(text = title)
                 }
@@ -128,7 +131,7 @@ private fun CategoriesTab(
         )
         Spacer(modifier = Modifier.padding(50.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByCategory(category = inputText.value, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen(startDestination = BottomBar.Filter.route, filterScreenTabIdx = 0))) } )) },
+            onClick = { viewModel.onEvent(MainEvent.FilterMealsByCategory(category = inputText.value)) },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -191,7 +194,7 @@ private fun AreasTab(
         )
         Spacer(modifier = Modifier.padding(50.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByArea(area = inputText.value, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen(startDestination = BottomBar.Filter.route, filterScreenTabIdx = 1))) } )) },
+            onClick = { viewModel.onEvent(MainEvent.FilterMealsByArea(area = inputText.value)) },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -256,7 +259,7 @@ private fun IngredientsTab(
         )
         Spacer(modifier = Modifier.padding(50.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByIngredient(ingredient = inputText.value, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen(startDestination = BottomBar.Filter.route, filterScreenTabIdx = 2))) } )) },
+            onClick = { viewModel.onEvent(MainEvent.FilterMealsByIngredient(ingredient = inputText.value)) },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)

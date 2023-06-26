@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -34,28 +32,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutritiontracker.events.MainEvent
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
 import com.example.nutritiontracker.presentation.composable.cammon.LoadImageFromUrl
 import com.example.nutritiontracker.presentation.composable.cammon.LoadingScreen
-import com.example.nutritiontracker.presentation.composable.cammon.SearchMeals
 import com.example.nutritiontracker.presentation.composable.cammon.toast
-import com.example.nutritiontracker.states.ListOfMealsState
-import com.example.nutritiontracker.states.UiState
+import com.example.nutritiontracker.states.screens.ListOfMealsState
 import com.example.nutritiontracker.states.screens.MainScreenState
 import com.example.nutritiontracker.viewModel.MainViewModel
 
 @Composable
 fun ListMealsScreen(
-    viewModel: MainViewModel = viewModel(),
-    buttonText: String = "Back",
-    onBack: () -> Unit,
-    onErrorCallBack: () -> Unit
+    viewModel: MainViewModel = viewModel()
 ){
     val listOfMealsState = viewModel.listOfMealsState.collectAsState()
     when(listOfMealsState.value){
         ListOfMealsState.Processing -> LoadingScreen()
-        ListOfMealsState.Success -> {
-            ListMeals(viewModel = viewModel, buttonText = buttonText, onBack = onBack)
-        }
+        ListOfMealsState.Success -> ListMeals()
         is ListOfMealsState.NotFound -> {
             toast(context = LocalContext.current, message = (listOfMealsState.value as ListOfMealsState.NotFound).message)
             (listOfMealsState.value as ListOfMealsState.NotFound).onNotFound.invoke()
@@ -69,12 +61,9 @@ fun ListMealsScreen(
 
 @Composable
 fun ListMeals(
-    viewModel: MainViewModel = viewModel(),
-    buttonText: String = "Back",
-    onBack: () -> Unit
+    viewModel: MainViewModel = viewModel()
 ){
     val mainDataState = viewModel.mainDataState.collectAsState()
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -88,26 +77,22 @@ fun ListMeals(
             SortComponent(viewModel = viewModel)
             SearchByNameComponent(viewModel = viewModel)
             Button(
-                onClick = { onBack.invoke() },
+                onClick = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen)) },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Yellow),
                 shape = RoundedCornerShape(30),
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
                     .height(50.dp)
             ) {
-                Text(text = buttonText, fontSize = 25.sp, color = Color.Black)
+                Text(text = "Back", fontSize = 25.sp, color = Color.Black)
             }
 
             LazyColumn(content = {
-                items(mainDataState.value.mealsByCriteriaModel!!.meals.size) { idx ->
-                    val meal = mainDataState.value.mealsByCriteriaModel!!.meals[idx]
+                items(mainDataState.value.mealList!!.meals.size) { idx ->
+                    val meal = mainDataState.value.mealList!!.meals[idx]
                     Box(
                         modifier = Modifier.clickable {
-
-                            viewModel.onEvent(MainEvent.MealSelection(meal = meal, onBack = {
-                                viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.ListOfMealsScreen(onBack = onBack)))
-                            }))
-
+                            viewModel.onEvent(MainEvent.MealSelection(meal = meal))
                         }
                     ) {
 
@@ -136,7 +121,6 @@ private fun SortComponent(
     val selectedIndex = remember { mutableStateOf(0) }
     val expanded = remember { mutableStateOf(false) }
     val orderBy = remember { mutableStateOf("ASC") }
-
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -201,7 +185,6 @@ private fun SortComponent(
                 }
             )
         }
-
     }
 }
 
@@ -220,7 +203,7 @@ private fun SearchByNameComponent(
             value = text.value,
             onValueChange = {
                 text.value = it
-                viewModel.onEvent(MainEvent.SearchMealsListByName(it))
+                viewModel.onEvent(MainEvent.SearchMealsListByName(name = it)) //, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.ListOfMealsScreen))
             },
             placeholder = { Text(text = "filter by name") },
             shape = RoundedCornerShape(12.dp),

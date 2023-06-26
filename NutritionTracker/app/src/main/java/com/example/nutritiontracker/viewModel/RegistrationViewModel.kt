@@ -8,7 +8,7 @@ import com.example.nutritiontracker.dtos.UserRegisterDto
 import com.example.nutritiontracker.events.RegistrationEvent
 import com.example.nutritiontracker.passwordValidation.isPasswordValid
 import com.example.nutritiontracker.states.UiState
-import com.example.nutritiontracker.states.requests.RequestState
+import com.example.nutritiontracker.states.requests.RetrofitRequestState
 import com.example.nutritiontracker.states.data.RegistrationDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,10 +41,9 @@ class RegistrationViewModel @Inject constructor(
                            val password = _registrationDataState.value.password
                            authRepository.register(UserRegisterDto(username, email, password)){
                                when(it){
-                                   is RequestState.Processing -> _uiState.value = UiState.Processing
-                                   is RequestState.Success -> _uiState.value = UiState.Success(it.message!!)
-                                   is RequestState.Failure -> _uiState.value = UiState.Failure(it.error!!)
-                                   is RequestState.NotFound -> TODO()
+                                   is RetrofitRequestState.Success -> _uiState.value = UiState.Success(it.message!!)
+                                   is RetrofitRequestState.Failure -> _uiState.value = UiState.Failure(it.error!!)
+                                   is RetrofitRequestState.NotFound -> TODO()
                                }
                            }
                        }

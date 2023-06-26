@@ -13,7 +13,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class) // dependencies will live as long as application
+@InstallIn(SingletonComponent::class)
 object AppModule {
 
     @Singleton

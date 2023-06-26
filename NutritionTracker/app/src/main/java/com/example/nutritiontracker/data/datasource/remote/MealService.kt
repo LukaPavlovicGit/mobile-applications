@@ -1,14 +1,12 @@
 package com.example.nutritiontracker.data.datasource.remote
 
-import com.example.nutritiontracker.models.AllAreaNamesModel
-import com.example.nutritiontracker.models.AllCategoriesModel
-import com.example.nutritiontracker.models.AllCategoryNamesModel
-import com.example.nutritiontracker.models.AllIngredientsModel
-import com.example.nutritiontracker.models.MealById
-import com.example.nutritiontracker.models.MealByName
-import com.example.nutritiontracker.models.MealsByAreaModel
-import com.example.nutritiontracker.models.MealsByCriteriaModel
-import com.example.nutritiontracker.models.MealsByIngredientModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllAreaNamesModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoriesModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoryNamesModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllIngredientsModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealById
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealByName
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealList
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -22,15 +20,15 @@ interface MealService {
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/filter.php")
-    suspend fun fetchMealsByCategory(@Query("c") category: String): Response<MealsByCriteriaModel>
+    suspend fun fetchMealsByCategory(@Query("c") category: String): Response<MealList>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/filter.php")
-    suspend fun fetchMealsByArea(@Query("a") area: String): Response<MealsByCriteriaModel>
+    suspend fun fetchMealsByArea(@Query("a") area: String): Response<MealList>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/filter.php")
-    suspend fun fetchMealsByIngredient(@Query("i") ingredient: String): Response<MealsByCriteriaModel>
+    suspend fun fetchMealsByIngredient(@Query("i") ingredient: String): Response<MealList>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/list.php?c=list")

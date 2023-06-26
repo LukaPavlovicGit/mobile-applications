@@ -28,35 +28,33 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutritiontracker.events.MainEvent
 import com.example.nutritiontracker.presentation.composable.cammon.LoadImageFromUrl
 import com.example.nutritiontracker.presentation.composable.cammon.SearchMeals
-import com.example.nutritiontracker.presentation.composable.navigation.BottomBar
 import com.example.nutritiontracker.states.screens.MainScreenState
 import com.example.nutritiontracker.states.screens.RemoteMenuScreenState
 import com.example.nutritiontracker.viewModel.MainViewModel
 
-
-
 @Composable
 fun MenuScreen(
-    viewModel: MainViewModel = viewModel(),
-    menuScreenTabIdx: Int
+    viewModel: MainViewModel = viewModel()
 ){
-    TabScreen(viewModel = viewModel, menuScreenTabIdx = menuScreenTabIdx)
+    TabScreen(viewModel = viewModel)
 }
 
 @Composable
 private fun TabScreen(
-    viewModel: MainViewModel = viewModel(),
-    menuScreenTabIdx: Int
+    viewModel: MainViewModel = viewModel()
 ) {
     val tabOptions = listOf("Remote", "Local")
-    val selectedTabIndex = remember { mutableStateOf(menuScreenTabIdx) }
+    val selectedTabIndex = remember { mutableStateOf(viewModel.navigationData.lastMenuScreenTabIdx) }
 
     Column {
         TabRow(selectedTabIndex = selectedTabIndex.value) {
             tabOptions.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTabIndex.value == index,
-                    onClick = { selectedTabIndex.value = index }
+                    onClick = {
+                        viewModel.onEvent(MainEvent.SetNavigationData(viewModel.navigationData.copy(lastMenuScreenTabIdx = index)))
+                        selectedTabIndex.value = index
+                    }
                 ) {
                     Text(text = title)
                 }
@@ -90,6 +88,7 @@ private fun EnergizeRemoteMenuScreen(
 ){
 
     val remoteMenuScreenState = viewModel.remoteMenuScreenState.collectAsState()
+    Log.e("ENTERED", "TRUE")
     when(remoteMenuScreenState.value){
         RemoteMenuScreenState.Default -> DefaultRemoteMenuScreen(viewModel = viewModel)
         RemoteMenuScreenState.Error -> TODO()
@@ -101,7 +100,9 @@ private fun DefaultRemoteMenuScreen(
     viewModel: MainViewModel = viewModel()
 ){
     Column(
-        modifier = Modifier.fillMaxWidth().padding(10.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ){
@@ -109,20 +110,14 @@ private fun DefaultRemoteMenuScreen(
             viewModel = viewModel,
             placeholder = "search by name",
             callBack = {
-                viewModel.onEvent(MainEvent.SearchMealsByName(
-                    name = it,
-                    onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 0))) }
-                ))
+                viewModel.onEvent(MainEvent.SearchMealsByName(name = it))
             }
         )
         SearchMeals(
             viewModel = viewModel,
             placeholder = "search by ingredient",
             callBack = {
-                viewModel.onEvent(MainEvent.SearchMealsByIngredient(
-                    ingredient = it,
-                    onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 0))) }
-                ))
+                viewModel.onEvent(MainEvent.SearchMealsByIngredient(ingredient = it))
             }
         )
         ListCategories(viewModel = viewModel)
@@ -142,17 +137,19 @@ private fun ListCategories(
     LazyColumn(content = {
         items(energy.value.allCategoriesModel!!.categories.size){ idx->
             val category = energy.value.allCategoriesModel!!.categories[idx]
+
+
             Box(
                 modifier = Modifier.clickable {
-                    viewModel.onEvent(MainEvent.CategorySelection(category = category, onBack = {
-                        viewModel.onEvent(MainEvent.SetMainScreenState(state = MainScreenState.NavigationBarScreen(startDestination = BottomBar.Menu.route, menuScreenTabIdx = 0)))
-                    }))
+                    viewModel.onEvent(MainEvent.CategorySelection(category = category))
                 }
             ){
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
                 ){
                     LoadImageFromUrl(url = category.strCategoryThumb)
                     Text(text = category.strCategory)

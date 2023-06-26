@@ -7,7 +7,7 @@ import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.dtos.UserLoginDto
 import com.example.nutritiontracker.events.LoginEvent
 import com.example.nutritiontracker.states.UiState
-import com.example.nutritiontracker.states.requests.RequestState
+import com.example.nutritiontracker.states.requests.RetrofitRequestState
 import com.example.nutritiontracker.states.data.LoginDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,10 +28,6 @@ class LoginViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
 
-    init{
-        //onEvent(LoginEvent.Submit)
-    }
-
     fun onEvent(event: LoginEvent){
         when(event) {
             LoginEvent.Submit -> {
@@ -41,13 +37,12 @@ class LoginViewModel @Inject constructor(
                     val password = _loginDataState.value.password
                     userRepository.login(UserLoginDto(email, password)){
                         when(it){
-                            is RequestState.Processing -> _uiState.value = UiState.Processing
-                            is RequestState.Success -> {
+                            is RetrofitRequestState.Success -> {
                                 _uiState.value = UiState.Success(it.message!!)
                                 sharedPrefManager.saveUser(it.data!!)
                             }
-                            is RequestState.Failure -> _uiState.value = UiState.Failure(it.error!!)
-                            is RequestState.NotFound -> TODO()
+                            is RetrofitRequestState.Failure -> _uiState.value = UiState.Failure(it.error!!)
+                            is RetrofitRequestState.NotFound -> TODO()
                         }
                     }
                 }

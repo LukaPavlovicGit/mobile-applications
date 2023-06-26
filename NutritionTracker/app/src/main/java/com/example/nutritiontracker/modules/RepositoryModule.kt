@@ -1,5 +1,6 @@
 package com.example.nutritiontracker.modules
 
+import com.example.nutritiontracker.data.datasource.local.dao.MealDao
 import com.example.nutritiontracker.data.datasource.remote.MealService
 import com.example.nutritiontracker.data.datasource.remote.NutritionService
 import com.example.nutritiontracker.data.repositories.AuthRepository
@@ -28,8 +29,9 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideMealRepository(
-        mealService: MealService
-    ): MealRepository = MealRepositoryImpl(mealService)
+        mealService: MealService,
+        mealDao: MealDao
+    ): MealRepository = MealRepositoryImpl(mealService, mealDao)
 
     @Provides
     @Singleton
