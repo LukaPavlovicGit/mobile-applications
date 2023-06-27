@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.nutritiontracker.events.MainEvent
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
 import com.example.nutritiontracker.presentation.composable.cammon.LoadImageFromUrl
@@ -76,18 +78,9 @@ fun ListMeals(
 
             SortComponent(viewModel = viewModel)
             SearchByNameComponent(viewModel = viewModel)
-            Button(
-                onClick = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen)) },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Yellow),
-                shape = RoundedCornerShape(30),
-                modifier = Modifier
-                    .fillMaxWidth(0.4f)
-                    .height(50.dp)
-            ) {
-                Text(text = "Back", fontSize = 25.sp, color = Color.Black)
-            }
-
-            LazyColumn(content = {
+            LazyColumn(
+                modifier = Modifier.weight(1f).padding(bottom = 30.dp),
+                content = {
                 items(mainDataState.value.mealList!!.meals.size) { idx ->
                     val meal = mainDataState.value.mealList!!.meals[idx]
                     Box(
@@ -95,20 +88,36 @@ fun ListMeals(
                             viewModel.onEvent(MainEvent.MealSelection(meal = meal))
                         }
                     ) {
-
                         Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp)
+                                .padding(start = 10.dp, top = 3.dp, end = 10.dp, bottom = 3.dp)
                         ) {
-                            LoadImageFromUrl(url = meal.strMealThumb)
-                            Text(text = meal.strMeal)
+                            AsyncImage(
+                                model =  meal.strMealThumb,
+                                contentDescription = "description",
+                                modifier = Modifier.size(100.dp).padding(end = 15.dp)
+                            )
+                            Text(text = meal.strMeal, fontSize = 20.sp)
                         }
                     }
                 }
-            })
+             }
+            )
+
+            Button(
+                onClick = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.NavigationBarScreen)) },
+                shape = RoundedCornerShape(15),
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .padding(start = 10.dp, bottom = 20.dp)
+                    .height(50.dp)
+            ) {
+                Text(text = "Back", fontSize = 25.sp)
+            }
+
         }
     }
 }
@@ -197,7 +206,7 @@ private fun SearchByNameComponent(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(start = 5.dp, end = 5.dp, bottom = 10.dp)
     ){
         TextField(
             value = text.value,
@@ -206,9 +215,9 @@ private fun SearchByNameComponent(
                 viewModel.onEvent(MainEvent.SearchMealsListByName(name = it)) //, onBack = { viewModel.onEvent(MainEvent.SetMainScreenState(MainScreenState.ListOfMealsScreen))
             },
             placeholder = { Text(text = "filter by name") },
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(6.dp),
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(0.6f).padding(5.dp),
+            modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,

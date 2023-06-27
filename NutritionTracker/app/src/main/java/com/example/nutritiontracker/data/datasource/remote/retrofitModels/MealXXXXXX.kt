@@ -64,4 +64,57 @@ data class MealXXXXXX(
     var strSource: Any = "",
     var strTags: String = "",
     var strYoutube: String = ""
-)
+){
+
+    fun getIngredientByNum(num: Int): String =
+        when (num) {
+            1 -> strIngredient1
+            2 -> strIngredient2
+            3 -> strIngredient3
+            4 -> strIngredient4
+            5 -> strIngredient5
+            6 -> strIngredient6
+            7 -> strIngredient7
+            8 -> strIngredient8
+            9 -> strIngredient9
+            10 -> strIngredient10
+            11 -> strIngredient11
+            12 -> strIngredient12
+            13 -> strIngredient13
+            14 -> strIngredient14
+            15 -> strIngredient15
+            16-> if(strIngredient16!=null) strIngredient16.toString() else ""
+            17-> if(strIngredient17!=null) strIngredient17.toString() else ""
+            18 -> if(strIngredient18!=null) strIngredient18.toString() else ""
+            19 -> if(strIngredient19!=null) strIngredient19.toString() else ""
+            20 -> if(strIngredient20!=null) strIngredient20.toString() else ""
+            else -> ""
+        }
+
+
+    fun getMeasureByNum(num: Int): String =
+        when (num) {
+            1 -> strMeasure1
+            2 -> strMeasure2
+            3 -> strMeasure3
+            4 -> strMeasure4
+            5 -> strMeasure5
+            6 -> strMeasure6
+            7 -> strMeasure7
+            8 -> strMeasure8
+            9 -> strMeasure9
+            10 -> strMeasure10
+            11 -> strMeasure11
+            12 -> strMeasure12
+            13 -> strMeasure13
+            14 -> strMeasure14
+            15 -> strMeasure15
+            16-> if(strMeasure16!=null) strMeasure16.toString() else ""
+            17-> if(strMeasure17!=null) strMeasure17.toString() else ""
+            18 -> if(strMeasure18!=null) strMeasure18.toString() else ""
+            19 -> if(strMeasure19!=null) strMeasure19.toString() else ""
+            20 -> if(strMeasure20!=null) strMeasure20.toString() else ""
+            else -> ""
+        }
+
+}
