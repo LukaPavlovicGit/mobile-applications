@@ -109,7 +109,7 @@ private fun DefaultSaveMealScreen(
             AsyncImage(
                 model = meal!!.meals[0].strMealThumb,
                 contentDescription = "description",
-                modifier = Modifier.size(250.dp).padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
+                modifier = Modifier.size(250.dp).padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp).clickable { openCamera.invoke() }
             )
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -137,7 +137,9 @@ private fun DefaultSaveMealScreen(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                    .clickable { openCamera.invoke() }
             ) {
                 OutlinedTextField(
                     enabled = false,
