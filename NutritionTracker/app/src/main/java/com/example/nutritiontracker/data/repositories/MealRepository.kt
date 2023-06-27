@@ -28,6 +28,7 @@ interface MealRepository {
     suspend fun delete(id: Long, result: (DeleteMealRequest) -> Unit)
     suspend fun update(meal: MealEntity, result: (UpdateMealRequest) -> Unit)
     suspend fun findByIdMeal(idMeal: String, result: (GetMealByIdMealRequest<MealDetails>) -> Unit)
+    suspend fun findById(id: Long, result: (GetMealByIdMealRequest<MealEntity>) -> Unit)
 
     suspend fun fetchMealsByArea(area: String, result: (FetchMealsByAreaRequest<List<Meal>>) -> Unit)
     suspend fun fetchMealsByCategory(category: String, result: (FetchMealsByCategoryRequest<List<Meal>>) -> Unit)

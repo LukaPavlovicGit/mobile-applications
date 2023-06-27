@@ -139,7 +139,7 @@ private fun DefaultSaveMealScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-                    .clickable { openCamera.invoke() }
+                    .clickable {  }
             ) {
                 OutlinedTextField(
                     enabled = false,

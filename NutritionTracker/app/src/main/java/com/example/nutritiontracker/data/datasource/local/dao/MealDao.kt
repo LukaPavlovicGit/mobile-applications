@@ -25,4 +25,7 @@ interface MealDao {
 
     @Query("SELECT * FROM meals WHERE idMeal = :idMeal")
     fun findByIdMeal(idMeal: String): MealEntity?
+
+    @Query("SELECT * FROM meals WHERE id = :id")
+    fun findById(id: Long): MealEntity?
 }

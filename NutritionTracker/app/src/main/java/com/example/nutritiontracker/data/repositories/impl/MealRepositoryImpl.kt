@@ -102,6 +102,16 @@ class MealRepositoryImpl (
         }
     }
 
+    override suspend fun findById(id: Long, result: (GetMealByIdMealRequest<MealEntity>) -> Unit) {
+        val entity = mealDao.findById(id)
+        if(entity != null){
+            result.invoke(GetMealByIdMealRequest.Success(data = entity))
+        }
+        else{
+            result.invoke(GetMealByIdMealRequest.NotFound())
+        }
+    }
+
     override suspend fun fetchMealsByArea(area: String, result: (FetchMealsByAreaRequest<List<Meal>>) -> Unit) {
         val ans = mealService.fetchMealsByArea(area)
 

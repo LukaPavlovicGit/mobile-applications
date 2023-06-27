@@ -1,6 +1,5 @@
 package com.example.nutritiontracker.presentation.composable
 
-import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding

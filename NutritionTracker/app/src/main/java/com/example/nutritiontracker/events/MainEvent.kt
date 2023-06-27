@@ -3,8 +3,10 @@ package com.example.nutritiontracker.events
 import com.example.nutritiontracker.data.datasource.local.entities.mealType.MealType
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Category
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
+import com.example.nutritiontracker.states.data.CreatePlanDataState
 import com.example.nutritiontracker.states.data.LocalSearchFilters
 import com.example.nutritiontracker.states.data.NavigationData
+import com.example.nutritiontracker.states.screens.CreatePlanScreenState
 import com.example.nutritiontracker.states.screens.FilterScreenState
 import com.example.nutritiontracker.states.screens.ListOfMealsState
 import com.example.nutritiontracker.states.screens.MainScreenState
@@ -34,6 +36,8 @@ interface MainEvent {
 
     data class SetFilterScreenState(val state: FilterScreenState): MainEvent
 
+    data class SetCreatePlanScreenState(val state: CreatePlanScreenState): MainEvent
+
     data class SetSingleMealScreenState(val state: SingleMealScreenState): MainEvent
 
     data class SetSaveMealScreenState(val state: SaveMealScreenState): MainEvent
@@ -50,9 +54,23 @@ interface MainEvent {
 
     data class SetLocalSearchFilters(val filters: LocalSearchFilters): MainEvent
 
+    data class SetCreatePlanDataState(val data: CreatePlanDataState): MainEvent
+
     data class SaveMeal(val dataToEat: LocalDate, val mealType: MealType): MainEvent
 
     object DeleteMeal: MainEvent
+
+    data class FetchRemoteMealsByCategory(val category: String): MainEvent
+
+    object GetLocalMeals: MainEvent
+
+    data class InsertToPlanFromLocal(val mealId: String): MainEvent
+
+    data class InsertToPlanFromRemote(val mealId: String): MainEvent
+
+    object LoadPlanedMealsByDay: MainEvent
+
+    data class DeletePlanedMeal(val mealNum: Int): MainEvent
 
     data class UpdateMeal(val dataToEat: LocalDate, val mealType: MealType): MainEvent
 
