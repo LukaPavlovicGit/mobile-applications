@@ -27,7 +27,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutritiontracker.events.LoginEvent
 import com.example.nutritiontracker.presentation.composable.cammon.LoadingScreen
 import com.example.nutritiontracker.presentation.composable.cammon.toast
-import com.example.nutritiontracker.states.UiState
 import com.example.nutritiontracker.states.screens.LoginScreenState
 import com.example.nutritiontracker.viewModel.LoginViewModel
 

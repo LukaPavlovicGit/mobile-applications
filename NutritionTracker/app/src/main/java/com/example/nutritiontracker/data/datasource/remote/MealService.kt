@@ -1,9 +1,9 @@
 package com.example.nutritiontracker.data.datasource.remote
 
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllAreaNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoriesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoryNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllIngredientsModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AreaNamesModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.CategoriesModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.CategoryNamesModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModel
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealById
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealByName
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealList
@@ -16,7 +16,7 @@ interface MealService {
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/categories.php")
-    suspend fun fetchAllCategories(): Response<AllCategoriesModel>
+    suspend fun fetchAllCategories(): Response<CategoriesModel>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/filter.php")
@@ -32,15 +32,15 @@ interface MealService {
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/list.php?c=list")
-    suspend fun fetchAllCategoryNames(): Response<AllCategoryNamesModel>
+    suspend fun fetchAllCategoryNames(): Response<CategoryNamesModel>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/list.php?a=list")
-    suspend fun fetchAllAreaNames(): Response<AllAreaNamesModel>
+    suspend fun fetchAllAreaNames(): Response<AreaNamesModel>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/list.php?i=list")
-    suspend fun fetchAllIngredients(): Response<AllIngredientsModel>
+    suspend fun fetchAllIngredients(): Response<IngredientsModel>
 
     @Headers("Accept: application/json")
     @GET("/api/json/v1/1/lookup.php")

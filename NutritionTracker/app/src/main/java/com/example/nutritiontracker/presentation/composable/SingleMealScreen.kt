@@ -1,10 +1,7 @@
 package com.example.nutritiontracker.presentation.composable
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.nutritiontracker.events.MainEvent
-import com.example.nutritiontracker.presentation.composable.cammon.LoadImageFromUrl
 import com.example.nutritiontracker.states.screens.MainScreenState
 import com.example.nutritiontracker.states.screens.SingleMealScreenState
 import com.example.nutritiontracker.viewModel.MainViewModel
@@ -60,10 +56,10 @@ private fun DefaultSingleMealScreen(
     onUrlClicked: (String?) -> Unit
 ) {
     val mainDataState = viewModel.mainDataState.collectAsState()
-    val meal = mainDataState.value.mealById
+    val meal = mainDataState.value.mealDetails
 
     Box(
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = Modifier.verticalScroll(rememberScrollState()).background(Color.LightGray)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -71,7 +67,7 @@ private fun DefaultSingleMealScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
-                model = meal!!.meals[0].strMealThumb,
+                model = meal.strMealThumb,
                 contentDescription = "description",
                 modifier = Modifier.size(250.dp).padding(10.dp)
             )
@@ -84,7 +80,7 @@ private fun DefaultSingleMealScreen(
                 modifier = Modifier
                     .padding(bottom = 10.dp)
                     .clickable {
-                        onUrlClicked.invoke(meal.meals[0].strYoutube)
+                        onUrlClicked.invoke(meal.strYoutube)
                     })
             Column(
                 horizontalAlignment = Alignment.Start,
@@ -97,7 +93,7 @@ private fun DefaultSingleMealScreen(
                     modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp)
                 ) {
                     Text(text = "NAME:", fontWeight = FontWeight.SemiBold, fontSize = 18.sp, modifier = Modifier.padding(end = 15.dp))
-                    Text(text = meal.meals[0].strMeal, fontSize = 16.sp)
+                    Text(text = meal.strMeal, fontSize = 16.sp)
                 }
                 Row(
                     horizontalArrangement = Arrangement.Start,
@@ -105,7 +101,7 @@ private fun DefaultSingleMealScreen(
                     modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp)
                 ) {
                     Text(text = "CATEGORY:", fontWeight = FontWeight.SemiBold, fontSize = 18.sp, modifier = Modifier.padding(end = 15.dp))
-                    Text(text = meal.meals[0].strCategory, fontSize = 16.sp)
+                    Text(text = meal.strCategory, fontSize = 16.sp)
                 }
                 Row(
                     horizontalArrangement = Arrangement.Start,
@@ -113,16 +109,16 @@ private fun DefaultSingleMealScreen(
                     modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp)
                 ) {
                     Text(text = "AREA:", fontWeight = FontWeight.SemiBold, fontSize = 18.sp, modifier = Modifier.padding(end = 15.dp))
-                    Text(text = meal.meals[0].strArea, fontSize = 16.sp)
+                    Text(text = meal.strArea, fontSize = 16.sp)
                 }
-                if(meal.meals[0].strTags != null && meal.meals[0].strTags.isNotEmpty()){
+                if(meal.strTags != null && meal.strTags.isNotEmpty()){
                     Column(
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.Top,
                         modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp)
                     ) {
                         Text(text = "TAGS:", fontWeight = FontWeight.SemiBold, fontSize = 18.sp, modifier = Modifier.padding(end = 15.dp))
-                        Text(text = meal.meals[0].strTags, fontSize = 14.sp)
+                        Text(text = meal.strTags, fontSize = 14.sp)
                     }
                 }
                 Column(
@@ -131,7 +127,7 @@ private fun DefaultSingleMealScreen(
                     modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp)
                 ) {
                     Text(text = "INSTRUCTIONS:", fontWeight = FontWeight.SemiBold, fontSize = 18.sp, modifier = Modifier.padding(end = 15.dp))
-                    Text(text = meal.meals[0].strInstructions, fontSize = 14.sp)
+                    Text(text = meal.strInstructions, fontSize = 14.sp)
                 }
 
                 Column(
@@ -146,13 +142,13 @@ private fun DefaultSingleMealScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(text = "$i.", fontWeight = FontWeight.SemiBold, fontSize = 18.sp, modifier = Modifier.padding(end = 10.dp))
-                            if(meal.meals[0].getIngredientByNum(i).isNotEmpty()){
+                            if(meal.getIngredientByNum(i).isNotEmpty()){
                                 Row(
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically,
                                 ){
-                                    Text(text = meal.meals[0].getIngredientByNum(i) + ":", fontSize = 18.sp, modifier = Modifier.padding(end = 10.dp))
-                                    Text(text = meal.meals[0].getMeasureByNum(i), fontSize = 16.sp)
+                                    Text(text = meal.getIngredientByNum(i) + ":", fontSize = 18.sp, modifier = Modifier.padding(end = 10.dp))
+                                    Text(text = meal.getMeasureByNum(i), fontSize = 16.sp)
                                 }
                             }
                         }
@@ -161,18 +157,18 @@ private fun DefaultSingleMealScreen(
             }
 
             Button(
-                enabled = !mainDataState.value.mealById!!.meals[0].saved,
+                enabled = !meal.saved,
                 onClick = {
                     viewModel.onEvent(MainEvent.SetSingleMealScreenState(SingleMealScreenState.SaveMeal))
                 },
                 shape = RoundedCornerShape(6.dp),
                 modifier = Modifier.fillMaxWidth(0.4f),
-                colors = ButtonDefaults.buttonColors(backgroundColor = if(mainDataState.value.mealById!!.meals[0].saved) Color.Green else Color.Yellow)
+                colors = ButtonDefaults.buttonColors(backgroundColor = if(meal.saved) Color.Green else Color.Yellow)
             ) {
-                Text(text = if(mainDataState.value.mealById!!.meals[0].saved) "Saved" else "Save meal", fontSize = 20.sp)
+                Text(text = if(meal.saved) "Saved" else "Save meal", fontSize = 20.sp)
             }
 
-            if(mainDataState.value.mealById!!.meals[0].saved){
+            if(meal.saved){
                 Button(
                     onClick = {
                         viewModel.onEvent(MainEvent.SetSingleMealScreenState(SingleMealScreenState.UpdateMeal))

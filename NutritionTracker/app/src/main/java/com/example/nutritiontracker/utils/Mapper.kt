@@ -2,13 +2,13 @@ package com.example.nutritiontracker.utils
 
 import com.example.nutritiontracker.data.datasource.local.entities.MealEntity
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealXXXXXX
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetails
 
 class Mapper {
 
 
     companion object {
-        fun mealToMealEntity(meal: MealXXXXXX): MealEntity =
+        fun mealToMealEntity(meal: MealDetails): MealEntity =
             MealEntity(
                 idMeal = meal.idMeal,
                 strArea = meal.strArea,
@@ -59,8 +59,8 @@ class Mapper {
                 strYoutube = meal.strYoutube
             )
 
-        fun mealEntityToMealXXXXXX(mealEntity: MealEntity): MealXXXXXX =
-            MealXXXXXX(
+        fun mealEntityToMealDetails(mealEntity: MealEntity): MealDetails =
+            MealDetails(
 
                 id = mealEntity.id,
                 dateToEat = mealEntity.dateToEat,

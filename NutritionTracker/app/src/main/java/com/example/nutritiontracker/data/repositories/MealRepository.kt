@@ -1,39 +1,43 @@
 package com.example.nutritiontracker.data.repositories
 
 import com.example.nutritiontracker.data.datasource.local.entities.MealEntity
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllAreaNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoriesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoryNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllIngredientsModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealById
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealByName
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealList
-import com.example.nutritiontracker.states.requests.AddMealState
-import com.example.nutritiontracker.states.requests.DeleteMealState
-import com.example.nutritiontracker.states.requests.EnergyRequestState
-import com.example.nutritiontracker.states.requests.FindByIdMealState
-import com.example.nutritiontracker.states.requests.GetAllMealsState
-import com.example.nutritiontracker.states.requests.RetrofitRequestState
-import com.example.nutritiontracker.states.requests.UpdateMealState
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Category
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetails
+import com.example.nutritiontracker.states.requests.AddMealRequest
+import com.example.nutritiontracker.states.requests.DeleteMealRequest
+import com.example.nutritiontracker.states.requests.EnergyRequest
+import com.example.nutritiontracker.states.requests.FetchAreaNamesRequest
+import com.example.nutritiontracker.states.requests.FetchCategoriesRequest
+import com.example.nutritiontracker.states.requests.FetchCategoryNamesRequest
+import com.example.nutritiontracker.states.requests.FetchIngredientsModelRequest
+import com.example.nutritiontracker.states.requests.FetchMealByIdMealRequest
+import com.example.nutritiontracker.states.requests.FetchMealByNameRequest
+import com.example.nutritiontracker.states.requests.FetchMealsByAreaRequest
+import com.example.nutritiontracker.states.requests.FetchMealsByCategoryRequest
+import com.example.nutritiontracker.states.requests.FetchMealsByIngredientRequest
+import com.example.nutritiontracker.states.requests.GetMealByIdMealRequest
+import com.example.nutritiontracker.states.requests.GetSavedMealsRequest
+import com.example.nutritiontracker.states.requests.UpdateMealRequest
 
 interface MealRepository {
 
+    suspend fun insert(meal: MealEntity, result: (AddMealRequest) -> Unit)
+    suspend fun getAll(result: (GetSavedMealsRequest<List<Meal>>) -> Unit)
+    suspend fun delete(id: Long, result: (DeleteMealRequest) -> Unit)
+    suspend fun update(meal: MealEntity, result: (UpdateMealRequest) -> Unit)
+    suspend fun findByIdMeal(idMeal: String, result: (GetMealByIdMealRequest<MealDetails>) -> Unit)
 
-    suspend fun insert(meal: MealEntity, result: (AddMealState) -> Unit)
-    suspend fun getAll(result: (GetAllMealsState<MealList>) -> Unit)
-    suspend fun delete(id: Long, result: (DeleteMealState) -> Unit)
-    suspend fun update(meal: MealEntity, result: (UpdateMealState) -> Unit)
-    suspend fun findByIdMeal(idMeal: String, result: (FindByIdMealState<MealById>) -> Unit)
-
-    suspend fun fetchMealsByArea(area: String, result: (RetrofitRequestState<MealList>) -> Unit)
-    suspend fun fetchMealsByCategory(category: String, result: (RetrofitRequestState<MealList>) -> Unit)
-    suspend fun fetchMealsByIngredient(ingredient: String, result: (RetrofitRequestState<MealList>) -> Unit)
-    suspend fun fetchMealById(id: String, result: (RetrofitRequestState<MealById>) -> Unit)
-    suspend fun fetchMealByName(name: String, result: (RetrofitRequestState<MealByName>) -> Unit)
+    suspend fun fetchMealsByArea(area: String, result: (FetchMealsByAreaRequest<List<Meal>>) -> Unit)
+    suspend fun fetchMealsByCategory(category: String, result: (FetchMealsByCategoryRequest<List<Meal>>) -> Unit)
+    suspend fun fetchMealsByIngredient(ingredient: String, result: (FetchMealsByIngredientRequest<List<Meal>>) -> Unit)
+    suspend fun fetchMealById(id: String, result: (FetchMealByIdMealRequest<MealDetails>) -> Unit)
+    suspend fun fetchMealByName(name: String, result: (FetchMealByNameRequest<MealDetails>) -> Unit)
 
     // energy data
-    suspend fun fetchAllCategories(result: (EnergyRequestState<AllCategoriesModel>) -> Unit)
-    suspend fun fetchAllCategoryNames(result: (EnergyRequestState<AllCategoryNamesModel>) -> Unit)
-    suspend fun fetchAllAreaNames(result: (EnergyRequestState<AllAreaNamesModel>) -> Unit)
-    suspend fun fetchAllIngredient(result: (EnergyRequestState<AllIngredientsModel>) -> Unit)
+    suspend fun fetchAllCategories(result: (FetchCategoriesRequest<List<Category>>) -> Unit)
+    suspend fun fetchAllCategoryNames(result: (FetchCategoryNamesRequest<List<String>>) -> Unit)
+    suspend fun fetchAllAreaNames(result: (FetchAreaNamesRequest<List<String>>) -> Unit)
+    suspend fun fetchAllIngredient(result: (FetchIngredientsModelRequest<IngredientsModel>) -> Unit)
 }

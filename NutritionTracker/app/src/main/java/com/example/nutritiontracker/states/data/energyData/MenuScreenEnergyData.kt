@@ -1,7 +1,7 @@
 package com.example.nutritiontracker.states.data.energyData
 
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoriesModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Category
 
 data class MenuScreenEnergyData(
-    val allCategoriesModel: AllCategoriesModel? = null
+    val categories: List<Category>? = null
 )

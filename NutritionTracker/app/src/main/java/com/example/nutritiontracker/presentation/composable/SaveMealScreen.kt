@@ -78,7 +78,7 @@ private fun DefaultSaveMealScreen(
     openCamera: () -> Unit
 ){
     val mainDataState = viewModel.mainDataState.collectAsState()
-    val meal = mainDataState.value.mealById
+    val meal = mainDataState.value.mealDetails
     val date = remember { mutableStateOf(LocalDate.now()) }
     val timeDialogState = rememberMaterialDialogState()
     val options = listOf(
@@ -98,7 +98,7 @@ private fun DefaultSaveMealScreen(
     }
 
     Box(
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = Modifier.verticalScroll(rememberScrollState()).background(Color.LightGray)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -107,7 +107,7 @@ private fun DefaultSaveMealScreen(
         ) {
 
             AsyncImage(
-                model = meal!!.meals[0].strMealThumb,
+                model = meal.strMealThumb,
                 contentDescription = "description",
                 modifier = Modifier.size(250.dp).padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp).clickable { openCamera.invoke() }
             )
@@ -117,7 +117,7 @@ private fun DefaultSaveMealScreen(
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
             ) {
                 Text(text = "NAME:", fontWeight = FontWeight.SemiBold, fontSize = 22.sp, modifier = Modifier.padding(end = 15.dp))
-                Text(text = meal.meals[0].strMeal, fontSize = 20.sp)
+                Text(text = meal.strMeal, fontSize = 20.sp)
             }
 
             Row(

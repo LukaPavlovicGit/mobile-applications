@@ -1,5 +1,5 @@
 package com.example.nutritiontracker.data.datasource.remote.retrofitModels
 
-data class MealsByIngredientModel(
-    val meals: List<Meal>
+data class IngredientsModel(
+    val meals: List<Ingredient>
 )

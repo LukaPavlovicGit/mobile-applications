@@ -1,28 +1,35 @@
 package com.example.nutritiontracker.viewModel
 
-import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutritiontracker.data.repositories.MealRepository
 import com.example.nutritiontracker.events.MainEvent
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealList
-import com.example.nutritiontracker.presentation.composable.navigation.BottomBar
+import com.example.nutritiontracker.presentation.pagination.DefaultPaginator
 import com.example.nutritiontracker.states.data.LocalSearchFilters
 import com.example.nutritiontracker.states.screens.ListOfMealsState
 import com.example.nutritiontracker.states.screens.FilterScreenState
-import com.example.nutritiontracker.states.requests.RetrofitRequestState
 import com.example.nutritiontracker.states.data.MainDataState
 import com.example.nutritiontracker.states.data.NavigationData
+import com.example.nutritiontracker.states.data.PaginationDataState
 import com.example.nutritiontracker.states.data.energyData.MenuScreenEnergyData
 import com.example.nutritiontracker.states.screens.RemoteMenuScreenState
 import com.example.nutritiontracker.states.data.energyData.FilterScreenEnergyData
-import com.example.nutritiontracker.states.requests.AddMealState
-import com.example.nutritiontracker.states.requests.DeleteMealState
-import com.example.nutritiontracker.states.requests.EnergyRequestState
-import com.example.nutritiontracker.states.requests.FindByIdMealState
-import com.example.nutritiontracker.states.requests.GetAllMealsState
-import com.example.nutritiontracker.states.requests.UpdateMealState
+import com.example.nutritiontracker.states.requests.AddMealRequest
+import com.example.nutritiontracker.states.requests.DeleteMealRequest
+import com.example.nutritiontracker.states.requests.FetchAreaNamesRequest
+import com.example.nutritiontracker.states.requests.FetchCategoriesRequest
+import com.example.nutritiontracker.states.requests.FetchCategoryNamesRequest
+import com.example.nutritiontracker.states.requests.FetchIngredientsModelRequest
+import com.example.nutritiontracker.states.requests.FetchMealByIdMealRequest
+import com.example.nutritiontracker.states.requests.FetchMealByNameRequest
+import com.example.nutritiontracker.states.requests.FetchMealsByAreaRequest
+import com.example.nutritiontracker.states.requests.FetchMealsByCategoryRequest
+import com.example.nutritiontracker.states.requests.FetchMealsByIngredientRequest
+import com.example.nutritiontracker.states.requests.GetMealByIdMealRequest
+import com.example.nutritiontracker.states.requests.GetSavedMealsRequest
+import com.example.nutritiontracker.states.requests.UpdateMealRequest
 import com.example.nutritiontracker.states.screens.DeleteMealScreenState
 import com.example.nutritiontracker.states.screens.MainScreenState
 import com.example.nutritiontracker.states.screens.SaveMealScreenState
@@ -82,6 +89,27 @@ class MainViewModel @Inject constructor(
     private var _navigationData = NavigationData()
     var navigationData = _navigationData
 
+    var paginationDataState = mutableStateOf(PaginationDataState())
+
+    private val paginator = DefaultPaginator(
+        initialKey = 0,
+        onLoadUpdated = {
+            paginationDataState.value = paginationDataState.value.copy(isLoading = it)
+        },
+        onRequest = {
+            Result.success(listOf(Meal("","","")))
+        },
+        getNextKey = {
+            paginationDataState.value.page + 1
+        },
+        onError = {
+            paginationDataState.value = paginationDataState.value.copy(error = it?.localizedMessage )
+          },
+        onSuccess = { items, kewKey ->
+            paginationDataState.value = paginationDataState.value.copy(items = paginationDataState.value.items + items)
+        }
+    )
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             getEnergyForMenuScreen()
@@ -95,14 +123,14 @@ class MainViewModel @Inject constructor(
                 _listOfMealsState.value = ListOfMealsState.Processing
                 _mainScreenState.value = MainScreenState.ListOfMealsScreen
                 viewModelScope.launch(Dispatchers.IO){
-                    mealRepository.fetchMealsByCategory(event.category.strCategory){
+                    mealRepository.fetchMealsByCategory(event.category.name){
                         when(it){
-                            is RetrofitRequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
-                            is RetrofitRequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealList = it.data!!, savedMealList = it.data)
+                            is FetchMealsByCategoryRequest.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByCategoryRequest.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(meals = it.data!!, copyMeals = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RetrofitRequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByCategoryRequest.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
                         }
                     }
                 }
@@ -113,11 +141,12 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO){
                     mealRepository.getAll {
                         when(it){
-                            GetAllMealsState.Error -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
-                            is GetAllMealsState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealList = it.data!!, savedMealList = it.data)
+                            is GetSavedMealsRequest.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is GetSavedMealsRequest.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(meals = it.data!!, copyMeals = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
+                            is GetSavedMealsRequest.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
                         }
                     }
                 }
@@ -127,23 +156,25 @@ class MainViewModel @Inject constructor(
                     var found = false
                     mealRepository.findByIdMeal(event.meal.idMeal){
                         when(it){
-                            FindByIdMealState.NotFound -> found = false
-                            is FindByIdMealState.Success -> {
+                            is GetMealByIdMealRequest.Failure -> found = false
+                            is GetMealByIdMealRequest.NotFound -> found = false
+                            is GetMealByIdMealRequest.Success -> {
                                 found = true
-                                _mainDataState.value = _mainDataState.value.copy(mealById = it.data)
+                                _mainDataState.value = _mainDataState.value.copy(mealDetails = it.data!!)
                                 _mainScreenState.value = MainScreenState.SingleMealScreen
                             }
+
                         }
                     }
                     if(!found){
                         mealRepository.fetchMealById(event.meal.idMeal) {
                             when (it) {
-                                is RetrofitRequestState.Failure -> { }
-                                is RetrofitRequestState.Success -> {
-                                    _mainDataState.value = _mainDataState.value.copy(mealById = it.data)
+                                is FetchMealByIdMealRequest.Failure -> { }
+                                is FetchMealByIdMealRequest.NotFound -> { }
+                                is FetchMealByIdMealRequest.Success -> {
+                                    _mainDataState.value = _mainDataState.value.copy(mealDetails = it.data!!)
                                     _mainScreenState.value = MainScreenState.SingleMealScreen
                                 }
-                                is RetrofitRequestState.NotFound -> { }
                             }
                         }
                     }
@@ -155,12 +186,12 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     mealRepository.fetchMealsByCategory(event.category){
                         when(it){
-                            is RetrofitRequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
-                            is RetrofitRequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealList = it.data, savedMealList = it.data)
+                            is FetchMealsByCategoryRequest.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByCategoryRequest.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(meals = it.data!!, copyMeals = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RetrofitRequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByCategoryRequest.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
                         }
                     }
                 }
@@ -171,12 +202,12 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     mealRepository.fetchMealsByArea(event.area){
                         when(it){
-                            is RetrofitRequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
-                            is RetrofitRequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealList = it.data, savedMealList = it.data)
+                            is FetchMealsByAreaRequest.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByAreaRequest.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(meals = it.data!!, copyMeals = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RetrofitRequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByAreaRequest.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
                         }
                     }
                 }
@@ -187,12 +218,12 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     mealRepository.fetchMealsByIngredient(event.ingredient){
                         when(it){
-                            is RetrofitRequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
-                            is RetrofitRequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealList = it.data, savedMealList = it.data)
+                            is FetchMealsByIngredientRequest.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByIngredientRequest.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(meals = it.data!!, copyMeals = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RetrofitRequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByIngredientRequest.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
                         }
                     }
                 }
@@ -203,13 +234,13 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     mealRepository.fetchMealByName(event.name){
                         when(it){
-                            is RetrofitRequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
-                            is RetrofitRequestState.Success -> {
-                                val mealList = MealList(meals = it.data!!.meals.map { meal -> Meal(meal.idMeal, meal.strMeal, meal.strMealThumb) })
-                                _mainDataState.value = _mainDataState.value.copy(mealList = mealList, savedMealList = mealList)
+                            is FetchMealByNameRequest.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealByNameRequest.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealByNameRequest.Success -> {
+                                val mealList = listOf(Meal(it.data!!.idMeal, it.data!!.strMeal, it.data!!.strMealThumb))
+                                _mainDataState.value = _mainDataState.value.copy(meals = mealList, copyMeals = mealList)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RetrofitRequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
                         }
                     }
                 }
@@ -220,12 +251,12 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     mealRepository.fetchMealsByIngredient(event.ingredient){
                         when(it){
-                            is RetrofitRequestState.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
-                            is RetrofitRequestState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealList = it.data!!, savedMealList = it.data)
+                            is FetchMealsByIngredientRequest.Failure -> _listOfMealsState.value = ListOfMealsState.Error(onError = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByIngredientRequest.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(meals = it.data!!, copyMeals = it.data)
                                 _listOfMealsState.value = ListOfMealsState.Success
                             }
-                            is RetrofitRequestState.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
+                            is FetchMealsByIngredientRequest.NotFound -> _listOfMealsState.value = ListOfMealsState.NotFound(onNotFound = { _mainScreenState.value = MainScreenState.NavigationBarScreen })
                         }
                     }
                 }
@@ -240,49 +271,49 @@ class MainViewModel @Inject constructor(
             is MainEvent.SetLocalSearchFilters -> _localStorageFilters.value = event.filters
             is MainEvent.SearchMealsListByName -> {
                 _listOfMealsState.value = ListOfMealsState.Processing
-                val filtered = _mainDataState.value.savedMealList!!.meals.filter { it.strMeal.startsWith(event.name) }
-                _mainDataState.value = _mainDataState.value.copy(mealList = MealList(meals = filtered))
+                val filtered = _mainDataState.value.copyMeals.filter { it.strMeal.startsWith(event.name) }
+                _mainDataState.value = _mainDataState.value.copy(meals = filtered)
                 _listOfMealsState.value = ListOfMealsState.Success
             }
             is MainEvent.SortMealsListByName -> {
                 _listOfMealsState.value = ListOfMealsState.Processing
-                val sorted = _mainDataState.value.savedMealList!!.meals.sortedBy { it.strMeal }
-                _mainDataState.value = _mainDataState.value.copy(mealList = MealList(meals = sorted))
+                val sorted = _mainDataState.value.copyMeals.sortedBy { it.strMeal }
+                _mainDataState.value = _mainDataState.value.copy(meals = sorted)
                 _listOfMealsState.value = ListOfMealsState.Success
             }
             is MainEvent.MealsListAscOrder -> {
                 _listOfMealsState.value = ListOfMealsState.Processing
-                val sorted = _mainDataState.value.mealList!!.meals.reversed()
-                _mainDataState.value = _mainDataState.value.copy(mealList = MealList(meals = sorted))
+                val sorted = _mainDataState.value.meals.reversed()
+                _mainDataState.value = _mainDataState.value.copy(meals = sorted)
                 _listOfMealsState.value = ListOfMealsState.Success
             }
             is MainEvent.MealsListDescOrder -> {
                 _listOfMealsState.value = ListOfMealsState.Processing
-                val sorted = _mainDataState.value.mealList!!.meals.reversed()
-                _mainDataState.value = _mainDataState.value.copy(mealList = MealList(meals = sorted))
+                val sorted = _mainDataState.value.meals.reversed()
+                _mainDataState.value = _mainDataState.value.copy(meals = sorted)
                 _listOfMealsState.value = ListOfMealsState.Success
             }
             is MainEvent.SetMealPictureUri -> {
-                val mealById = _mainDataState.value.mealById
-                mealById!!.meals[0].strMealThumb = event.uri
-                _mainDataState.value = _mainDataState.value.copy(mealById = mealById)
+                val mealDetails = _mainDataState.value.mealDetails
+                mealDetails.strMealThumb = event.uri
+                _mainDataState.value = _mainDataState.value.copy(mealDetails = mealDetails)
             }
             is MainEvent.SaveMeal -> {
                 _saveMealScreenState.value = SaveMealScreenState.Processing
                 viewModelScope.launch(Dispatchers.IO) {
-                    val mealEntity = Mapper.mealToMealEntity(_mainDataState.value.mealById!!.meals[0])
+                    val mealEntity = Mapper.mealToMealEntity(_mainDataState.value.mealDetails)
                     mealEntity.dateToEat = event.dataToEat
                     mealEntity.mealType = event.mealType
                     mealRepository.insert(mealEntity){
                         when(it){
-                            is AddMealState.Error -> _saveMealScreenState.value = SaveMealScreenState.Error(onError = {
+                            is AddMealRequest.Error -> _saveMealScreenState.value = SaveMealScreenState.Error(onError = {
                                                                                             _saveMealScreenState.value = SaveMealScreenState.Default
                                                                                             _singleMealScreenState.value = SingleMealScreenState.Default
                                                                                         })
-                            is AddMealState.Success -> {
-                                _mainDataState.value.mealById!!.meals[0].id = it.mealId
-                                _mainDataState.value.mealById!!.meals[0].saved = true
-                                _mainDataState.value = _mainDataState.value.copy(mealById = _mainDataState.value.mealById)
+                            is AddMealRequest.Success -> {
+                                _mainDataState.value.mealDetails.id = it.mealId
+                                _mainDataState.value.mealDetails.saved = true
+                                _mainDataState.value = _mainDataState.value.copy(mealDetails = _mainDataState.value.mealDetails)
                                 _saveMealScreenState.value = SaveMealScreenState.Success(onSuccess = {
                                     _saveMealScreenState.value = SaveMealScreenState.Default
                                     _singleMealScreenState.value = SingleMealScreenState.Default
@@ -291,15 +322,14 @@ class MainViewModel @Inject constructor(
                         }
                     }
                 }
-
             }
             is MainEvent.DeleteMeal -> {
                 _deleteMealScreenState.value = DeleteMealScreenState.Processing
                 viewModelScope.launch(Dispatchers.IO) {
-                    mealRepository.delete(_mainDataState.value.mealById!!.meals[0].id){
+                    mealRepository.delete(_mainDataState.value.mealDetails.id){
                         when(it){
-                            DeleteMealState.Error -> _deleteMealScreenState.value = DeleteMealScreenState.Error(onError = { _singleMealScreenState.value = SingleMealScreenState.Default } )
-                            DeleteMealState.Success -> {
+                            DeleteMealRequest.Error -> _deleteMealScreenState.value = DeleteMealScreenState.Error(onError = { _singleMealScreenState.value = SingleMealScreenState.Default } )
+                            DeleteMealRequest.Success -> {
                                 _deleteMealScreenState.value = DeleteMealScreenState.Success(onSuccess = {
                                     _mainScreenState.value = MainScreenState.ListOfMealsScreen
                                     _singleMealScreenState.value = SingleMealScreenState.Default
@@ -312,14 +342,14 @@ class MainViewModel @Inject constructor(
             is MainEvent.UpdateMeal -> {
                 _updateMealScreenState.value = UpdateMealScreenState.Processing
                 viewModelScope.launch(Dispatchers.IO) {
-                    mealRepository.update(Mapper.mealToMealEntity(_mainDataState.value.mealById!!.meals[0])){
+                    mealRepository.update(Mapper.mealToMealEntity(_mainDataState.value.mealDetails)){
                         when(it){
-                            UpdateMealState.Error -> _updateMealScreenState.value = UpdateMealScreenState.Error(onError = {
+                            UpdateMealRequest.Error -> _updateMealScreenState.value = UpdateMealScreenState.Error(onError = {
                                 _updateMealScreenState.value = UpdateMealScreenState.Default
                                 _singleMealScreenState.value = SingleMealScreenState.Default
                             })
-                            UpdateMealState.Success -> {
-                                _mainDataState.value = _mainDataState.value.copy(mealById = _mainDataState.value.mealById)
+                            UpdateMealRequest.Success -> {
+                                _mainDataState.value = _mainDataState.value.copy(mealDetails = _mainDataState.value.mealDetails)
                                 _updateMealScreenState.value = UpdateMealScreenState.Success(onSuccess = {
 
                                     _updateMealScreenState.value = UpdateMealScreenState.Default
@@ -336,8 +366,9 @@ class MainViewModel @Inject constructor(
     private suspend fun getEnergyForMenuScreen(){
         mealRepository.fetchAllCategories {
             when(it){
-                is EnergyRequestState.Failure -> _menuScreenEnergyData.value = _menuScreenEnergyData.value.copy(allCategoriesModel = null)
-                is EnergyRequestState.Success -> _menuScreenEnergyData.value = _menuScreenEnergyData.value.copy(allCategoriesModel = it.data)
+                is FetchCategoriesRequest.NotFound -> _menuScreenEnergyData.value = _menuScreenEnergyData.value.copy(categories = null)
+                is FetchCategoriesRequest.Failure -> _menuScreenEnergyData.value = _menuScreenEnergyData.value.copy(categories = null)
+                is FetchCategoriesRequest.Success -> _menuScreenEnergyData.value = _menuScreenEnergyData.value.copy(categories = it.data)
             }
         }
     }
@@ -346,26 +377,33 @@ class MainViewModel @Inject constructor(
 
         mealRepository.fetchAllCategoryNames {
             when(it){
-                is EnergyRequestState.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNamesModel = null)
-                is EnergyRequestState.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNamesModel = it.data)
+                is FetchCategoryNamesRequest.NotFound -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNames = null)
+                is FetchCategoryNamesRequest.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNames = null)
+                is FetchCategoryNamesRequest.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(categoryNames = it.data)
             }
         }
         mealRepository.fetchAllAreaNames {
             when(it){
-                is EnergyRequestState.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNamesModel = null)
-                is EnergyRequestState.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNamesModel = it.data)
+                is FetchAreaNamesRequest.NotFound -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNames = null)
+                is FetchAreaNamesRequest.Failure -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNames = null)
+                is FetchAreaNamesRequest.Success -> _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(areaNames = it.data)
             }
         }
         mealRepository.fetchAllIngredient {
             when(it){
-                is EnergyRequestState.Failure -> {
-                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsModel = null)
-                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsNames = null)
+                is FetchIngredientsModelRequest.NotFound -> {
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(ingredientsModel = null)
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(ingredientsNames = null)
                 }
-                is EnergyRequestState.Success -> {
-                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsModel = it.data)
-                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(allIngredientsNames = it.data!!.meals.map { ingredient -> ingredient.strIngredient })
+                is FetchIngredientsModelRequest.Failure -> {
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(ingredientsModel = null)
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(ingredientsNames = null)
                 }
+                is FetchIngredientsModelRequest.Success -> {
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(ingredientsModel = it.data)
+                    _filterScreenEnergyData.value = _filterScreenEnergyData.value.copy(ingredientsNames = it.data!!.meals.map { ingredient -> ingredient.name })
+                }
+
             }
         }
     }

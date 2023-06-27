@@ -37,10 +37,10 @@ class MainFragment: Fragment() {
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
-            Log.i("kilo", "Permission granted")
+            Log.i("TAG", "Permission granted")
             shouldShowCamera.value = true
         } else {
-            Log.i("kilo", "Permission denied")
+            Log.i("TAG", "Permission denied")
         }
     }
 
@@ -64,7 +64,7 @@ class MainFragment: Fragment() {
                         outputDirectory = outputDirectory,
                         executor = cameraExecutor,
                         onImageCaptured = ::handleImageCapture,
-                        onError = { Log.e("kilo", "View error:", it) }
+                        onError = { Log.e("TAG", "View error:", it) }
                     )
                 }
             }
@@ -80,11 +80,11 @@ class MainFragment: Fragment() {
     private fun requestCameraPermission() {
         when {
             ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
-                Log.i("kilo", "Permission previously granted")
+                Log.i("TAG", "Permission previously granted")
                 shouldShowCamera.value = true
             }
             ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA) -> {
-                Log.i("kilo", "Show camera permissions dialog")
+                Log.i("TAG", "Show camera permissions dialog")
             }
             else -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }

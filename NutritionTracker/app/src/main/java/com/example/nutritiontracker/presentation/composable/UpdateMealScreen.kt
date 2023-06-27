@@ -45,7 +45,7 @@ fun UpdateMealScreen(
 ){
 
     val mainDataState = viewModel.mainDataState.collectAsState()
-    val meal = mainDataState.value.mealById
+    val meal = mainDataState.value.mealDetails
     val date = remember { mutableStateOf(LocalDate.now()) }
     val timeDialogState = rememberMaterialDialogState()
     val options = listOf(
@@ -78,12 +78,12 @@ fun UpdateMealScreen(
 
 
             AsyncImage(
-                model = meal!!.meals[0].strMealThumb,
+                model = meal.strMealThumb,
                 contentDescription = "description",
                 modifier = Modifier.clickable { openCamera.invoke() }
             )
 
-            Text(text = meal.meals[0].strMeal, fontSize = 25.sp)
+            Text(text = meal.strMeal, fontSize = 25.sp)
             Text(
                 text = options[selectedIndex.value],
                 fontSize = 16.sp,

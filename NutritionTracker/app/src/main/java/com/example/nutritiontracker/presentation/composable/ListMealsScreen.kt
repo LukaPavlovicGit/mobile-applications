@@ -81,8 +81,8 @@ fun ListMeals(
             LazyColumn(
                 modifier = Modifier.weight(1f).padding(bottom = 30.dp),
                 content = {
-                items(mainDataState.value.mealList!!.meals.size) { idx ->
-                    val meal = mainDataState.value.mealList!!.meals[idx]
+                items(mainDataState.value.meals.size) { idx ->
+                    val meal = mainDataState.value.meals[idx]
                     Box(
                         modifier = Modifier.clickable {
                             viewModel.onEvent(MainEvent.MealSelection(meal = meal))

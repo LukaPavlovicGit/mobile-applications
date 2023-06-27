@@ -2,7 +2,6 @@ package com.example.nutritiontracker.presentation.composable
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Space
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,7 +43,6 @@ import com.example.nutritiontracker.data.datasource.local.entities.mealType.Meal
 import com.example.nutritiontracker.events.MainEvent
 import com.example.nutritiontracker.presentation.composable.cammon.LoadImageFromUrl
 import com.example.nutritiontracker.presentation.composable.cammon.SearchMeals
-import com.example.nutritiontracker.states.screens.MainScreenState
 import com.example.nutritiontracker.states.screens.RemoteMenuScreenState
 import com.example.nutritiontracker.viewModel.MainViewModel
 
@@ -98,7 +95,7 @@ fun RemoteMenuScreen(
     viewModel: MainViewModel = viewModel()
 ){
     val energy = viewModel.menuScreenEnergyData.collectAsState()
-    when(energy.value.allCategoriesModel){
+    when(energy.value.categories){
         null -> { Log.e("MenuScreen", "MENU SCREEN DON'T HAVE ENERGY") }
         else -> {
             EnergizeRemoteMenuScreen(viewModel = viewModel)
@@ -157,8 +154,8 @@ private fun ListCategories(
     val categoryDescription = remember { mutableStateOf("") }
 
     LazyColumn(content = {
-        items(energy.value.allCategoriesModel!!.categories.size){ idx->
-            val category = energy.value.allCategoriesModel!!.categories[idx]
+        items(energy.value.categories!!.size){ idx->
+            val category = energy.value.categories!![idx]
             Box(
                 modifier = Modifier.clickable {
                     viewModel.onEvent(MainEvent.CategorySelection(category = category))
@@ -171,13 +168,13 @@ private fun ListCategories(
                         .fillMaxWidth()
                         .padding(10.dp)
                 ){
-                    LoadImageFromUrl(url = category.strCategoryThumb)
-                    Text(text = category.strCategory, fontSize = 20.sp)
+                    LoadImageFromUrl(url = category.imageUri)
+                    Text(text = category.name, fontSize = 20.sp)
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
                         contentDescription = "Overflow Menu",
                         modifier = Modifier.clickable {
-                            categoryDescription.value = category.strCategoryDescription
+                            categoryDescription.value = category.des
                             openDialog.value = true
                         }
                     )
@@ -369,13 +366,13 @@ private fun DropDownMealCategory(
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false }
         ) {
-            if(energy.categoryNamesModel != null) {
-                energy.categoryNamesModel.meals.forEach() { opt ->
+            if(energy.categoryNames != null) {
+                energy.categoryNames.forEach() { opt ->
                     DropdownMenuItem(onClick = {
                         expanded.value = false
-                        viewModel.onEvent(MainEvent.SetLocalSearchFilters(localSearchFilters.value.copy(category = opt.strCategory)))
+                        viewModel.onEvent(MainEvent.SetLocalSearchFilters(localSearchFilters.value.copy(category = opt)))
                     }) {
-                        Text(opt.strCategory)
+                        Text(opt)
                     }
                 }
             }
@@ -396,7 +393,6 @@ private fun DropDownMealCategory(
         )
     }
 }
-
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -425,8 +421,8 @@ private fun DropDownMealIngredient(
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false }
         ) {
-            if(energy.allIngredientsNames != null) {
-                energy.allIngredientsNames.forEach { opt ->
+            if(energy.ingredientsNames != null) {
+                energy.ingredientsNames.forEach { opt ->
                     DropdownMenuItem(onClick = {
                         expanded.value = false
                         viewModel.onEvent(MainEvent.SetLocalSearchFilters(localSearchFilters.value.copy(ingredient = opt)))
@@ -480,13 +476,13 @@ private fun DropDownMealArea(
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false }
         ) {
-            if(energy.areaNamesModel != null) {
-                energy.areaNamesModel.meals.forEach { opt ->
+            if(energy.areaNames != null) {
+                energy.areaNames.forEach { opt ->
                     DropdownMenuItem(onClick = {
                         expanded.value = false
-                        viewModel.onEvent(MainEvent.SetLocalSearchFilters(localSearchFilters.value.copy(area = opt.strArea)))
+                        viewModel.onEvent(MainEvent.SetLocalSearchFilters(localSearchFilters.value.copy(area = opt)))
                     }) {
-                        Text(opt.strArea)
+                        Text(opt)
                     }
                 }
             }

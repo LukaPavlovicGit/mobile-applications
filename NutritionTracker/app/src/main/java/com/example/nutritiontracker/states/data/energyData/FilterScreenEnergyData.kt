@@ -1,12 +1,10 @@
 package com.example.nutritiontracker.states.data.energyData
 
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllAreaNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllCategoryNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AllIngredientsModel
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModel
 
 data class FilterScreenEnergyData(
-    val categoryNamesModel: AllCategoryNamesModel? = null,
-    val areaNamesModel: AllAreaNamesModel? = null,
-    val allIngredientsModel: AllIngredientsModel? = null,
-    val allIngredientsNames: List<String>? = null,
+    val categoryNames: List<String>? = null,
+    val areaNames: List<String>? = null,
+    val ingredientsModel: IngredientsModel? = null,
+    val ingredientsNames: List<String>? = null,
 )

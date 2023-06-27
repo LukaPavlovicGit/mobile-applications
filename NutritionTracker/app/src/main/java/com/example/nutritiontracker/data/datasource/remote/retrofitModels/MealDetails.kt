@@ -3,7 +3,7 @@ package com.example.nutritiontracker.data.datasource.remote.retrofitModels
 import com.example.nutritiontracker.data.datasource.local.entities.mealType.MealType
 import java.time.LocalDate
 
-data class MealXXXXXX(
+data class MealDetails(
 
     var id: Long = -1,
     var dateToEat: LocalDate = LocalDate.now(),

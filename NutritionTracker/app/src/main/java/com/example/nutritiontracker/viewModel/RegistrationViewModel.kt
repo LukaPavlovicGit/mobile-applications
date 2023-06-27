@@ -6,9 +6,8 @@ import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.dtos.UserRegisterDto
 import com.example.nutritiontracker.events.RegistrationEvent
 import com.example.nutritiontracker.passwordValidation.isPasswordValid
-import com.example.nutritiontracker.states.UiState
 import com.example.nutritiontracker.states.data.RegistrationDataState
-import com.example.nutritiontracker.states.requests.AuthRequestState
+import com.example.nutritiontracker.states.requests.AuthRequest
 import com.example.nutritiontracker.states.screens.RegistrationScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,8 +43,8 @@ class RegistrationViewModel @Inject constructor(
                            val password = _registrationDataState.value.password
                            authRepository.register(UserRegisterDto(username, email, password)){
                                when(it){
-                                   is AuthRequestState.Failure -> _registrationScreenState.value = RegistrationScreenState.Failure(it.message)
-                                   AuthRequestState.Success -> _registrationScreenState.value = RegistrationScreenState.Success
+                                   is AuthRequest.Failure -> _registrationScreenState.value = RegistrationScreenState.Failure(it.message)
+                                   AuthRequest.Success -> _registrationScreenState.value = RegistrationScreenState.Success
                                }
                            }
                        }

@@ -1,15 +1,12 @@
 package com.example.nutritiontracker.viewModel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.nutritiontracker.application.SharedPreferencesManager
 import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.dtos.UserLoginDto
 import com.example.nutritiontracker.events.LoginEvent
-import com.example.nutritiontracker.states.UiState
-import com.example.nutritiontracker.states.requests.RetrofitRequestState
 import com.example.nutritiontracker.states.data.LoginDataState
-import com.example.nutritiontracker.states.requests.AuthRequestState
+import com.example.nutritiontracker.states.requests.AuthRequest
 import com.example.nutritiontracker.states.screens.LoginScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -42,8 +39,8 @@ class LoginViewModel @Inject constructor(
                     val password = _loginDataState.value.password
                     userRepository.login(UserLoginDto(email, password)){
                         when(it){
-                            is AuthRequestState.Failure -> _loginScreenState.value = LoginScreenState.Failure(it.message)
-                            AuthRequestState.Success -> {
+                            is AuthRequest.Failure -> _loginScreenState.value = LoginScreenState.Failure(it.message)
+                            AuthRequest.Success -> {
                                 _loginScreenState.value = LoginScreenState.Success
                                 sharedPrefManager.saveUser(email)
                             }
