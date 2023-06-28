@@ -1,6 +1,7 @@
 package com.example.nutritiontracker.presentation.fragments
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -9,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +59,11 @@ class MainFragment: Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-                MainScreen(onUrlClicked = { onUrlClicked(url = it) }, openCamera = { requestCameraPermission() } )
+                MainScreen(
+                    onUrlClicked = { onUrlClicked(url = it) },
+                    openCamera = { requestCameraPermission() },
+                    sendEmail = { sendEmail() }
+                )
 
                 if (shouldShowCamera.value) {
                     CameraView(
@@ -75,6 +81,31 @@ class MainFragment: Fragment() {
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(url)
         startActivity(i)
+    }
+
+    private fun sendEmail(){
+
+        Log.e("EMAIL", viewModel.createPlanDataState.value.email)
+
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(viewModel.createPlanDataState.value.email))
+            putExtra(Intent.EXTRA_SUBJECT, "Meal plan")
+            putExtra(Intent.EXTRA_TEXT, viewModel.createPlanDataState.value.emailBody())
+        }
+        Log.e("EMAIL", viewModel.createPlanDataState.value.emailBody().substring(1,10))
+        try {
+            startActivity(emailIntent)
+        } catch (ex: ActivityNotFoundException) {
+            Log.e("EMAIL", "EXCEPTION")
+        }
+//        if (emailIntent.resolveActivity(requireContext().packageManager) != null) {
+//            Log.e("EMAIL", "YES")
+//            startActivity(emailIntent)
+//        } else {
+//            Log.e("EMAIL", "NO")
+//        }
+
     }
 
     private fun requestCameraPermission() {

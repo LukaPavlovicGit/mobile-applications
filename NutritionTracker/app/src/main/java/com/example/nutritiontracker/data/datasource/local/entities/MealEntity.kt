@@ -14,6 +14,8 @@ data class MealEntity(
     var dateToEat: LocalDate = LocalDate.now(),
     var mealType: MealType = MealType.Breakfast,
 
+    var createdAt: LocalDate = LocalDate.now(),
+
     var idMeal: String = "",
     var strArea: String = "",
     var strCategory: String = "",

@@ -74,6 +74,20 @@ class MealRepositoryImpl (
         }
     }
 
+    override suspend fun getAllEntities(result: (GetSavedMealsRequest<List<MealEntity>>) -> Unit) {
+        try {
+            val entities = mealDao.getAll()
+            if(entities.isEmpty()){
+                result.invoke(GetSavedMealsRequest.NotFound(message = "No saved meals"))
+            }
+            else{
+                result.invoke(GetSavedMealsRequest.Success(data = entities))
+            }
+        } catch (e: Exception) {
+            result.invoke(GetSavedMealsRequest.Failure())
+        }
+    }
+
     override suspend fun delete(id: Long, result: (DeleteMealRequest) -> Unit) {
         if(mealDao.delete(id) > 0){
             result.invoke(DeleteMealRequest.Success)

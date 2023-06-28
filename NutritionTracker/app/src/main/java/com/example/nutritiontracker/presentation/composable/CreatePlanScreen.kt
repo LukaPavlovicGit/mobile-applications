@@ -59,7 +59,8 @@ import java.time.temporal.ChronoUnit
 
 @Composable
 fun CreatePlanScreen(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    sendEmail: () -> Unit
 ){
 
     val createPlanScreenState = viewModel.createPlanScreenState.collectAsState()
@@ -68,14 +69,15 @@ fun CreatePlanScreen(
     when(createPlanScreenState.value){
         CreatePlanScreenState.PeriodSelection -> PeriodSelectionScreen(viewModel = viewModel)
         CreatePlanScreenState.MealSelection -> MealSelectionScreen(viewModel = viewModel)
-        CreatePlanScreenState.Email -> EmailScreen(viewModel = viewModel)
+        CreatePlanScreenState.Email -> EmailScreen(viewModel = viewModel, sendEmail = sendEmail)
     }
 
 }
 
 @Composable
 private fun EmailScreen(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    sendEmail: () -> Unit
 ){
     val data = viewModel.createPlanDataState.collectAsState()
     Box(
@@ -109,7 +111,7 @@ private fun EmailScreen(
 
             Spacer(modifier = Modifier.padding(20.dp))
             Button(
-                onClick = {  },
+                onClick = { sendEmail.invoke() },
                 shape = RoundedCornerShape(15),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green),
                 modifier = Modifier

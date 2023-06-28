@@ -12,11 +12,12 @@ fun MainScreen(
     viewModel: MainViewModel = viewModel(),
     onUrlClicked: (String?) -> Unit,
     openCamera: () -> Unit,
+    sendEmail: () -> Unit
 ){
 
     val mainScreenState = viewModel.mainScreenState.collectAsState()
     when(mainScreenState.value){
-        is MainScreenState.NavigationBarScreen -> NavigationScreen()
+        is MainScreenState.NavigationBarScreen -> NavigationScreen(sendEmail = sendEmail)
         is MainScreenState.ListOfMealsScreen -> ListMealsScreen()
         is MainScreenState.SingleMealScreen -> SingleMealScreen(onUrlClicked = onUrlClicked, openCamera = openCamera)
         MainScreenState.Error -> {

@@ -122,4 +122,14 @@ data class PlanedMeal(
 
     private fun safeStr(str: Any?): String = str?.toString() ?: ""
 
+    override fun toString(): String{
+        val stringBuilder = StringBuilder(strMeal)
+        for (i in 1..20) {
+            if(getIngredientByNum(i).isNotEmpty()){
+                stringBuilder.append("\n")
+                stringBuilder.append(getIngredientByNum(i)+ "-" + getMeasureByNum(i))
+            }
+        }
+        return stringBuilder.toString()
+    }
 }

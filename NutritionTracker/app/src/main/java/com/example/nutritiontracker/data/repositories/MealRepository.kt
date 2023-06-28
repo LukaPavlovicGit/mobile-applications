@@ -25,6 +25,7 @@ interface MealRepository {
 
     suspend fun insert(meal: MealEntity, result: (AddMealRequest) -> Unit)
     suspend fun getAll(result: (GetSavedMealsRequest<List<Meal>>) -> Unit)
+    suspend fun getAllEntities(result: (GetSavedMealsRequest<List<MealEntity>>) -> Unit)
     suspend fun delete(id: Long, result: (DeleteMealRequest) -> Unit)
     suspend fun update(meal: MealEntity, result: (UpdateMealRequest) -> Unit)
     suspend fun findByIdMeal(idMeal: String, result: (GetMealByIdMealRequest<MealDetails>) -> Unit)

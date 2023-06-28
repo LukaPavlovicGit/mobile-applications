@@ -68,9 +68,12 @@ interface MainEvent {
 
     data class InsertToPlanFromRemote(val mealId: String): MainEvent
 
+    object GetChartData: MainEvent
+
     object LoadPlanedMealsByDay: MainEvent
 
     data class DeletePlanedMeal(val mealNum: Int): MainEvent
+//    data class EmailEvent(val mealNum: Int): MainEvent
 
     data class UpdateMeal(val dataToEat: LocalDate, val mealType: MealType): MainEvent
 

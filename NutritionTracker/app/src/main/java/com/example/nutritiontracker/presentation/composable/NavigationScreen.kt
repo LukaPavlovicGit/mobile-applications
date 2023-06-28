@@ -27,14 +27,19 @@ import com.example.nutritiontracker.presentation.composable.navigation.BottomNav
 import com.example.nutritiontracker.viewModel.MainViewModel
 
 @Composable
-fun NavigationScreen(){
+fun NavigationScreen(
+    sendEmail: () -> Unit
+){
 
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomBar(navController = navController) },
         content = { paddingValues ->
             Row(modifier = Modifier.padding(paddingValues)){
-                BottomNavGraph(navController = navController)
+                BottomNavGraph(
+                    navController = navController,
+                    sendEmail = sendEmail
+                )
             }
         }
     )

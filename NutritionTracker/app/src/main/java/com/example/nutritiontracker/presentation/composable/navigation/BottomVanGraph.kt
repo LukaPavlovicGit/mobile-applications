@@ -15,7 +15,8 @@ import com.example.nutritiontracker.viewModel.MainViewModel
 @Composable
 fun BottomNavGraph(
     viewModel: MainViewModel = viewModel(),
-    navController: NavHostController
+    navController: NavHostController,
+    sendEmail: () -> Unit
 ){
 
     NavHost(
@@ -33,7 +34,7 @@ fun BottomNavGraph(
             StatsScreen(viewModel = viewModel)
         }
         composable(route = BottomBar.Plan.route){
-            CreatePlanScreen(viewModel = viewModel)
+            CreatePlanScreen(viewModel = viewModel, sendEmail = sendEmail)
         }
     }
 

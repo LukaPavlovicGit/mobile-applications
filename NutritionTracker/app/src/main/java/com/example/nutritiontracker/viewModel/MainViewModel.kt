@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nutritiontracker.data.datasource.local.entities.MealEntity
 import com.example.nutritiontracker.data.repositories.MealRepository
 import com.example.nutritiontracker.events.MainEvent
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.PlanedMeal
 import com.example.nutritiontracker.presentation.pagination.DefaultPaginator
+import com.example.nutritiontracker.states.data.ChartDataState
 import com.example.nutritiontracker.states.data.CreatePlanDataState
 import com.example.nutritiontracker.states.data.LocalSearchFilters
 import com.example.nutritiontracker.states.screens.ListOfMealsState
@@ -46,6 +48,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,6 +62,9 @@ class MainViewModel @Inject constructor(
 
     private val _createPlanDataState = MutableStateFlow(CreatePlanDataState())
     val createPlanDataState = _createPlanDataState.asStateFlow()
+
+    private val _chartDataState = MutableStateFlow(ChartDataState())
+    val chartDataState = _chartDataState.asStateFlow()
 
     private val _menuScreenEnergyData = MutableStateFlow(MenuScreenEnergyData())
     val menuScreenEnergyData = _menuScreenEnergyData.asStateFlow()
@@ -478,6 +485,27 @@ class MainViewModel @Inject constructor(
                         it.day == _createPlanDataState.value.currDay && it.mealNum == event.mealNum
                     }
                     _createPlanDataState.value = _createPlanDataState.value.copy(byDay = _createPlanDataState.value.plan.filter { meal -> meal.day == _createPlanDataState.value.currDay }.sortedBy { it.mealNum } )
+                }
+            }
+            is MainEvent.GetChartData -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    mealRepository.getAllEntities {
+                        when(it){
+                            is GetSavedMealsRequest.Failure -> {  }
+                            is GetSavedMealsRequest.NotFound -> {  }
+                            is GetSavedMealsRequest.Success -> {
+                                val currentDate = LocalDate.now()
+                                val entities: List<MealEntity> = it.data!!.filter {entity -> ChronoUnit.DAYS.between(entity.createdAt, currentDate) in 0..6}
+                                val map = hashMapOf<Int, Int>()
+                                for(entity in entities){
+                                    val k = ChronoUnit.DAYS.between(entity.createdAt, currentDate).toInt()
+                                    if(map[k] == null) map[k] = 1
+                                    else map[k] = map[k]!! + 1
+                                }
+                                _chartDataState.value = _chartDataState.value.copy(map = map)
+                            }
+                        }
+                    }
                 }
             }
         }
