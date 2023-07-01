@@ -1,7 +1,9 @@
 package com.example.nutritiontracker.presentation.activities
 
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.nutritiontracker.R
 import com.example.nutritiontracker.application.SharedPreferencesManager
@@ -19,7 +21,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        supportActionBar!!.hide()
+        setContentView(R.layout.activity_main)
+        setAppTheme()
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 val transaction = supportFragmentManager.beginTransaction()
@@ -31,8 +35,17 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
-
-        supportActionBar!!.hide()
-        setContentView(R.layout.activity_main)
     }
+
+    private fun setAppTheme() {
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val isDarkModeEnabled = currentNightMode == Configuration.UI_MODE_NIGHT_YES
+        if (isDarkModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+    }
+
+
 }

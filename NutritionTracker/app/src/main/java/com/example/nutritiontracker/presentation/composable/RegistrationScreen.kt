@@ -1,5 +1,6 @@
 package com.example.nutritiontracker.presentation.composable
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -61,6 +62,7 @@ private fun RegistrationForm(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.60f)
+            .background(Color.White)
             .padding(10.dp)
     ) {
 

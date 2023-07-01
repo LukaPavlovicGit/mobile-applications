@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -62,7 +61,6 @@ fun LoginForm(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.60f)
-            .clip(RoundedCornerShape(30.dp, 30.dp, 30.dp, 30.dp))
             .background(Color.White)
             .padding(10.dp)
     ) {

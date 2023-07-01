@@ -28,13 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.nutritiontracker.viewModel.MainViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutritiontracker.presentation.composable.cammon.toast
 
 @Composable
 fun StatsScreen(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = hiltViewModel()
 ){
 
     val chartDataState = viewModel.chartDataState.collectAsState()

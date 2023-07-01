@@ -163,4 +163,7 @@ dependencies {
     // Icons
     implementation "androidx.compose.material:material-icons-extended:1.4.0"
 
+    //eventbus-java
+    implementation "org.greenrobot:eventbus:3.3.1"
+
 }

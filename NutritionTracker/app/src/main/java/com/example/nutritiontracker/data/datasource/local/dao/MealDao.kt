@@ -4,28 +4,26 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.nutritiontracker.data.datasource.local.entities.MealEntity
-import io.reactivex.Completable
-import kotlinx.coroutines.flow.Flow
+import com.example.nutritiontracker.data.datasource.local.entities.MealDetailsLocalEntity
 
 @Dao
 interface MealDao {
 
     @Insert
-    fun insert(meal: MealEntity): Long
+    fun insert(meal: MealDetailsLocalEntity): Long
 
-    @Query("SELECT * FROM meals ORDER BY strArea ASC")
-    fun getAll(): List<MealEntity>
+    @Query("SELECT * FROM meals ORDER BY area ASC")
+    fun getAll(): List<MealDetailsLocalEntity>
 
     @Query("DELETE FROM meals WHERE id = :id")
     fun delete(id: Long): Int
 
     @Update
-    fun update(meal: MealEntity): Int
+    fun update(meal: MealDetailsLocalEntity): Int
 
-    @Query("SELECT * FROM meals WHERE idMeal = :idMeal")
-    fun findByIdMeal(idMeal: String): MealEntity?
+    @Query("SELECT * FROM meals WHERE remoteIdMeal = :remoteIdMeal")
+    fun findByIdMeal(remoteIdMeal: String): MealDetailsLocalEntity?
 
     @Query("SELECT * FROM meals WHERE id = :id")
-    fun findById(id: Long): MealEntity?
+    fun findById(id: Long): MealDetailsLocalEntity?
 }

@@ -1,20 +1,24 @@
 package com.example.nutritiontracker.utils
 
-import com.example.nutritiontracker.data.datasource.local.entities.MealEntity
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetails
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.PlanedMeal
+import com.example.nutritiontracker.data.datasource.local.entities.MealDetailsLocalEntity
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.CategoryRemoteEntity
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealRemoteEntity
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetailsRemoteEntity
+import com.example.nutritiontracker.domainModels.Category
+import com.example.nutritiontracker.domainModels.Meal
+import com.example.nutritiontracker.domainModels.MealDetails
+import com.example.nutritiontracker.domainModels.PlanedMeal
 
 class Mapper {
 
 
     companion object {
 
-        fun mealToMealEntity(meal: MealDetails): MealEntity =
-            MealEntity(
-                idMeal = safeStr(meal.idMeal),
-                strArea = safeStr(meal.strArea),
-                strCategory = safeStr(meal.strCategory),
+        fun mealToMealEntity(meal: MealDetailsRemoteEntity): MealDetailsLocalEntity =
+            MealDetailsLocalEntity(
+                remoteIdMeal = safeStr(meal.remoteIdMeal),
+                area = safeStr(meal.area),
+                category = safeStr(meal.category),
                 strIngredient1 = safeStr(meal.strIngredient1),
                 strIngredient10 = safeStr(meal.strIngredient10),
                 strIngredient11 = safeStr(meal.strIngredient11),
@@ -35,8 +39,8 @@ class Mapper {
                 strIngredient8 = safeStr(meal.strIngredient8),
                 strIngredient9 = safeStr(meal.strIngredient9),
                 strInstructions = safeStr(meal.strInstructions),
-                strMeal = safeStr(meal.strMeal),
-                strMealThumb = safeStr(meal.strMealThumb),
+                name = safeStr(meal.name),
+                imageUri = safeStr(meal.imageUri),
                 strMeasure1 = safeStr(meal.strMeasure1),
                 strMeasure10 = safeStr(meal.strMeasure10),
                 strMeasure11 = safeStr(meal.strMeasure11),
@@ -57,15 +61,15 @@ class Mapper {
                 strMeasure7 = safeStr(meal.strMeasure7),
                 strMeasure8 = safeStr(meal.strMeasure8),
                 strMeasure9 = safeStr(meal.strMeasure9),
-                strTags = safeStr(meal.strTags),
-                strYoutube = safeStr(meal.strYoutube)
+                tags = safeStr(meal.strTags),
+                videoLink = safeStr(meal.strYoutube)
             )
 
-        fun mealEntityToMealDetails(meal: MealEntity): MealDetails =
-            MealDetails(
-                idMeal = safeStr(meal.idMeal),
-                strArea = safeStr(meal.strArea),
-                strCategory = safeStr(meal.strCategory),
+        fun mealEntityToMealDetails(meal: MealDetailsLocalEntity): MealDetailsRemoteEntity =
+            MealDetailsRemoteEntity(
+                remoteIdMeal = safeStr(meal.remoteIdMeal),
+                area = safeStr(meal.area),
+                category = safeStr(meal.category),
                 strIngredient1 = safeStr(meal.strIngredient1),
                 strIngredient10 = safeStr(meal.strIngredient10),
                 strIngredient11 = safeStr(meal.strIngredient11),
@@ -86,8 +90,8 @@ class Mapper {
                 strIngredient8 = safeStr(meal.strIngredient8),
                 strIngredient9 = safeStr(meal.strIngredient9),
                 strInstructions = safeStr(meal.strInstructions),
-                strMeal = safeStr(meal.strMeal),
-                strMealThumb = safeStr(meal.strMealThumb),
+                name = safeStr(meal.name),
+                imageUri = safeStr(meal.imageUri),
                 strMeasure1 = safeStr(meal.strMeasure1),
                 strMeasure10 = safeStr(meal.strMeasure10),
                 strMeasure11 = safeStr(meal.strMeasure11),
@@ -108,27 +112,27 @@ class Mapper {
                 strMeasure7 = safeStr(meal.strMeasure7),
                 strMeasure8 = safeStr(meal.strMeasure8),
                 strMeasure9 = safeStr(meal.strMeasure9),
-                strTags = safeStr(meal.strTags),
-                strYoutube = safeStr(meal.strYoutube)
+                strTags = safeStr(meal.tags),
+                strYoutube = safeStr(meal.videoLink)
             )
 
-        fun mealEntityToMeal(mealEntity: MealEntity): Meal =
-            Meal(
-                idMeal = safeStr(mealEntity.idMeal),
-                strMeal = safeStr(mealEntity.strMeal),
-                strMealThumb = safeStr(mealEntity.strMealThumb)
+        fun mealEntityToMeal(mealDetailsLocalEntity: MealDetailsLocalEntity): MealRemoteEntity =
+            MealRemoteEntity(
+                remoteIdMeal = safeStr(mealDetailsLocalEntity.remoteIdMeal),
+                name = safeStr(mealDetailsLocalEntity.name),
+                imageUri = safeStr(mealDetailsLocalEntity.imageUri)
             )
 
-        fun mealDetailsToPlanedMeal(meal: MealDetails): PlanedMeal =
+        fun mealDetailsToPlanedMeal(meal: MealDetailsRemoteEntity): PlanedMeal =
             PlanedMeal(
                 id = meal.id,
                 dateToEat = meal.dateToEat,
                 mealType = meal.mealType,
                 saved = true,
 
-                idMeal = safeStr(meal.idMeal),
-                strArea = safeStr(meal.strArea),
-                strCategory = safeStr(meal.strCategory),
+                remoteIdMeal = safeStr(meal.remoteIdMeal),
+                area = safeStr(meal.area),
+                category = safeStr(meal.category),
                 strIngredient1 = safeStr(meal.strIngredient1),
                 strIngredient10 = safeStr(meal.strIngredient10),
                 strIngredient11 = safeStr(meal.strIngredient11),
@@ -150,8 +154,8 @@ class Mapper {
                 strIngredient8 = safeStr(meal.strIngredient8),
                 strIngredient9 = safeStr(meal.strIngredient9),
                 strInstructions = safeStr(meal.strInstructions),
-                strMeal = safeStr(meal.strMeal),
-                strMealThumb = safeStr(meal.strMealThumb),
+                name = safeStr(meal.name),
+                imageUri = safeStr(meal.imageUri),
                 strMeasure1 = safeStr(meal.strMeasure1),
                 strMeasure10 = safeStr(meal.strMeasure10),
                 strMeasure11 = safeStr(meal.strMeasure11),
@@ -182,67 +186,192 @@ class Mapper {
                 strSource = ""
             )
 
-        fun mealEntityToPlanedMeal(mealEntity: MealEntity): PlanedMeal =
+        fun mealEntityToPlanedMeal(mealDetailsLocalEntity: MealDetailsLocalEntity): PlanedMeal =
             PlanedMeal(
-                id = mealEntity.id,
-                dateToEat = mealEntity.dateToEat,
-                mealType = mealEntity.mealType,
+                id = mealDetailsLocalEntity.id,
+                dateToEat = mealDetailsLocalEntity.dateToEat,
+                mealType = mealDetailsLocalEntity.mealType,
                 saved = true,
 
-                idMeal = safeStr(mealEntity.idMeal),
-                strArea = safeStr(mealEntity.strArea),
-                strCategory = safeStr(mealEntity.strCategory),
-                strIngredient1 = safeStr(mealEntity.strIngredient1),
-                strIngredient10 = safeStr(mealEntity.strIngredient10),
-                strIngredient11 = safeStr(mealEntity.strIngredient11),
-                strIngredient12 = safeStr(mealEntity.strIngredient12),
-                strIngredient13 = safeStr(mealEntity.strIngredient13),
-                strIngredient14 = safeStr(mealEntity.strIngredient14),
-                strIngredient15 = safeStr(mealEntity.strIngredient15),
-                strIngredient16 = safeStr(mealEntity.strIngredient16),
-                strIngredient17 = safeStr(mealEntity.strIngredient17),
-                strIngredient18 = safeStr(mealEntity.strIngredient18),
-                strIngredient19 = safeStr(mealEntity.strIngredient19),
-                strIngredient2 = safeStr(mealEntity.strIngredient2),
-                strIngredient20 = safeStr(mealEntity.strIngredient20),
-                strIngredient3 = safeStr(mealEntity.strIngredient3),
-                strIngredient4 = safeStr(mealEntity.strIngredient4),
-                strIngredient5 = safeStr(mealEntity.strIngredient5),
-                strIngredient6 = safeStr(mealEntity.strIngredient6),
-                strIngredient7 = safeStr(mealEntity.strIngredient7),
-                strIngredient8 = safeStr(mealEntity.strIngredient8),
-                strIngredient9 = safeStr(mealEntity.strIngredient9),
-                strInstructions = safeStr(mealEntity.strInstructions),
-                strMeal = safeStr(mealEntity.strMeal),
-                strMealThumb = safeStr(mealEntity.strMealThumb),
-                strMeasure1 = safeStr(mealEntity.strMeasure1),
-                strMeasure10 = safeStr(mealEntity.strMeasure10),
-                strMeasure11 = safeStr(mealEntity.strMeasure11),
-                strMeasure12 = safeStr(mealEntity.strMeasure12),
-                strMeasure13 = safeStr(mealEntity.strMeasure13),
-                strMeasure14 = safeStr(mealEntity.strMeasure14),
-                strMeasure15 = safeStr(mealEntity.strMeasure15),
-                strMeasure16 = safeStr(mealEntity.strMeasure16),
-                strMeasure17 = safeStr(mealEntity.strMeasure17),
-                strMeasure18 = safeStr(mealEntity.strMeasure18),
-                strMeasure19 = safeStr(mealEntity.strMeasure19),
-                strMeasure2 = safeStr(mealEntity.strMeasure2),
-                strMeasure20 = safeStr(mealEntity.strMeasure20),
-                strMeasure3 = safeStr(mealEntity.strMeasure3),
-                strMeasure4 = safeStr(mealEntity.strMeasure4),
-                strMeasure5 = safeStr(mealEntity.strMeasure5),
-                strMeasure6 = safeStr(mealEntity.strMeasure6),
-                strMeasure7 = safeStr(mealEntity.strMeasure7),
-                strMeasure8 = safeStr(mealEntity.strMeasure8),
-                strMeasure9 = safeStr(mealEntity.strMeasure9),
-                strTags = safeStr(mealEntity.strTags),
-                strYoutube = safeStr(mealEntity.strYoutube),
+                remoteIdMeal = safeStr(mealDetailsLocalEntity.remoteIdMeal),
+                area = safeStr(mealDetailsLocalEntity.area),
+                category = safeStr(mealDetailsLocalEntity.category),
+                strIngredient1 = safeStr(mealDetailsLocalEntity.strIngredient1),
+                strIngredient10 = safeStr(mealDetailsLocalEntity.strIngredient10),
+                strIngredient11 = safeStr(mealDetailsLocalEntity.strIngredient11),
+                strIngredient12 = safeStr(mealDetailsLocalEntity.strIngredient12),
+                strIngredient13 = safeStr(mealDetailsLocalEntity.strIngredient13),
+                strIngredient14 = safeStr(mealDetailsLocalEntity.strIngredient14),
+                strIngredient15 = safeStr(mealDetailsLocalEntity.strIngredient15),
+                strIngredient16 = safeStr(mealDetailsLocalEntity.strIngredient16),
+                strIngredient17 = safeStr(mealDetailsLocalEntity.strIngredient17),
+                strIngredient18 = safeStr(mealDetailsLocalEntity.strIngredient18),
+                strIngredient19 = safeStr(mealDetailsLocalEntity.strIngredient19),
+                strIngredient2 = safeStr(mealDetailsLocalEntity.strIngredient2),
+                strIngredient20 = safeStr(mealDetailsLocalEntity.strIngredient20),
+                strIngredient3 = safeStr(mealDetailsLocalEntity.strIngredient3),
+                strIngredient4 = safeStr(mealDetailsLocalEntity.strIngredient4),
+                strIngredient5 = safeStr(mealDetailsLocalEntity.strIngredient5),
+                strIngredient6 = safeStr(mealDetailsLocalEntity.strIngredient6),
+                strIngredient7 = safeStr(mealDetailsLocalEntity.strIngredient7),
+                strIngredient8 = safeStr(mealDetailsLocalEntity.strIngredient8),
+                strIngredient9 = safeStr(mealDetailsLocalEntity.strIngredient9),
+                strInstructions = safeStr(mealDetailsLocalEntity.strInstructions),
+                name = safeStr(mealDetailsLocalEntity.name),
+                imageUri = safeStr(mealDetailsLocalEntity.imageUri),
+                strMeasure1 = safeStr(mealDetailsLocalEntity.strMeasure1),
+                strMeasure10 = safeStr(mealDetailsLocalEntity.strMeasure10),
+                strMeasure11 = safeStr(mealDetailsLocalEntity.strMeasure11),
+                strMeasure12 = safeStr(mealDetailsLocalEntity.strMeasure12),
+                strMeasure13 = safeStr(mealDetailsLocalEntity.strMeasure13),
+                strMeasure14 = safeStr(mealDetailsLocalEntity.strMeasure14),
+                strMeasure15 = safeStr(mealDetailsLocalEntity.strMeasure15),
+                strMeasure16 = safeStr(mealDetailsLocalEntity.strMeasure16),
+                strMeasure17 = safeStr(mealDetailsLocalEntity.strMeasure17),
+                strMeasure18 = safeStr(mealDetailsLocalEntity.strMeasure18),
+                strMeasure19 = safeStr(mealDetailsLocalEntity.strMeasure19),
+                strMeasure2 = safeStr(mealDetailsLocalEntity.strMeasure2),
+                strMeasure20 = safeStr(mealDetailsLocalEntity.strMeasure20),
+                strMeasure3 = safeStr(mealDetailsLocalEntity.strMeasure3),
+                strMeasure4 = safeStr(mealDetailsLocalEntity.strMeasure4),
+                strMeasure5 = safeStr(mealDetailsLocalEntity.strMeasure5),
+                strMeasure6 = safeStr(mealDetailsLocalEntity.strMeasure6),
+                strMeasure7 = safeStr(mealDetailsLocalEntity.strMeasure7),
+                strMeasure8 = safeStr(mealDetailsLocalEntity.strMeasure8),
+                strMeasure9 = safeStr(mealDetailsLocalEntity.strMeasure9),
+                strTags = safeStr(mealDetailsLocalEntity.tags),
+                strYoutube = safeStr(mealDetailsLocalEntity.videoLink),
 
                 dateModified = "",
                 strCreativeCommonsConfirmed = "",
                 strDrinkAlternate = "",
                 strImageSource = "",
                 strSource = ""
+            )
+
+
+        fun mealDetailsRemoteEntityToMealDetails(mealDetailsRemoteEntity: MealDetailsRemoteEntity): MealDetails =
+            MealDetails(
+                remoteIdMeal = safeStr(mealDetailsRemoteEntity.remoteIdMeal),
+                area = safeStr(mealDetailsRemoteEntity.area),
+                category = safeStr(mealDetailsRemoteEntity.category),
+                strIngredient1 = safeStr(mealDetailsRemoteEntity.strIngredient1),
+                strIngredient10 = safeStr(mealDetailsRemoteEntity.strIngredient10),
+                strIngredient11 = safeStr(mealDetailsRemoteEntity.strIngredient11),
+                strIngredient12 = safeStr(mealDetailsRemoteEntity.strIngredient12),
+                strIngredient13 = safeStr(mealDetailsRemoteEntity.strIngredient13),
+                strIngredient14 = safeStr(mealDetailsRemoteEntity.strIngredient14),
+                strIngredient15 = safeStr(mealDetailsRemoteEntity.strIngredient15),
+                strIngredient16 = safeStr(mealDetailsRemoteEntity.strIngredient16),
+                strIngredient17 = safeStr(mealDetailsRemoteEntity.strIngredient17),
+                strIngredient18 = safeStr(mealDetailsRemoteEntity.strIngredient18),
+                strIngredient19 = safeStr(mealDetailsRemoteEntity.strIngredient19),
+                strIngredient2 = safeStr(mealDetailsRemoteEntity.strIngredient2),
+                strIngredient20 = safeStr(mealDetailsRemoteEntity.strIngredient20),
+                strIngredient4 = safeStr(mealDetailsRemoteEntity.strIngredient4),
+                strIngredient5 = safeStr(mealDetailsRemoteEntity.strIngredient5),
+                strIngredient6 = safeStr(mealDetailsRemoteEntity.strIngredient6),
+                strIngredient7 = safeStr(mealDetailsRemoteEntity.strIngredient7),
+                strIngredient8 = safeStr(mealDetailsRemoteEntity.strIngredient8),
+                strIngredient9 = safeStr(mealDetailsRemoteEntity.strIngredient9),
+                strInstructions = safeStr(mealDetailsRemoteEntity.strInstructions),
+                name = safeStr(mealDetailsRemoteEntity.name),
+                imageUri = safeStr(mealDetailsRemoteEntity.imageUri),
+                strMeasure1 = safeStr(mealDetailsRemoteEntity.strMeasure1),
+                strMeasure10 = safeStr(mealDetailsRemoteEntity.strMeasure10),
+                strMeasure11 = safeStr(mealDetailsRemoteEntity.strMeasure11),
+                strMeasure12 = safeStr(mealDetailsRemoteEntity.strMeasure12),
+                strMeasure13 = safeStr(mealDetailsRemoteEntity.strMeasure13),
+                strMeasure14 = safeStr(mealDetailsRemoteEntity.strMeasure14),
+                strMeasure15 = safeStr(mealDetailsRemoteEntity.strMeasure15),
+                strMeasure16 = safeStr(mealDetailsRemoteEntity.strMeasure16),
+                strMeasure17 = safeStr(mealDetailsRemoteEntity.strMeasure17),
+                strMeasure18 = safeStr(mealDetailsRemoteEntity.strMeasure18),
+                strMeasure19 = safeStr(mealDetailsRemoteEntity.strMeasure19),
+                strMeasure2 = safeStr(mealDetailsRemoteEntity.strMeasure2),
+                strMeasure20 = safeStr(mealDetailsRemoteEntity.strMeasure20),
+                strMeasure3 = safeStr(mealDetailsRemoteEntity.strMeasure3),
+                strMeasure4 = safeStr(mealDetailsRemoteEntity.strMeasure4),
+                strMeasure5 = safeStr(mealDetailsRemoteEntity.strMeasure5),
+                strMeasure6 = safeStr(mealDetailsRemoteEntity.strMeasure6),
+                strMeasure7 = safeStr(mealDetailsRemoteEntity.strMeasure7),
+                strMeasure8 = safeStr(mealDetailsRemoteEntity.strMeasure8),
+                strMeasure9 = safeStr(mealDetailsRemoteEntity.strMeasure9),
+                strTags = safeStr(mealDetailsRemoteEntity.strTags),
+                strYoutube = safeStr(mealDetailsRemoteEntity.strYoutube)
+            )
+
+        fun mealDetailsLocalEntityToMealDetails(mealDetailsLocalEntity: MealDetailsLocalEntity): MealDetails =
+            MealDetails(
+
+                id = mealDetailsLocalEntity.id,
+                dateToEat = mealDetailsLocalEntity.dateToEat,
+                mealType = mealDetailsLocalEntity.mealType,
+                saved = true,
+                createdAt = mealDetailsLocalEntity.createdAt,
+
+                remoteIdMeal = safeStr(mealDetailsLocalEntity.remoteIdMeal),
+                area = safeStr(mealDetailsLocalEntity.area),
+                category = safeStr(mealDetailsLocalEntity.category),
+                strIngredient1 = safeStr(mealDetailsLocalEntity.strIngredient1),
+                strIngredient10 = safeStr(mealDetailsLocalEntity.strIngredient10),
+                strIngredient11 = safeStr(mealDetailsLocalEntity.strIngredient11),
+                strIngredient12 = safeStr(mealDetailsLocalEntity.strIngredient12),
+                strIngredient13 = safeStr(mealDetailsLocalEntity.strIngredient13),
+                strIngredient14 = safeStr(mealDetailsLocalEntity.strIngredient14),
+                strIngredient15 = safeStr(mealDetailsLocalEntity.strIngredient15),
+                strIngredient16 = safeStr(mealDetailsLocalEntity.strIngredient16),
+                strIngredient17 = safeStr(mealDetailsLocalEntity.strIngredient17),
+                strIngredient18 = safeStr(mealDetailsLocalEntity.strIngredient18),
+                strIngredient19 = safeStr(mealDetailsLocalEntity.strIngredient19),
+                strIngredient2 = safeStr(mealDetailsLocalEntity.strIngredient2),
+                strIngredient20 = safeStr(mealDetailsLocalEntity.strIngredient20),
+                strIngredient4 = safeStr(mealDetailsLocalEntity.strIngredient4),
+                strIngredient5 = safeStr(mealDetailsLocalEntity.strIngredient5),
+                strIngredient6 = safeStr(mealDetailsLocalEntity.strIngredient6),
+                strIngredient7 = safeStr(mealDetailsLocalEntity.strIngredient7),
+                strIngredient8 = safeStr(mealDetailsLocalEntity.strIngredient8),
+                strIngredient9 = safeStr(mealDetailsLocalEntity.strIngredient9),
+                strInstructions = safeStr(mealDetailsLocalEntity.strInstructions),
+                name = safeStr(mealDetailsLocalEntity.name),
+                imageUri = safeStr(mealDetailsLocalEntity.imageUri),
+                strMeasure1 = safeStr(mealDetailsLocalEntity.strMeasure1),
+                strMeasure10 = safeStr(mealDetailsLocalEntity.strMeasure10),
+                strMeasure11 = safeStr(mealDetailsLocalEntity.strMeasure11),
+                strMeasure12 = safeStr(mealDetailsLocalEntity.strMeasure12),
+                strMeasure13 = safeStr(mealDetailsLocalEntity.strMeasure13),
+                strMeasure14 = safeStr(mealDetailsLocalEntity.strMeasure14),
+                strMeasure15 = safeStr(mealDetailsLocalEntity.strMeasure15),
+                strMeasure16 = safeStr(mealDetailsLocalEntity.strMeasure16),
+                strMeasure17 = safeStr(mealDetailsLocalEntity.strMeasure17),
+                strMeasure18 = safeStr(mealDetailsLocalEntity.strMeasure18),
+                strMeasure19 = safeStr(mealDetailsLocalEntity.strMeasure19),
+                strMeasure2 = safeStr(mealDetailsLocalEntity.strMeasure2),
+                strMeasure20 = safeStr(mealDetailsLocalEntity.strMeasure20),
+                strMeasure3 = safeStr(mealDetailsLocalEntity.strMeasure3),
+                strMeasure4 = safeStr(mealDetailsLocalEntity.strMeasure4),
+                strMeasure5 = safeStr(mealDetailsLocalEntity.strMeasure5),
+                strMeasure6 = safeStr(mealDetailsLocalEntity.strMeasure6),
+                strMeasure7 = safeStr(mealDetailsLocalEntity.strMeasure7),
+                strMeasure8 = safeStr(mealDetailsLocalEntity.strMeasure8),
+                strMeasure9 = safeStr(mealDetailsLocalEntity.strMeasure9),
+                strTags = safeStr(mealDetailsLocalEntity.tags),
+                strYoutube = safeStr(mealDetailsLocalEntity.videoLink)
+            )
+
+        fun mealRemoteEntityToMeal(remoteEntity: MealRemoteEntity): Meal =
+            Meal(
+                remoteIdMeal = safeStr(remoteEntity.remoteIdMeal),
+                name = safeStr(remoteEntity.name),
+                imageUri = safeStr(remoteEntity.imageUri),
+            )
+
+        fun categoryRemoteEntityToCategory(category: CategoryRemoteEntity): Category =
+            Category(
+                id = category.id,
+                name = category.name,
+                des = category.des,
+                imageUri = category.imageUri
             )
 
 

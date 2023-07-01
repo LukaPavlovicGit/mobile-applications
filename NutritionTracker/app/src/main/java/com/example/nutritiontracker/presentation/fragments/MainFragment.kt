@@ -19,11 +19,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.nutritiontracker.events.MainEvent
+import com.example.nutritiontracker.events.EventBusEvent
 import com.example.nutritiontracker.presentation.composable.MainScreen
 import com.example.nutritiontracker.presentation.composable.cammon.CameraView
 import com.example.nutritiontracker.viewModel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -59,12 +61,7 @@ class MainFragment: Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-                MainScreen(
-                    onUrlClicked = { onUrlClicked(url = it) },
-                    openCamera = { requestCameraPermission() },
-                    sendEmail = { sendEmail() }
-                )
-
+                MainScreen()
                 if (shouldShowCamera.value) {
                     CameraView(
                         outputDirectory = outputDirectory,
@@ -77,38 +74,23 @@ class MainFragment: Fragment() {
         }
     }
 
-    private fun onUrlClicked(url :String?){
-        val i = Intent(Intent.ACTION_VIEW)
-        i.data = Uri.parse(url)
-        startActivity(i)
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
     }
 
-    private fun sendEmail(){
-
-        Log.e("EMAIL", viewModel.createPlanDataState.value.email)
-
-        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(viewModel.createPlanDataState.value.email))
-            putExtra(Intent.EXTRA_SUBJECT, "Meal plan")
-            putExtra(Intent.EXTRA_TEXT, viewModel.createPlanDataState.value.emailBody())
-        }
-        Log.e("EMAIL", viewModel.createPlanDataState.value.emailBody().substring(1,10))
-        try {
-            startActivity(emailIntent)
-        } catch (ex: ActivityNotFoundException) {
-            Log.e("EMAIL", "EXCEPTION")
-        }
-//        if (emailIntent.resolveActivity(requireContext().packageManager) != null) {
-//            Log.e("EMAIL", "YES")
-//            startActivity(emailIntent)
-//        } else {
-//            Log.e("EMAIL", "NO")
-//        }
-
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
-    private fun requestCameraPermission() {
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+
+    private fun cameraRequest(){
         when {
             ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
                 Log.i("TAG", "Permission previously granted")
@@ -122,8 +104,8 @@ class MainFragment: Fragment() {
     }
 
     private fun handleImageCapture(uri: Uri) {
+        EventBus.getDefault().postSticky(EventBusEvent.MealImageUrl(uri.toString()))
         shouldShowCamera.value = false
-        viewModel.onEvent(MainEvent.SetMealPictureUri(uri.toString()))
     }
 
     private fun getOutputDirectory(): File {
@@ -131,12 +113,50 @@ class MainFragment: Fragment() {
             File(it, "myPictures").apply { mkdirs() }
         }
 
-        return if (mediaDir != null && mediaDir.exists()) mediaDir else  requireActivity().filesDir
+        return if (mediaDir != null && mediaDir.exists()) mediaDir else requireActivity().filesDir
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
+    private fun openUrl(url: String){
+        if(url.isEmpty()){
+            Toast.makeText(requireContext(), "Not available", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val i = Intent(Intent.ACTION_VIEW)
+        i.data = Uri.parse(url)
+        startActivity(i)
     }
+
+    private fun sendEmail(receiver: String, subject: String, body: String){
+
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(receiver))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+        }
+        try {
+            startActivity(emailIntent)
+            Toast.makeText(requireContext(), "Email sent", Toast.LENGTH_SHORT).show()
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), "Email in not sent", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+
+    @Subscribe(sticky = true)
+    fun handleEvent(event: EventBusEvent) {
+        when(event){
+            EventBusEvent.CameraRequest -> cameraRequest()
+            is EventBusEvent.MessageToast -> Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+            is EventBusEvent.SendEmail -> sendEmail(event.receiver, event.subject, event.body)
+            is EventBusEvent.OpenUrl -> openUrl(event.url)
+            else -> {  }
+        }
+        // prevent event from re-delivering, like when leaving and coming back to app
+        EventBus.getDefault().removeStickyEvent(event);
+    }
+
+
 
 }

@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Tab
@@ -23,7 +21,6 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,31 +28,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.nutritiontracker.viewModel.MainViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nutritiontracker.events.MainEvent
-import com.example.nutritiontracker.states.screens.FilterScreenState
-
-@Composable
-fun FilterScreen(
-    viewModel: MainViewModel = viewModel()
-){
-    val menuScreenState = viewModel.filterScreenState.collectAsState()
-    when(menuScreenState.value){
-        FilterScreenState.Default -> TabScreen(viewModel = viewModel)
-        FilterScreenState.Error -> TODO()
-    }
-
-}
 
 @Composable
 private fun TabScreen(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = hiltViewModel()
 ) {
     val tabOptions = listOf("Categories", "Areas", "Ingredients")
-    val selectedTabIndex = remember { mutableStateOf(viewModel.navigationData.lastFilterScreenTabIdx) }
-
-
+    val selectedTabIndex = remember { mutableStateOf(0) }
 
     Column {
         TabRow(
@@ -69,7 +50,6 @@ private fun TabScreen(
                     selected = selectedTabIndex.value == index,
                     onClick = {
                         selectedTabIndex.value = index
-                        viewModel.onEvent(MainEvent.SetNavigationData(viewModel.navigationData.copy(lastFilterScreenTabIdx = index)))
                     }
                 ) {
                     Text(text = title)
@@ -78,18 +58,18 @@ private fun TabScreen(
         }
 
         when (selectedTabIndex.value) {
-            0 -> CategoriesTab(viewModel = viewModel)
-            1 -> AreasTab(viewModel = viewModel)
-            2 -> IngredientsTab(viewModel = viewModel)
+            0 -> CategoriesTab()
+            1 -> AreasTab()
+            2 -> IngredientsTab()
         }
     }
 }
 
 @Composable
 private fun CategoriesTab(
-    viewModel: MainViewModel = viewModel(),
+    viewModel: MainViewModel = hiltViewModel()
 ) {
-    val energy = viewModel.filterScreenEnergyData.collectAsState()
+//    val energy = viewModel.filterScreenEnergyData.collectAsState()
     val expanded = remember { mutableStateOf(false) }
     val selectedOption = remember { mutableStateOf("") }
     val inputText = remember { mutableStateOf("") }
@@ -109,21 +89,21 @@ private fun CategoriesTab(
                 )
             }
 
-            if(energy.value.categoryNames != null){
-                DropdownMenu(
-                    expanded = expanded.value,
-                    onDismissRequest = { expanded.value = false }
-                ) {
-                    energy.value.categoryNames!!.forEach { opt ->
-                        DropdownMenuItem(onClick = {
-                            expanded.value = false
-                            inputText.value = opt
-                        }) {
-                            Text(opt)
-                        }
-                    }
-                }
-            }
+//            if(energy.value.categoryNames != null){
+//                DropdownMenu(
+//                    expanded = expanded.value,
+//                    onDismissRequest = { expanded.value = false }
+//                ) {
+//                    energy.value.categoryNames!!.forEach { opt ->
+//                        DropdownMenuItem(onClick = {
+//                            expanded.value = false
+//                            inputText.value = opt
+//                        }) {
+//                            Text(text = opt)
+//                        }
+//                    }
+//                }
+//            }
             TextField(
                 value = inputText.value,
                 label = { Text(text = "search by category") },
@@ -141,7 +121,9 @@ private fun CategoriesTab(
         }
         Spacer(modifier = Modifier.size(100.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByCategory(category = inputText.value)) },
+            onClick = {
+//                viewModel.onEvent(MainEvent.FilterMealsByCategory(category = inputText.value))
+                      },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -154,9 +136,9 @@ private fun CategoriesTab(
 
 @Composable
 private fun AreasTab(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = hiltViewModel()
 ) {
-    val energy = viewModel.filterScreenEnergyData.collectAsState()
+//    val energy = viewModel.filterScreenEnergyData.collectAsState()
     val expanded = remember { mutableStateOf(false) }
     val selectedOption = remember { mutableStateOf("") }
     val inputText = remember { mutableStateOf("") }
@@ -176,21 +158,21 @@ private fun AreasTab(
                 )
             }
 
-            if(energy.value.areaNames != null){
-                DropdownMenu(
-                    expanded = expanded.value,
-                    onDismissRequest = { expanded.value = false }
-                ) {
-                    energy.value.areaNames!!.forEach { opt ->
-                        DropdownMenuItem(onClick = {
-                            expanded.value = false
-                            inputText.value = opt
-                        }) {
-                            Text(opt)
-                        }
-                    }
-                }
-            }
+//            if(energy.value.areaNames != null){
+//                DropdownMenu(
+//                    expanded = expanded.value,
+//                    onDismissRequest = { expanded.value = false }
+//                ) {
+//                    energy.value.areaNames!!.forEach { opt ->
+//                        DropdownMenuItem(onClick = {
+//                            expanded.value = false
+//                            inputText.value = opt
+//                        }) {
+//                            Text(text = opt)
+//                        }
+//                    }
+//                }
+//            }
             TextField(
                 value = inputText.value,
                 label = { Text(text = "search by area") },
@@ -208,7 +190,9 @@ private fun AreasTab(
         }
         Spacer(modifier = Modifier.size(100.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByArea(area = inputText.value)) },
+            onClick = {
+//                viewModel.onEvent(MainEvent.FilterMealsByArea(area = inputText.value))
+            },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -221,9 +205,9 @@ private fun AreasTab(
 
 @Composable
 private fun IngredientsTab(
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = hiltViewModel()
 ) {
-    val energy = viewModel.filterScreenEnergyData.collectAsState()
+//    val energy = viewModel.filterScreenEnergyData.collectAsState()
     val expanded = remember { mutableStateOf(false) }
     val selectedOption = remember { mutableStateOf("") }
     val inputText = remember { mutableStateOf("") }
@@ -243,21 +227,21 @@ private fun IngredientsTab(
                 )
             }
 
-            if(energy.value.ingredientsNames != null){
-                DropdownMenu(
-                    expanded = expanded.value,
-                    onDismissRequest = { expanded.value = false }
-                ) {
-                    energy.value.ingredientsNames!!.forEach { opt ->
-                        DropdownMenuItem(onClick = {
-                            expanded.value = false
-                            inputText.value = opt
-                        }) {
-                            Text(opt)
-                        }
-                    }
-                }
-            }
+//            if(energy.value.ingredientsNames != null){
+//                DropdownMenu(
+//                    expanded = expanded.value,
+//                    onDismissRequest = { expanded.value = false }
+//                ) {
+//                    energy.value.ingredientsNames!!.forEach { opt ->
+//                        DropdownMenuItem(onClick = {
+//                            expanded.value = false
+//                            inputText.value = opt
+//                        }) {
+//                            Text(text = opt)
+//                        }
+//                    }
+//                }
+//            }
             TextField(
                 value = inputText.value,
                 label = { Text(text = "search by ingredient") },
@@ -275,7 +259,9 @@ private fun IngredientsTab(
         }
         Spacer(modifier = Modifier.size(100.dp))
         Button(
-            onClick = { viewModel.onEvent(MainEvent.FilterMealsByIngredient(ingredient = inputText.value)) },
+            onClick = {
+//                viewModel.onEvent(MainEvent.FilterMealsByIngredient(ingredient = inputText.value))
+          },
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .fillMaxWidth(0.4f)

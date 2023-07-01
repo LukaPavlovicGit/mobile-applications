@@ -1,7 +1,7 @@
 package com.example.nutritiontracker.states.data
 
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetails
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.PlanedMeal
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetailsRemoteEntity
+import com.example.nutritiontracker.domainModels.PlanedMeal
 import java.time.LocalDate
 
 data class CreatePlanDataState(
@@ -11,7 +11,7 @@ data class CreatePlanDataState(
 
     var currDay: Int = 0,
     var currMeal: Int = 0,
-    var selectedMeal: MealDetails? = null,
+    var selectedMeal: MealDetailsRemoteEntity? = null,
     var plan: List<PlanedMeal> = mutableListOf(),
     var byDay: List<PlanedMeal> = mutableListOf()
 ){

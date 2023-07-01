@@ -3,27 +3,22 @@ package com.example.nutritiontracker.data.repositories.impl
 import com.example.nutritiontracker.data.datasource.local.dao.MealDao
 import com.example.nutritiontracker.data.datasource.remote.MealService
 import com.example.nutritiontracker.data.repositories.MealRepository
-import com.example.nutritiontracker.data.datasource.local.entities.MealEntity
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.AreaNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.CategoryNamesModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModel
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Category
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.Meal
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetails
+import com.example.nutritiontracker.data.datasource.local.entities.MealDetailsLocalEntity
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModelRemoteEntity
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealRemoteEntity
+import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetailsRemoteEntity
+import com.example.nutritiontracker.domainModels.Category
+import com.example.nutritiontracker.domainModels.Meal
+import com.example.nutritiontracker.domainModels.MealDetails
 import com.example.nutritiontracker.states.requests.AddMealRequest
 import com.example.nutritiontracker.states.requests.DeleteMealRequest
-import com.example.nutritiontracker.states.requests.EnergyRequest
 import com.example.nutritiontracker.states.requests.FetchAreaNamesRequest
-import com.example.nutritiontracker.states.requests.FetchCategoriesRequest
 import com.example.nutritiontracker.states.requests.FetchCategoryNamesRequest
 import com.example.nutritiontracker.states.requests.FetchIngredientsModelRequest
 import com.example.nutritiontracker.states.requests.FetchMealByIdMealRequest
-import com.example.nutritiontracker.states.requests.FetchMealByNameRequest
-import com.example.nutritiontracker.states.requests.FetchMealsByAreaRequest
-import com.example.nutritiontracker.states.requests.FetchMealsByCategoryRequest
-import com.example.nutritiontracker.states.requests.FetchMealsByIngredientRequest
 import com.example.nutritiontracker.states.requests.GetMealByIdMealRequest
 import com.example.nutritiontracker.states.requests.GetSavedMealsRequest
+import com.example.nutritiontracker.states.requests.Resource
 import com.example.nutritiontracker.states.requests.UpdateMealRequest
 import com.example.nutritiontracker.utils.Mapper
 
@@ -33,23 +28,23 @@ class MealRepositoryImpl (
 ): MealRepository {
 
 
-    override suspend fun fetchMealsByCategory(category: String, result: (FetchMealsByCategoryRequest<List<Meal>>) -> Unit) {
+    override suspend fun fetchMealsByCategory(category: String, result: (Resource<List<Meal>>) -> Unit) {
         val ans = mealService.fetchMealsByCategory(category)
 
         if(ans.isSuccessful){
-            if(ans.body() == null || ans.body()!!.meals == null){
-                result.invoke(FetchMealsByCategoryRequest.NotFound(message = "Not found..."))
+            if(ans.body() == null || ans.body()!!.mealRemoteEntities == null){
+                result.invoke(Resource.Success(data = emptyList()))
             }
             else{
-                result.invoke(FetchMealsByCategoryRequest.Success(data = ans.body()!!.meals , message = "Meals fetched successfully..."))
+                result.invoke(Resource.Success(data = ans.body()!!.mealRemoteEntities.map{ Mapper.mealRemoteEntityToMeal(it) }))
             }
         }
         else {
-            result.invoke(FetchMealsByCategoryRequest.Failure(error = "Something went wrong.. Meals are NOT fetched!"))
+            result.invoke(Resource.Error())
         }
     }
 
-    override suspend fun insert(meal: MealEntity, result: (AddMealRequest) -> Unit) {
+    override suspend fun insert(meal: MealDetailsLocalEntity, result: (AddMealRequest) -> Unit) {
         val mealId = mealDao.insert(meal)
         if(mealId > 0){
             result.invoke(AddMealRequest.Success(mealId = mealId))
@@ -60,7 +55,7 @@ class MealRepositoryImpl (
 
     }
 
-    override suspend fun getAll(result: (GetSavedMealsRequest<List<Meal>>) -> Unit) {
+    override suspend fun getAll(result: (GetSavedMealsRequest<List<MealRemoteEntity>>) -> Unit) {
         try {
             val entities = mealDao.getAll()
             if(entities.isEmpty()){
@@ -74,7 +69,7 @@ class MealRepositoryImpl (
         }
     }
 
-    override suspend fun getAllEntities(result: (GetSavedMealsRequest<List<MealEntity>>) -> Unit) {
+    override suspend fun getAllEntities(result: (GetSavedMealsRequest<List<MealDetailsLocalEntity>>) -> Unit) {
         try {
             val entities = mealDao.getAll()
             if(entities.isEmpty()){
@@ -97,7 +92,7 @@ class MealRepositoryImpl (
         }
     }
 
-    override suspend fun update(meal: MealEntity, result: (UpdateMealRequest) -> Unit) {
+    override suspend fun update(meal: MealDetailsLocalEntity, result: (UpdateMealRequest) -> Unit) {
         if(mealDao.update(meal) > 0){
             result.invoke(UpdateMealRequest.Success)
         }
@@ -106,17 +101,17 @@ class MealRepositoryImpl (
         }
     }
 
-    override suspend fun findByIdMeal(idMeal: String, result: (GetMealByIdMealRequest<MealDetails>) -> Unit) {
+    override suspend fun getByIdMeal(idMeal: String, result: (Resource<MealDetails>) -> Unit) {
         val entity = mealDao.findByIdMeal(idMeal)
         if(entity != null){
-            result.invoke(GetMealByIdMealRequest.Success(data = Mapper.mealEntityToMealDetails(entity)))
+            result.invoke(Resource.Success(data = Mapper.mealDetailsLocalEntityToMealDetails(entity)))
         }
         else{
-            result.invoke(GetMealByIdMealRequest.NotFound())
+            result.invoke(Resource.Error())
         }
     }
 
-    override suspend fun findById(id: Long, result: (GetMealByIdMealRequest<MealEntity>) -> Unit) {
+    override suspend fun getById(id: Long, result: (GetMealByIdMealRequest<MealDetailsLocalEntity>) -> Unit) {
         val entity = mealDao.findById(id)
         if(entity != null){
             result.invoke(GetMealByIdMealRequest.Success(data = entity))
@@ -126,83 +121,81 @@ class MealRepositoryImpl (
         }
     }
 
-    override suspend fun fetchMealsByArea(area: String, result: (FetchMealsByAreaRequest<List<Meal>>) -> Unit) {
+    override suspend fun fetchMealsByArea(area: String, result: (Resource<List<Meal>>) -> Unit) {
         val ans = mealService.fetchMealsByArea(area)
-
         if(ans.isSuccessful){
-            if(ans.body() == null || ans.body()!!.meals == null){
-                result.invoke(FetchMealsByAreaRequest.NotFound(message = "Not found..."))
+            if(ans.body() == null || ans.body()!!.mealRemoteEntities == null){
+                result.invoke(Resource.Success(data = emptyList()))
             }
             else{
-                result.invoke(FetchMealsByAreaRequest.Success(data = ans.body()!!.meals , message = "Meals fetched successfully..."))
+                result.invoke(Resource.Success(data = ans.body()!!.mealRemoteEntities.map{ Mapper.mealRemoteEntityToMeal(it) }))
             }
         }
         else {
-            result.invoke(FetchMealsByAreaRequest.Failure(error = "Something went wrong.. Meals are NOT fetched!"))
+            result.invoke(Resource.Error())
         }
     }
 
-    override suspend fun fetchMealsByIngredient(ingredient: String, result: (FetchMealsByIngredientRequest<List<Meal>>) -> Unit) {
-        val ans = mealService.fetchMealsByIngredient(ingredient)
-
+    override suspend fun fetchMealsByIngredient(ingredient: String, result: (Resource<List<Meal>>) -> Unit) {
+        val ans = mealService.fetchMealsByArea(ingredient)
         if(ans.isSuccessful){
-            if(ans.body() == null || ans.body()!!.meals == null){
-                result.invoke(FetchMealsByIngredientRequest.NotFound(message = "Not found..."))
+            if(ans.body() == null || ans.body()!!.mealRemoteEntities == null){
+                result.invoke(Resource.Success(data = emptyList()))
             }
             else{
-                result.invoke(FetchMealsByIngredientRequest.Success(data = ans.body()!!.meals , message = "Meals fetched successfully..."))
+                result.invoke(Resource.Success(data = ans.body()!!.mealRemoteEntities.map{ Mapper.mealRemoteEntityToMeal(it) }))
             }
         }
         else {
-            result.invoke(FetchMealsByIngredientRequest.Failure(error = "Something went wrong.. Meals are NOT fetched!"))
+            result.invoke(Resource.Error())
         }
     }
 
-    override suspend fun fetchMealById(id: String, result: (FetchMealByIdMealRequest<MealDetails>) -> Unit) {
+    override suspend fun fetchMealById(id: String, result: (Resource<MealDetails>) -> Unit) {
         val ans = mealService.fetchMealById(id)
         if(ans.isSuccessful){
             if(ans.body() == null || ans.body()!!.meals == null || ans.body()!!.meals.isEmpty()){
-                result.invoke(FetchMealByIdMealRequest.NotFound(message = "Not found..."))
+                result.invoke(Resource.Success(data = MealDetails()))
             }
             else{
-                result.invoke(FetchMealByIdMealRequest.Success(data = ans.body()!!.meals[0] , message = "Meal fetched successfully..."))
+                result.invoke(Resource.Success(data = Mapper.mealDetailsRemoteEntityToMealDetails(ans.body()!!.meals[0])))
             }
         }
         else {
-            result.invoke(FetchMealByIdMealRequest.Failure(error = "Something went wrong.. Meal is NOT fetched!"))
+            result.invoke(Resource.Error())
         }
     }
 
-    override suspend fun fetchMealByName(name: String, result: (FetchMealByNameRequest<MealDetails>) -> Unit) {
+    override suspend fun fetchMealByName(name: String, result: (Resource<MealDetails>) -> Unit) {
         val ans = mealService.fetchMealByName(name)
         if(ans.isSuccessful){
             if(ans.body() == null || ans.body()!!.meals == null || ans.body()!!.meals.isEmpty()){
-                result.invoke(FetchMealByNameRequest.NotFound(message = "Not found..."))
+                result.invoke(Resource.Success(data = MealDetails()))
             }
             else{
-                result.invoke(FetchMealByNameRequest.Success(data = ans.body()!!.meals[0] , message = "Meal fetched successfully..."))
+                result.invoke(Resource.Success(data = Mapper.mealDetailsRemoteEntityToMealDetails(ans.body()!!.meals[0])))
             }
         }
         else {
-            result.invoke(FetchMealByNameRequest.Failure(error = "Something went wrong.. Meal is NOT fetched!"))
+            result.invoke(Resource.Error())
         }
     }
 
 
     // energy data
 
-    override suspend fun fetchAllCategories(result: (FetchCategoriesRequest<List<Category>>) -> Unit) {
+    override suspend fun fetchAllCategories(result: (Resource<List<Category>>) -> Unit) {
         val ans = mealService.fetchAllCategories()
         if(ans.isSuccessful){
             if(ans.body() == null || ans.body()!!.categories == null || ans.body()!!.categories.isEmpty()){
-                result.invoke(FetchCategoriesRequest.Failure(error = "Energy data not found!"))
+                result.invoke(Resource.Success(data = emptyList()))
             }
             else{
-                result.invoke(FetchCategoriesRequest.Success(data = ans.body()!!.categories , message = "Categories fetched successfully..."))
+                result.invoke(Resource.Success(data = ans.body()!!.categories.map { Mapper.categoryRemoteEntityToCategory(it) }))
             }
         }
         else {
-            result.invoke(FetchCategoriesRequest.Failure(error = "Something went wrong.. Categories are NOT fetched!"))
+            result.invoke(Resource.Error())
         }
     }
 
@@ -236,7 +229,7 @@ class MealRepositoryImpl (
         }
     }
 
-    override suspend fun fetchAllIngredient(result: (FetchIngredientsModelRequest<IngredientsModel>) -> Unit) {
+    override suspend fun fetchAllIngredient(result: (FetchIngredientsModelRequest<IngredientsModelRemoteEntity>) -> Unit) {
         val ans = mealService.fetchAllIngredients()
         if(ans.isSuccessful){
             if(ans.body() == null || ans.body()!!.meals == null){
