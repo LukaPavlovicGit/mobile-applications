@@ -1,6 +1,5 @@
 package com.example.nutritiontracker.presentation.composable
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -24,10 +23,9 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -41,10 +39,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.nutritiontracker.data.datasource.local.entities.mealType.MealType
-import com.example.nutritiontracker.domainModels.MealDetails
 import com.example.nutritiontracker.events.MealEvent
 import com.example.nutritiontracker.states.data.MealDetailsState
 import com.example.nutritiontracker.viewModel.MealViewModel
@@ -56,8 +54,7 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun MealScreen(
-    mealViewModel: MealViewModel = viewModel(),
-//    mealState: State<MealDetailsState>,
+    mealViewModel: MealViewModel = hiltViewModel(),
     onBack: () -> Unit
 ){
     BackHandler(true) {
@@ -69,7 +66,6 @@ fun MealScreen(
     val imageUrlToExpand = remember { mutableStateOf("") }
     val mealState = mealViewModel.mealState.collectAsState()
 
-    Log.e("TAG", "MealScreen")
 
     when{
         expandImage.value -> {
@@ -80,6 +76,11 @@ fun MealScreen(
                     .clickable(onClick = { expandImage.value = false }),
                 contentAlignment = Alignment.Center
             ) {
+
+                BackHandler(true) {
+                    expandImage.value = false
+                }
+
                 AsyncImage(
                     model = imageUrlToExpand.value,
                     contentDescription = "description",
@@ -88,8 +89,7 @@ fun MealScreen(
             }
         }
         saveMeal.value -> {
-            val meal = (mealState.value as MealDetailsState.Success).meal
-            SaveMealScreen(meal = meal) {
+            SaveMealScreen() {
                 saveMeal.value = false
             }
         }
@@ -220,44 +220,41 @@ fun MealScreen(
                                     }
                                 }
                             }
-
-                            Button(
-                                enabled = !meal.saved,
-                                onClick = { saveMeal.value = true },
-                                shape = RoundedCornerShape(6.dp),
-                                modifier = Modifier.fillMaxWidth(0.4f),
-                                colors = ButtonDefaults.buttonColors(backgroundColor = if(meal.saved) Color.Green else Color.Yellow)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 20.dp)
                             ) {
-                                Text(text = if(meal.saved) "Saved" else "Save meal", fontSize = 20.sp)
-                            }
+                                if (!meal.saved) {
+                                    Button(
+                                        onClick = { saveMeal.value = true },
+                                        shape = RoundedCornerShape(6.dp),
+                                        modifier = Modifier.fillMaxWidth(0.4f),
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green)
+                                    ) {
+                                        Text(text = "Save", fontSize = 20.sp)
+                                    }
+                                } else {
+                                    Button(
+                                        onClick = {
 
-                            if(meal.saved){
-                                Button(
-                                    onClick = {
-//                                viewModel.onEvent(MainEvent.SetSingleMealScreenState(SingleMealScreenState.UpdateMeal))
-
-                                    },
-                                    shape = RoundedCornerShape(6.dp),
-                                    modifier = Modifier.fillMaxWidth(0.4f)
-                                ) {
-                                    Text(text = "Update", fontSize = 20.sp)
+                                        },
+                                        shape = RoundedCornerShape(6.dp),
+                                        modifier = Modifier.fillMaxWidth(0.4f)
+                                    ) {
+                                        Text(text = "Update", fontSize = 20.sp)
+                                    }
+                                    Button(
+                                        onClick = { },
+                                        shape = RoundedCornerShape(6.dp),
+                                        modifier = Modifier.fillMaxWidth(0.4f),
+                                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
+                                    ) {
+                                        Text(text = "Delete", fontSize = 20.sp)
+                                    }
                                 }
-                                Button(
-                                    onClick = {  },
-                                    shape = RoundedCornerShape(6.dp),
-                                    modifier = Modifier.fillMaxWidth(0.4f),
-                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
-                                ) {
-                                    Text(text = "Delete", fontSize = 20.sp)
-                                }
-                            }
-
-                            Button(
-                                onClick = { onBack.invoke() },
-                                shape = RoundedCornerShape(6.dp),
-                                modifier = Modifier.fillMaxWidth(0.4f)
-                            ) {
-                                Text(text = "Back", fontSize = 20.sp)
                             }
 
                         }
@@ -268,11 +265,9 @@ fun MealScreen(
     }
 }
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SaveMealScreen(
     mealViewModel: MealViewModel = viewModel(),
-    meal: MealDetails,
     onBack:() -> Unit
 ){
 
@@ -280,6 +275,7 @@ fun SaveMealScreen(
         onBack.invoke()
     }
 
+    val savingMeal = mealViewModel.savingMeal.collectAsState()
     val date = remember { mutableStateOf(LocalDate.now()) }
     val timeDialogState = rememberMaterialDialogState()
     val options = listOf(MealType.Breakfast.name, MealType.Launch.name, MealType.Dinner.name, MealType.Snack.name)
@@ -306,72 +302,85 @@ fun SaveMealScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
-                model = meal.imageUri,
+                model = savingMeal.value.imageUri,
                 contentDescription = "description",
                 modifier = Modifier
                     .size(250.dp)
                     .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
-                    .pointerInput(Unit){
+                    .pointerInput(Unit) {
                         detectTapGestures(
                             onLongPress = { mealViewModel.onEvent(MealEvent.ResetImageUri) },
-                            onTap = { mealViewModel.onEvent(MealEvent.CameraRequest) }
+                            onTap = {
+                                mealViewModel.onEvent(MealEvent.CameraRequest)
+                            }
                         )
                     }
             )
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "NAME:", fontWeight = FontWeight.SemiBold, fontSize = 22.sp, modifier = Modifier.padding(end = 15.dp))
-                Text(text = meal.name, fontSize = 20.sp)
-            }
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-            ) {
-                Text(text = "MEAL TYPE:", fontWeight = FontWeight.SemiBold, fontSize = 22.sp, modifier = Modifier.padding(end = 15.dp))
-                Text(
-                    text = options[selectedIndex.value],
-                    fontSize = 25.sp,
-                    modifier = Modifier.clickable { expanded.value = true },
-                    style = MaterialTheme.typography.body1
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-                    .clickable { }
-            ) {
-                OutlinedTextField(
-                    enabled = false,
-                    value = formattedTime,
-                    onValueChange = {  },
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+                ) {
+                    Text(text = "Name:", fontSize = 22.sp, modifier = Modifier.padding(end = 15.dp))
+                    Text(text = savingMeal.value.name, fontSize = 20.sp)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                ) {
+                    Text(
+                        text = "Meal type:",
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(end = 15.dp)
+                    )
+                    Text(
+                        text = options[selectedIndex.value],
+                        fontSize = 25.sp,
+                        modifier = Modifier.clickable { expanded.value = true },
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .clickable { timeDialogState.show() },
-                    singleLine = true,
-                    label = { Text(text = "Date to eat", fontSize = 18.sp, color = Color.Red) },
-                    textStyle = TextStyle.Default.copy(fontSize = 25.sp, color = Color.Black, fontWeight = FontWeight.Black)
-                )
+                        .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                        .clickable { }
+                ) {
+                    Text(
+                        text = "Date to eat:",
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(end = 15.dp)
+                    )
+                    TextField(
+                        enabled = false,
+                        value = formattedTime,
+                        onValueChange = { },
+                        modifier = Modifier
+                            .clickable { timeDialogState.show() },
+                        singleLine = true,
+                        textStyle = TextStyle.Default.copy(fontSize = 22.sp, color = Color.Black)
+                    )
+                }
             }
+
             Spacer(modifier = Modifier.size(50.dp))
             Button(
-                onClick = {  },
+                onClick = {
+                    mealViewModel.onEvent(MealEvent.SaveMeal)
+                    onBack.invoke()
+                },
                 shape = RoundedCornerShape(6.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Yellow),
                 modifier = Modifier.fillMaxWidth(0.4f)
             ) {
                 Text(text = "Save", fontSize = 20.sp)
-            }
-            Button(
-                onClick = { onBack.invoke() },
-                shape = RoundedCornerShape(6.dp),
-                modifier = Modifier.fillMaxWidth(0.4f)
-            ) {
-                Text(text = "Back", fontSize = 20.sp)
             }
             DropdownMenu(
                 expanded = expanded.value,
@@ -394,14 +403,13 @@ fun SaveMealScreen(
                     negativeButton(text = "Cancel")
                 }
             ) {
-                datepicker (
+                datepicker(
                     title = "Pick a date"
                 ) {
                     date.value = it
                 }
             }
         }
-
     }
 }
 

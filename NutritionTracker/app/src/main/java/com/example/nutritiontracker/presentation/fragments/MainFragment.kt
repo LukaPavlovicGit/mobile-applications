@@ -24,6 +24,8 @@ import com.example.nutritiontracker.presentation.composable.MainScreen
 import com.example.nutritiontracker.presentation.composable.cammon.CameraView
 import com.example.nutritiontracker.viewModel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.io.File
@@ -127,7 +129,6 @@ class MainFragment: Fragment() {
     }
 
     private fun sendEmail(receiver: String, subject: String, body: String){
-
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
             putExtra(Intent.EXTRA_EMAIL, arrayOf(receiver))

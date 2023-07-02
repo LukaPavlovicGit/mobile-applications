@@ -3,7 +3,6 @@ package com.example.nutritiontracker.data.repositories
 import com.example.nutritiontracker.data.datasource.local.entities.MealDetailsLocalEntity
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModelRemoteEntity
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealRemoteEntity
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetailsRemoteEntity
 import com.example.nutritiontracker.domainModels.Category
 import com.example.nutritiontracker.domainModels.Meal
 import com.example.nutritiontracker.domainModels.MealDetails
@@ -12,16 +11,16 @@ import com.example.nutritiontracker.states.requests.DeleteMealRequest
 import com.example.nutritiontracker.states.requests.FetchAreaNamesRequest
 import com.example.nutritiontracker.states.requests.FetchCategoryNamesRequest
 import com.example.nutritiontracker.states.requests.FetchIngredientsModelRequest
-import com.example.nutritiontracker.states.requests.FetchMealByIdMealRequest
 import com.example.nutritiontracker.states.requests.GetMealByIdMealRequest
 import com.example.nutritiontracker.states.requests.GetSavedMealsRequest
+import com.example.nutritiontracker.states.requests.Request
 import com.example.nutritiontracker.states.requests.Resource
 import com.example.nutritiontracker.states.requests.UpdateMealRequest
 
 interface MealRepository {
 
-    suspend fun insert(meal: MealDetailsLocalEntity, result: (AddMealRequest) -> Unit)
-    suspend fun getAll(result: (GetSavedMealsRequest<List<MealRemoteEntity>>) -> Unit)
+    suspend fun insert(meal: MealDetails, result: (AddMealRequest) -> Unit)
+    suspend fun getAll(result: (Request<List<Meal>>) -> Unit)
     suspend fun getAllEntities(result: (GetSavedMealsRequest<List<MealDetailsLocalEntity>>) -> Unit)
     suspend fun delete(id: Long, result: (DeleteMealRequest) -> Unit)
     suspend fun update(meal: MealDetailsLocalEntity, result: (UpdateMealRequest) -> Unit)

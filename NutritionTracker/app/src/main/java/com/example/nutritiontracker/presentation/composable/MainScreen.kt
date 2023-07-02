@@ -56,9 +56,9 @@ private fun BottomBar(navController: NavHostController){
 
     val screens = listOf(
         BottomBar.Menu,
-        BottomBar.Filter,
+        BottomBar.Plan,
         BottomBar.Stats,
-        BottomBar.Plan
+        BottomBar.Profile
     )
     BottomNavigation(
         backgroundColor = Color.White

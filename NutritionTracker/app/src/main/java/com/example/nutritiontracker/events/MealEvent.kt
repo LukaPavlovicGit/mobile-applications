@@ -2,7 +2,7 @@ package com.example.nutritiontracker.events
 
 sealed interface MealEvent{
     data class MealSelection(val idMeal: String): MealEvent
-    data class SaveMeal(val idMeal: String): MealEvent
+    object SaveMeal: MealEvent
     data class OpenUrl(val url: String): MealEvent
     object CameraRequest: MealEvent
     data class MessageToast(val message: String): MealEvent

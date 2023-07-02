@@ -7,6 +7,7 @@ import com.example.nutritiontracker.viewModel.MainViewModel
 import com.example.nutritiontracker.viewModel.LoginViewModel
 import com.example.nutritiontracker.viewModel.MealViewModel
 import com.example.nutritiontracker.viewModel.MenuViewModel
+import com.example.nutritiontracker.viewModel.ProfileViewModel
 import com.example.nutritiontracker.viewModel.RegistrationViewModel
 import dagger.Module
 import dagger.Provides
@@ -49,4 +50,10 @@ object ViewModelModule {
     fun provideMealViewModel(
         mealRepository: MealRepository
     ): MealViewModel = MealViewModel(mealRepository)
+
+    @Singleton
+    @Provides
+    fun provideProfileViewModel(
+        mealRepository: MealRepository
+    ): ProfileViewModel = ProfileViewModel(mealRepository)
 }

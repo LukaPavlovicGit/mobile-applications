@@ -6,7 +6,6 @@ import com.example.nutritiontracker.data.repositories.MealRepository
 import com.example.nutritiontracker.data.datasource.local.entities.MealDetailsLocalEntity
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModelRemoteEntity
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealRemoteEntity
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetailsRemoteEntity
 import com.example.nutritiontracker.domainModels.Category
 import com.example.nutritiontracker.domainModels.Meal
 import com.example.nutritiontracker.domainModels.MealDetails
@@ -15,9 +14,9 @@ import com.example.nutritiontracker.states.requests.DeleteMealRequest
 import com.example.nutritiontracker.states.requests.FetchAreaNamesRequest
 import com.example.nutritiontracker.states.requests.FetchCategoryNamesRequest
 import com.example.nutritiontracker.states.requests.FetchIngredientsModelRequest
-import com.example.nutritiontracker.states.requests.FetchMealByIdMealRequest
 import com.example.nutritiontracker.states.requests.GetMealByIdMealRequest
 import com.example.nutritiontracker.states.requests.GetSavedMealsRequest
+import com.example.nutritiontracker.states.requests.Request
 import com.example.nutritiontracker.states.requests.Resource
 import com.example.nutritiontracker.states.requests.UpdateMealRequest
 import com.example.nutritiontracker.utils.Mapper
@@ -44,10 +43,11 @@ class MealRepositoryImpl (
         }
     }
 
-    override suspend fun insert(meal: MealDetailsLocalEntity, result: (AddMealRequest) -> Unit) {
-        val mealId = mealDao.insert(meal)
-        if(mealId > 0){
-            result.invoke(AddMealRequest.Success(mealId = mealId))
+    override suspend fun insert(meal: MealDetails, result: (AddMealRequest) -> Unit) {
+
+        val id = mealDao.insert(Mapper.mealDetailsToMealDetailsLocalEntity(meal))
+        if(id > 0){
+            result.invoke(AddMealRequest.Success(id = id))
         }
         else{
             result.invoke(AddMealRequest.Error)
@@ -55,17 +55,17 @@ class MealRepositoryImpl (
 
     }
 
-    override suspend fun getAll(result: (GetSavedMealsRequest<List<MealRemoteEntity>>) -> Unit) {
+    override suspend fun getAll(result: (Request<List<Meal>>) -> Unit) {
         try {
             val entities = mealDao.getAll()
             if(entities.isEmpty()){
-                result.invoke(GetSavedMealsRequest.NotFound(message = "No saved meals"))
+                result.invoke(Request.NotFound(message = "No saved meals"))
             }
             else{
-                result.invoke(GetSavedMealsRequest.Success(data = entities.map { Mapper.mealEntityToMeal(it) }))
+                result.invoke(Request.Success(data = entities.map { Mapper.mealDetailsLocalEntityToMeal(it) }))
             }
         } catch (e: Exception) {
-            result.invoke(GetSavedMealsRequest.Failure())
+            result.invoke(Request.Error())
         }
     }
 

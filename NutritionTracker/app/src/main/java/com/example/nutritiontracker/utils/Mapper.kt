@@ -14,6 +14,63 @@ class Mapper {
 
     companion object {
 
+        fun mealDetailsToMealDetailsLocalEntity(meal: MealDetails): MealDetailsLocalEntity =
+            MealDetailsLocalEntity(
+                name = safeStr(meal.name),
+                remoteIdMeal = safeStr(meal.remoteIdMeal),
+                area = safeStr(meal.area),
+                tags = safeStr(meal.strTags),
+                imageUri = safeStr(meal.imageUri),
+                videoLink = safeStr(meal.strYoutube),
+                category = safeStr(meal.category),
+                mealType = meal.mealType,
+                dateToEat = meal.dateToEat,
+
+                strIngredient1 = safeStr(meal.strIngredient1),
+                strIngredient2 = safeStr(meal.strIngredient2),
+                strIngredient3 = safeStr(meal.strIngredient3),
+                strIngredient4 = safeStr(meal.strIngredient4),
+                strIngredient5 = safeStr(meal.strIngredient5),
+                strIngredient6 = safeStr(meal.strIngredient6),
+                strIngredient7 = safeStr(meal.strIngredient7),
+                strIngredient8 = safeStr(meal.strIngredient8),
+                strIngredient9 = safeStr(meal.strIngredient9),
+                strIngredient10 = safeStr(meal.strIngredient10),
+                strIngredient11 = safeStr(meal.strIngredient11),
+                strIngredient12 = safeStr(meal.strIngredient12),
+                strIngredient13 = safeStr(meal.strIngredient13),
+                strIngredient14 = safeStr(meal.strIngredient14),
+                strIngredient15 = safeStr(meal.strIngredient15),
+                strIngredient16 = safeStr(meal.strIngredient16),
+                strIngredient17 = safeStr(meal.strIngredient17),
+                strIngredient18 = safeStr(meal.strIngredient18),
+                strIngredient19 = safeStr(meal.strIngredient19),
+                strIngredient20 = safeStr(meal.strIngredient20),
+
+                strMeasure1 = safeStr(meal.strMeasure1),
+                strMeasure2 = safeStr(meal.strMeasure2),
+                strMeasure3 = safeStr(meal.strMeasure3),
+                strMeasure4 = safeStr(meal.strMeasure4),
+                strMeasure5 = safeStr(meal.strMeasure5),
+                strMeasure6 = safeStr(meal.strMeasure6),
+                strMeasure7 = safeStr(meal.strMeasure7),
+                strMeasure8 = safeStr(meal.strMeasure8),
+                strMeasure9 = safeStr(meal.strMeasure9),
+                strMeasure10 = safeStr(meal.strMeasure10),
+                strMeasure11 = safeStr(meal.strMeasure11),
+                strMeasure12 = safeStr(meal.strMeasure12),
+                strMeasure13 = safeStr(meal.strMeasure13),
+                strMeasure14 = safeStr(meal.strMeasure14),
+                strMeasure15 = safeStr(meal.strMeasure15),
+                strMeasure16 = safeStr(meal.strMeasure16),
+                strMeasure17 = safeStr(meal.strMeasure17),
+                strMeasure18 = safeStr(meal.strMeasure18),
+                strMeasure19 = safeStr(meal.strMeasure19),
+                strMeasure20 = safeStr(meal.strMeasure20),
+
+                strInstructions = safeStr(meal.strInstructions)
+            )
+
         fun mealToMealEntity(meal: MealDetailsRemoteEntity): MealDetailsLocalEntity =
             MealDetailsLocalEntity(
                 remoteIdMeal = safeStr(meal.remoteIdMeal),
@@ -114,6 +171,13 @@ class Mapper {
                 strMeasure9 = safeStr(meal.strMeasure9),
                 strTags = safeStr(meal.tags),
                 strYoutube = safeStr(meal.videoLink)
+            )
+
+        fun mealDetailsLocalEntityToMeal(meal: MealDetailsLocalEntity): Meal =
+            Meal(
+                remoteIdMeal = meal.remoteIdMeal,
+                name = meal.name,
+                imageUri = meal.imageUri,
             )
 
         fun mealEntityToMeal(mealDetailsLocalEntity: MealDetailsLocalEntity): MealRemoteEntity =

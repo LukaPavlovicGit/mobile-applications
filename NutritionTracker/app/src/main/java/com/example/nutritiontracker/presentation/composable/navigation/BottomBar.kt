@@ -15,9 +15,9 @@ sealed class BottomBar(
         icon = Icons.Default.RestaurantMenu
     )
 
-    object Filter : BottomBar(
-        route = "filter",
-        title = "Filter",
+    object Profile : BottomBar(
+        route = "profile",
+        title = "Profile",
         icon = Icons.Default.FilterAlt
     )
 

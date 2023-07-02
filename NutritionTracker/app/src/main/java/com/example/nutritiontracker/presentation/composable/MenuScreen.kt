@@ -71,6 +71,7 @@ fun MenuScreen(
             mainViewModel.shouldShowNavigationBar.value = false
             MealList(
                 mealsState = mealsState,
+                modifier = Modifier.fillMaxSize().background(Color.Black),
                 onBack = {
                     mainViewModel.shouldShowNavigationBar.value = true
                     showListMeals.value = false
