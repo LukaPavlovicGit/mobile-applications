@@ -1,6 +1,7 @@
 package com.example.nutritiontracker.presentation.composable
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,13 +44,13 @@ import kotlinx.coroutines.flow.StateFlow
 fun MealList(
     mealViewModel: MealViewModel = hiltViewModel(),
     modifier: Modifier,
-    mealsState: StateFlow<MealsState>,
+    mealsState: State<MealsState>,
     onBack: () -> Unit = {  }
 ){
 
 
-
-    val currMealsState = mealsState.collectAsState()
+    Log.e("STATE", "YES")
+    val currMealsState = mealsState.value
     val showMeal = remember { mutableStateOf(false) }
     val expandImage = remember { mutableStateOf(false) }
     val imageUrlToExpand = remember { mutableStateOf("") }
@@ -80,7 +82,7 @@ fun MealList(
             }
         }
         else -> {
-            when(currMealsState.value){
+            when(currMealsState){
                 MealsState.DataFetched -> {  }
                 is MealsState.Error -> toast(context = LocalContext.current, message = "ERROR")
                 MealsState.Loading -> CircularProgressIndicator()
@@ -132,6 +134,7 @@ fun MealList(
                                                     text = meal.name,
                                                     fontSize = 15.sp,
                                                     modifier = Modifier.clickable {
+                                                        Log.e("TAG", "CLICK")
                                                         mealViewModel.onEvent(MealEvent.MealSelection(meal.remoteIdMeal))
                                                         showMeal.value = true
                                                     }

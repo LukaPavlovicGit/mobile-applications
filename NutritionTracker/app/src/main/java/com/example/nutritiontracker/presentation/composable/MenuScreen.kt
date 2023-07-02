@@ -64,14 +64,16 @@ fun MenuScreen(
     val expanded = remember { mutableStateOf(false) }
     val showListMeals = remember { mutableStateOf(false) }
     val searchText = remember { mutableStateOf("") }
-    val mealsState = menuViewModel.mealsState
+    val mealsState = menuViewModel.mealsState.collectAsState()
 
     when{
         showListMeals.value -> {
             mainViewModel.shouldShowNavigationBar.value = false
             MealList(
                 mealsState = mealsState,
-                modifier = Modifier.fillMaxSize().background(Color.Black),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
                 onBack = {
                     mainViewModel.shouldShowNavigationBar.value = true
                     showListMeals.value = false

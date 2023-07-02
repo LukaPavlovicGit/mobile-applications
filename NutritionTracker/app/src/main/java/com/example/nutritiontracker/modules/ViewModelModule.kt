@@ -12,47 +12,49 @@ import com.example.nutritiontracker.viewModel.RegistrationViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 object ViewModelModule {
 
-    @Singleton
     @Provides
+    @ViewModelScoped
     fun provideLoginViewModel(
         userRepository: AuthRepository,
         sharedPrefManager: SharedPreferencesManager
     ): LoginViewModel = LoginViewModel(userRepository, sharedPrefManager)
 
-    @Singleton
     @Provides
+    @ViewModelScoped
     fun provideRegistrationViewModel(
         userRepository: AuthRepository,
         sharedPrefManager: SharedPreferencesManager
     ): RegistrationViewModel = RegistrationViewModel(userRepository, sharedPrefManager)
 
-    @Singleton
     @Provides
+    @ViewModelScoped
     fun provideMainViewModel(
         mealRepository: MealRepository
     ): MainViewModel = MainViewModel(mealRepository)
 
-    @Singleton
     @Provides
+    @ViewModelScoped
     fun provideMenuViewModel(
         mealRepository: MealRepository
     ): MenuViewModel = MenuViewModel(mealRepository)
 
-    @Singleton
     @Provides
+    @ViewModelScoped
     fun provideMealViewModel(
         mealRepository: MealRepository
     ): MealViewModel = MealViewModel(mealRepository)
 
-    @Singleton
     @Provides
+    @ViewModelScoped
     fun provideProfileViewModel(
         mealRepository: MealRepository
     ): ProfileViewModel = ProfileViewModel(mealRepository)

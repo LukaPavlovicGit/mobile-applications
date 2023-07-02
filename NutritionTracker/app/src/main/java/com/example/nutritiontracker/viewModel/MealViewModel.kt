@@ -1,5 +1,6 @@
 package com.example.nutritiontracker.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutritiontracker.data.repositories.MealRepository
@@ -11,6 +12,7 @@ import com.example.nutritiontracker.states.requests.AddMealRequest
 import com.example.nutritiontracker.states.requests.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -55,7 +57,9 @@ class MealViewModel @Inject constructor(
                     if(success){
                         withContext(Dispatchers.Main){
                             EventBus.getDefault().postSticky(EventBusEvent.MessageToast("Saved"))
+                            EventBus.getDefault().postSticky(EventBusEvent.MealSaved)
                         }
+
                         mealRepository.getByIdMeal(_mealCachedDetails.remoteIdMeal){
                             when(it){
                                 is Resource.Error -> _mealState.value = MealDetailsState.Error(message = "Error")
@@ -69,6 +73,14 @@ class MealViewModel @Inject constructor(
                 }
             }
             is MealEvent.MealSelection -> {
+                Log.e("TAG", "ULAZAK")
+                //*************
+                // From some reason viewModelScope doesn't work properly (it gets ignored) in the next scenario:
+                // 1. meal is selected from profile screen
+                // 2. menu screen is selected
+                // 3. meal is selected from menu screen
+                //*************
+                // THIS CASE IS SOLVED BY REMOVING @Singleton annotation in ViewModelModule
                 viewModelScope.launch(Dispatchers.IO) {
                     _mealState.value =  MealDetailsState.Loading
                     var found = false
@@ -76,6 +88,7 @@ class MealViewModel @Inject constructor(
                         when(it){
                             is Resource.Error -> _mealState.value = MealDetailsState.Error(message = "Error")
                             is Resource.Success -> {
+                                Log.e("TAG", "Success")
                                 found = true
                                 _mealState.value = MealDetailsState.Success(meal = it.data)
                                 prepareData(it.data)
@@ -83,8 +96,11 @@ class MealViewModel @Inject constructor(
                         }
                     }
 
-                    if(found) return@launch
-
+                    if(found) {
+                        Log.e("TAG", "found")
+                        return@launch
+                    }
+                    Log.e("TAG", "not found")
                     mealRepository.fetchMealById(event.idMeal){
                         when(it){
                             is Resource.Error -> MealDetailsState.Error(message = "Error")
@@ -112,6 +128,7 @@ class MealViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        Log.e("LIFE", "MealViewModel CLEARED")
         EventBus.getDefault().unregister(this)
     }
 
