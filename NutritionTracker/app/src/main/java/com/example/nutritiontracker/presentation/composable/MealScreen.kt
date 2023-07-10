@@ -1,6 +1,5 @@
 package com.example.nutritiontracker.presentation.composable
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,9 +21,12 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -62,6 +64,8 @@ fun MealScreen(
     }
 
     val saveMeal = remember { mutableStateOf(false) }
+    val updateMeal = remember { mutableStateOf(false) }
+    val deleteMeal = remember { mutableStateOf(false) }
     val expandImage = remember { mutableStateOf(false) }
     val imageUrlToExpand = remember { mutableStateOf("") }
     val mealState = mealViewModel.mealState.collectAsState()
@@ -92,6 +96,15 @@ fun MealScreen(
             SaveMealScreen() {
                 saveMeal.value = false
             }
+        }
+
+        updateMeal.value -> {
+            UpdateMealScreen() {
+                updateMeal.value = false
+            }
+        }
+        deleteMeal.value -> {
+
         }
         else -> {
             when(mealState.value){
@@ -238,9 +251,7 @@ fun MealScreen(
                                     }
                                 } else {
                                     Button(
-                                        onClick = {
-
-                                        },
+                                        onClick = { updateMeal.value = true },
                                         shape = RoundedCornerShape(6.dp),
                                         modifier = Modifier.fillMaxWidth(0.4f)
                                     ) {
@@ -266,16 +277,15 @@ fun MealScreen(
 }
 
 @Composable
-fun SaveMealScreen(
+private fun UpdateMealScreen(
     mealViewModel: MealViewModel = viewModel(),
     onBack:() -> Unit
 ){
-
     BackHandler(true) {
         onBack.invoke()
     }
 
-    val savingMeal = mealViewModel.savingMeal.collectAsState()
+    val selectedMeal = mealViewModel.selectedMeal.collectAsState()
     val date = remember { mutableStateOf(LocalDate.now()) }
     val timeDialogState = rememberMaterialDialogState()
     val options = listOf(MealType.Breakfast.name, MealType.Launch.name, MealType.Dinner.name, MealType.Snack.name)
@@ -302,19 +312,165 @@ fun SaveMealScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
-                model = savingMeal.value.imageUri,
+                model = selectedMeal.value.imageUri,
                 contentDescription = "description",
                 modifier = Modifier
                     .size(250.dp)
-                    .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
+                    .padding(start = 10.dp, top = 10.dp, end = 10.dp)
                     .pointerInput(Unit) {
                         detectTapGestures(
-                            onLongPress = { mealViewModel.onEvent(MealEvent.ResetImageUri) },
-                            onTap = {
-                                mealViewModel.onEvent(MealEvent.CameraRequest)
-                            }
+                            onLongPress = { }
                         )
                     }
+            )
+            Text(
+                text = "VIDEO LINK",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Red,
+                modifier = Modifier
+                    .padding(bottom = 10.dp)
+                    .clickable {
+                        mealViewModel.onEvent(MealEvent.OpenUrl(selectedMeal.value.strYoutube))
+                    }
+            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Button(
+                    onClick = {  },
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier.fillMaxWidth(0.4f)
+                ) {
+                    Text(text = "New photo", fontSize = 20.sp)
+                }
+
+                Button(
+                    onClick = {  },
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier.fillMaxWidth(0.4f)
+                ) {
+                    Text(text = "New video", fontSize = 20.sp)
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
+                ) {
+                    Text(
+                        text = "Meal type:",
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(end = 15.dp)
+                    )
+                    Text(
+                        text = options[selectedIndex.value],
+                        fontSize = 25.sp,
+                        modifier = Modifier.clickable { expanded.value = true },
+                        style = MaterialTheme.typography.body1
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expanded.value,
+                    onDismissRequest = { expanded.value = false },
+                    modifier = Modifier.clickable { expanded.value = true }
+                ) {
+                    options.forEachIndexed { index, option ->
+                        DropdownMenuItem(onClick = {
+                            selectedIndex.value = index
+                            expanded.value = false
+                        }) {
+                            Text(text = option)
+                        }
+                    }
+                }
+                MaterialDialog(
+                    dialogState = timeDialogState,
+                    buttons = {
+                        positiveButton(text = "Ok")
+                        negativeButton(text = "Cancel")
+                    }
+                ) {
+                    datepicker(
+                        title = "Pick a date"
+                    ) {
+                        date.value = it
+                    }
+                }
+
+            }
+
+            Spacer(Modifier.weight(1f))
+            Button(
+                onClick = {  },
+                shape = RoundedCornerShape(6.dp),
+                modifier = Modifier.fillMaxWidth(0.4f)
+            ) {
+                Text(text = "Update", fontSize = 20.sp)
+            }
+        }
+
+    }
+}
+
+@Composable
+fun SaveMealScreen(
+    mealViewModel: MealViewModel = viewModel(),
+    onBack:() -> Unit
+){
+
+    BackHandler(true) {
+        onBack.invoke()
+    }
+
+    val selectedMeal = mealViewModel.selectedMeal.collectAsState()
+    val date = remember { mutableStateOf(LocalDate.now()) }
+    val timeDialogState = rememberMaterialDialogState()
+    val options = listOf(MealType.Breakfast.name, MealType.Launch.name, MealType.Dinner.name, MealType.Snack.name)
+    val expanded = remember { mutableStateOf(false) }
+    val selectedIndex = remember { mutableStateOf(0) }
+
+    val formattedTime by remember {
+        derivedStateOf {
+            DateTimeFormatter
+                .ofPattern("dd/MM/yyyy")
+                .format(date.value)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .background(Color.LightGray)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            AsyncImage(
+                model = selectedMeal.value.imageUri,
+                contentDescription = "description",
+                modifier = Modifier
+                    .size(250.dp)
+                    .padding(start = 10.dp, top = 10.dp, end = 10.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = { mealViewModel.onEvent(MealEvent.ResetImageUri) }
+                        )
+                    }
+            )
+            Icon(
+                imageVector = Icons.Default.PhotoCamera,
+                contentDescription = "Change Image",
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .clickable { mealViewModel.onEvent(MealEvent.CameraRequest) }
             )
             Column(
                 horizontalAlignment = Alignment.Start,
@@ -327,7 +483,7 @@ fun SaveMealScreen(
                     modifier = Modifier.padding(start = 10.dp, end = 10.dp)
                 ) {
                     Text(text = "Name:", fontSize = 22.sp, modifier = Modifier.padding(end = 15.dp))
-                    Text(text = savingMeal.value.name, fontSize = 20.sp)
+                    Text(text = selectedMeal.value.name, fontSize = 20.sp)
                 }
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -382,6 +538,9 @@ fun SaveMealScreen(
             ) {
                 Text(text = "Save", fontSize = 20.sp)
             }
+
+
+
             DropdownMenu(
                 expanded = expanded.value,
                 onDismissRequest = { expanded.value = false },

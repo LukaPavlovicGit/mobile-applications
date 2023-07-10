@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.nutritiontracker.R
 import com.example.nutritiontracker.presentation.composable.RegistrationScreen
 import com.example.nutritiontracker.presentation.composable.cammon.toast
-import com.example.raftrading.utils.Constants
+import com.example.nutritiontracker.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -29,7 +29,6 @@ class ProfileViewModel @Inject constructor(
     val mealsState = _mealsState.asStateFlow()
 
     init{
-
         EventBus.getDefault().register(this)
         viewModelScope.launch(Dispatchers.IO){
             mealRepository.getAll {
@@ -58,19 +57,12 @@ class ProfileViewModel @Inject constructor(
     fun handleEvent(event: EventBusEvent) {
         when (event) {
             is EventBusEvent.MealSaved -> {
-                Log.e("SAVED", "DA")
                 viewModelScope.launch(Dispatchers.IO){
                     mealRepository.getAll {
                         when(it){
-                            is Request.Error -> {
-                                _mealsState.value = MealsState.Error(message = "Error")
-                            }
-                            is Request.NotFound -> {
-                                _mealsState.value = MealsState.Success(meals = emptyList())
-                            }
-                            is Request.Success -> {
-                                _mealsState.value = MealsState.Success(meals = it.data)
-                            }
+                            is Request.Error -> _mealsState.value = MealsState.Error(message = "Error")
+                            is Request.NotFound -> _mealsState.value = MealsState.Success(meals = emptyList())
+                            is Request.Success -> _mealsState.value = MealsState.Success(meals = it.data)
                         }
                     }
                 }

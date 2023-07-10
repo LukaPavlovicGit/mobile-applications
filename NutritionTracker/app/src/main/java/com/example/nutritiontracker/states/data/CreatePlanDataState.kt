@@ -1,19 +1,14 @@
 package com.example.nutritiontracker.states.data
 
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealDetailsRemoteEntity
-import com.example.nutritiontracker.domainModels.PlanedMeal
-import java.time.LocalDate
+import com.example.nutritiontracker.domainModels.MealDetails
+import com.example.nutritiontracker.domainModels.PlannedMeal
 
 data class CreatePlanDataState(
-    var from: LocalDate = LocalDate.now(),
-    var to: LocalDate = LocalDate.now().plusDays(7),
-    var email: String = "lukapavlovic032@gmail.com",
-
     var currDay: Int = 0,
     var currMeal: Int = 0,
-    var selectedMeal: MealDetailsRemoteEntity? = null,
-    var plan: List<PlanedMeal> = mutableListOf(),
-    var byDay: List<PlanedMeal> = mutableListOf()
+    var selectedMeal: MealDetails? = null,
+    var plan: List<PlannedMeal> = mutableListOf(),
+    var byDay: List<PlannedMeal> = mutableListOf()
 ){
 
     fun emailBody(): String {
@@ -29,7 +24,7 @@ data class CreatePlanDataState(
         for ((day, meals) in map) {
             stringBuilder.append("day $day:\n")
             stringBuilder.append(meals)
-            stringBuilder.append("\n")
+            stringBuilder.append("\n\n")
         }
 
         return stringBuilder.toString()

@@ -1,7 +1,12 @@
-package com.example.raftrading.utils
+package com.example.nutritiontracker.utils
+
+import android.util.DisplayMetrics
 
 class Constants {
+
+
     companion object{
+
         const val SHARED_PREFERENCES_PATH = "com.example.nutritiontracker.application";
 
         const val EMAIL_KEY = "email_key"

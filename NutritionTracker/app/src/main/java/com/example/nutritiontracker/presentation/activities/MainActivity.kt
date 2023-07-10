@@ -9,7 +9,7 @@ import com.example.nutritiontracker.R
 import com.example.nutritiontracker.application.SharedPreferencesManager
 import com.example.nutritiontracker.presentation.fragments.LoginFragment
 import com.example.nutritiontracker.presentation.fragments.MainFragment
-import com.example.raftrading.utils.Constants
+import com.example.nutritiontracker.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

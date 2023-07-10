@@ -5,7 +5,6 @@ import com.example.nutritiontracker.data.datasource.remote.MealService
 import com.example.nutritiontracker.data.repositories.MealRepository
 import com.example.nutritiontracker.data.datasource.local.entities.MealDetailsLocalEntity
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModelRemoteEntity
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealRemoteEntity
 import com.example.nutritiontracker.domainModels.Category
 import com.example.nutritiontracker.domainModels.Meal
 import com.example.nutritiontracker.domainModels.MealDetails
@@ -151,8 +150,8 @@ class MealRepositoryImpl (
         }
     }
 
-    override suspend fun fetchMealById(id: String, result: (Resource<MealDetails>) -> Unit) {
-        val ans = mealService.fetchMealById(id)
+    override suspend fun fetchMealById(idMeal: String, result: (Resource<MealDetails>) -> Unit) {
+        val ans = mealService.fetchMealById(idMeal)
         if(ans.isSuccessful){
             if(ans.body() == null || ans.body()!!.meals == null || ans.body()!!.meals.isEmpty()){
                 result.invoke(Resource.Success(data = MealDetails()))

@@ -2,7 +2,6 @@ package com.example.nutritiontracker.data.repositories
 
 import com.example.nutritiontracker.data.datasource.local.entities.MealDetailsLocalEntity
 import com.example.nutritiontracker.data.datasource.remote.retrofitModels.IngredientsModelRemoteEntity
-import com.example.nutritiontracker.data.datasource.remote.retrofitModels.MealRemoteEntity
 import com.example.nutritiontracker.domainModels.Category
 import com.example.nutritiontracker.domainModels.Meal
 import com.example.nutritiontracker.domainModels.MealDetails
@@ -30,7 +29,7 @@ interface MealRepository {
     suspend fun fetchMealsByCategory(category: String, result: (Resource<List<Meal>>) -> Unit)
     suspend fun fetchMealsByArea(area: String, result: (Resource<List<Meal>>) -> Unit)
     suspend fun fetchMealsByIngredient(ingredient: String, result: (Resource<List<Meal>>) -> Unit)
-    suspend fun fetchMealById(id: String, result: (Resource<MealDetails>) -> Unit)
+    suspend fun fetchMealById(idMeal: String, result: (Resource<MealDetails>) -> Unit)
     suspend fun fetchMealByName(name: String, result: (Resource<MealDetails>) -> Unit)
 
     // energy data

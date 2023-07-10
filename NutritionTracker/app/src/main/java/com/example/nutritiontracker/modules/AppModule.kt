@@ -3,7 +3,7 @@ package com.example.nutritiontracker.modules
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.nutritiontracker.application.SharedPreferencesManager
-import com.example.raftrading.utils.Constants
+import com.example.nutritiontracker.utils.Constants
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides

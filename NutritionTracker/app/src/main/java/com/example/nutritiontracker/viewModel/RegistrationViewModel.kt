@@ -1,6 +1,7 @@
 package com.example.nutritiontracker.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.nutritiontracker.application.SharedPreferencesManager
 import com.example.nutritiontracker.data.repositories.AuthRepository
 import com.example.nutritiontracker.dtos.UserRegisterDto
@@ -33,8 +34,7 @@ class RegistrationViewModel @Inject constructor(
         when(event){
             RegistrationEvent.Submit -> {
                 _registrationScreenState.value = RegistrationScreenState.Processing
-                // ZASTO NE RADI KADA SE KORISTI viewModelScope.launch
-                GlobalScope.launch(Dispatchers.IO) {
+                viewModelScope.launch(Dispatchers.IO) {
                    when(inputsValidation()){
                        false -> _registrationScreenState.value = RegistrationScreenState.Failure("INVALID INPUTS")
                        true -> {
