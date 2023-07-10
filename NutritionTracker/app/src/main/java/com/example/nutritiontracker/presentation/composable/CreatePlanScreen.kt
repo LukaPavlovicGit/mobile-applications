@@ -96,13 +96,11 @@ fun CreatePlanScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.LightGray),
             ){
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 20.dp, end = 20.dp)
-                        .background(Color.LightGray),
+                        .padding(start = 20.dp, end = 20.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -382,8 +380,6 @@ private fun MealSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.Red)
-                            .height(50.dp)
                     ){
                         Canvas(modifier = Modifier
                             .fillMaxWidth()
@@ -392,7 +388,7 @@ private fun MealSelectionScreen(
                                 start = Offset(0f, 0f),
                                 end = Offset(size.width, 0f),
                                 color = Color.Black,
-                                strokeWidth = 1.dp.toPx()
+                                strokeWidth = 20.dp.toPx()
                             )
                         }
                     }
